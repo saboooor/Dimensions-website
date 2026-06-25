@@ -1,8 +1,8 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
 import { routeLoader$, routeAction$, Form, zod$, z } from "@builder.io/qwik-city";
 import { eq, and } from "drizzle-orm";
-import { getDB, users, userPortals, cosmetics, badges, type User, type UserPortal } from "../../../lib/db";
-import { getSessionUserId, getSessionUser, logoutUser } from "../../../lib/auth";
+import { getDB, users, userPortals, cosmetics, badges, type User, type UserPortal } from "../../../util/db";
+import { getSessionUserId, getSessionUser, logoutUser } from "../../../util/auth";
 
 /**
  * Loader to fetch profile details, including ranks, badges, cosmetics access, and saved portals.

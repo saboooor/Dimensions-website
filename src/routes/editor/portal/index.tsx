@@ -1,8 +1,8 @@
 import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
 import { eq } from "drizzle-orm";
-import { getDB, userPortals } from "~/lib/db";
-import { getSessionUserId, getSessionUser } from "~/lib/auth";
+import { getDB, userPortals } from "~/util/db";
+import { getSessionUserId, getSessionUser } from "~/util/auth";
 import textureManifest from "~/lib/texture-manifest.json";
 
 /**

@@ -1,7 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import { routeAction$, routeLoader$, Form, zod$, z } from "@builder.io/qwik-city";
-import { getDB, subscriptionCoupons } from "../../lib/db";
-import { getSessionUser, isAdmin } from "../../lib/auth";
+import { getDB, subscriptionCoupons } from "../../util/db";
+import { getSessionUser, isAdmin } from "../../util/auth";
 
 /**
  * Loader to enforce administrative access only.

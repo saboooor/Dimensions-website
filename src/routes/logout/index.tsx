@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { logoutUser } from "../../lib/auth";
+import { logoutUser } from "../../util/auth";
 
 /**
  * Loader to log the user out and redirect.

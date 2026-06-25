@@ -1,7 +1,7 @@
 import type { RequestHandler } from "@builder.io/qwik-city";
 import { eq, and, or, desc } from "drizzle-orm";
-import { getDB, userPortals, users } from "../../../lib/db";
-import { getSessionUserId, getSessionUser, isAdmin } from "../../../lib/auth";
+import { getDB, userPortals, users } from "../../../util/db";
+import { getSessionUserId, getSessionUser, isAdmin } from "../../../util/auth";
 
 export const onGet: RequestHandler = async (requestEvent) => {
   const db = getDB(requestEvent);

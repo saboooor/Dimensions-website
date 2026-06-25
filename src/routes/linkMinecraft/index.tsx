@@ -1,8 +1,8 @@
 import { component$, useSignal } from "@builder.io/qwik";
 import { routeLoader$, routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
 import { eq } from "drizzle-orm";
-import { getDB, users } from "~/lib/db";
-import { getSessionUserId } from "~/lib/auth";
+import { getDB, users } from "~/util/db";
+import { getSessionUserId } from "~/util/auth";
 
 /**
  * Handle unlinking Minecraft account or check if already linked.

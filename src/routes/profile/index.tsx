@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { getSessionUserId } from "../../lib/auth";
+import { getSessionUserId } from "../../util/auth";
 
 /**
  * Loader to redirect '/profile' to '/profile/[loggedInUserId]'

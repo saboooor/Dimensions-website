@@ -1,7 +1,7 @@
 import { type RequestHandler } from "@builder.io/qwik-city";
 import { eq } from "drizzle-orm";
-import { getDB, users } from "~/lib/db";
-import { getSessionUserId } from "~/lib/auth";
+import { getDB, users } from "~/util/db";
+import { getSessionUserId } from "~/util/auth";
 
 export const onGet: RequestHandler = async (requestEvent) => {
   const code = requestEvent.url.searchParams.get("code");

@@ -1,6 +1,6 @@
 import { type RequestHandler } from "@builder.io/qwik-city";
 import { sql, eq, or } from "drizzle-orm";
-import { getDB, users } from "~/lib/db";
+import { getDB, users } from "~/util/db";
 
 const DEFAULT_COSMETICS = {
   postIgnitePortal: "NOTHING",

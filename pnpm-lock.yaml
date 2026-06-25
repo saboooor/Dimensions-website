@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@auth/drizzle-adapter':
+        specifier: ^1.11.2
+        version: 1.11.2
       '@auth/qwik':
         specifier: ^0.9.2
         version: 0.9.2
@@ -102,6 +105,9 @@ packages:
         optional: true
       nodemailer:
         optional: true
+
+  '@auth/drizzle-adapter@1.11.2':
+    resolution: {integrity: sha512-VOuj7REI8jfJjpSbsYwDM/Zrn55T6lS9Yc+29V+EXMcel8eqG7x+7LodNfd1WHjakfkLYi+qsbYUHB3E6aDA4w==}
 
   '@auth/qwik@0.9.2':
     resolution: {integrity: sha512-MVCcMbtRL44QHXWXvhrX5J8iBFikc8Lr6fWWyQRWdGxyo4X0JFkoG1zfIYkERxb6lssJR7KqMTrYdSbSYikpHA==}
@@ -3553,6 +3559,14 @@ snapshots:
       oauth4webapi: 3.8.6
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
+
+  '@auth/drizzle-adapter@1.11.2':
+    dependencies:
+      '@auth/core': 0.41.2
+    transitivePeerDependencies:
+      - '@simplewebauthn/browser'
+      - '@simplewebauthn/server'
+      - nodemailer
 
   '@auth/qwik@0.9.2':
     dependencies:

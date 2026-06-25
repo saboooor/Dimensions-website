@@ -1,7 +1,7 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { routeLoader$, useLocation, Link } from "@builder.io/qwik-city";
 import { Nav, SelectMenuRaw } from "@luminescent/ui-qwik";
-import { getSessionUser } from "../lib/auth";
+import { getSessionUser } from "../util/auth";
 
 /**
  * Global route loader to fetch the logged-in user's session data.

@@ -1,6 +1,6 @@
 import { component$, useSignal } from "@builder.io/qwik";
 import type { Signal } from "@builder.io/qwik";
-import type { User } from "../../lib/db";
+import type { User } from "../../util/db";
 
 export interface SidebarProps {
   user: User | null;

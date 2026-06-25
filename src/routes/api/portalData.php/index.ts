@@ -1,7 +1,7 @@
 import { type RequestHandler } from "@builder.io/qwik-city";
 import { sql, eq, or } from "drizzle-orm";
 import { dump } from "js-yaml";
-import { getDB, users, userPortals } from "~/lib/db";
+import { getDB, users, userPortals } from "~/util/db";
 
 // Helper to convert flat state to nested object for YAML conversion
 function toNested(state: Record<string, any>) {

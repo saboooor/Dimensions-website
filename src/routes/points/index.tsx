@@ -1,8 +1,8 @@
 import { component$, useSignal } from "@builder.io/qwik";
 import { routeAction$, routeLoader$, Form, zod$, z, type DocumentHead } from "@builder.io/qwik-city";
 import { eq, and, like, notLike, desc } from "drizzle-orm";
-import { getDB, users, subscriptionCoupons, claimRewards, claimRequests } from "../../lib/db";
-import { getSessionUser, getSessionUserId } from "../../lib/auth";
+import { getDB, users, subscriptionCoupons, claimRewards, claimRequests } from "../../util/db";
+import { getSessionUser, getSessionUserId } from "../../util/auth";
 
 /**
  * Loader to fetch points data, available rewards, and user's claim history.

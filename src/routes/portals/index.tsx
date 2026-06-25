@@ -1,8 +1,8 @@
 import { component$, useStore, $ } from "@builder.io/qwik";
 import { routeLoader$, routeAction$, Form, zod$, z } from "@builder.io/qwik-city";
 import { eq, and, or, desc } from "drizzle-orm";
-import { getDB, userPortals, users } from "../../lib/db";
-import { getSessionUserId, getSessionUser, isAdmin } from "../../lib/auth";
+import { getDB, userPortals, users } from "../../util/db";
+import { getSessionUserId, getSessionUser, isAdmin } from "../../util/auth";
 
 export interface PortalCardData {
   id: number;

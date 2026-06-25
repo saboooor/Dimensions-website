@@ -27,6 +27,6 @@ const manifest = {
   items: getPngBasenames(itemsPath),
 };
 
-const outputPath = path.join(projectRoot, 'src/lib/texture-manifest.json');
+const outputPath = path.join(projectRoot, 'src/util/texture-manifest.json');
 fs.writeFileSync(outputPath, JSON.stringify(manifest, null, 2), 'utf8');
 console.log('Texture manifest generated successfully at', outputPath);
