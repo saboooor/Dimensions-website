@@ -1,0 +1,4 @@
+[submodule "Minecraft-default-assets"]
+	path = Minecraft-default-assets
+	url = https://github.com/PixiGeko/Minecraft-default-assets
+	branch = 26.2
