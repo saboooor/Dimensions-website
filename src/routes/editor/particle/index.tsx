@@ -1,4 +1,10 @@
-import { component$, useVisibleTask$ } from '@qwik.dev/core';
+import {
+  component$,
+  useSignal,
+  useStore,
+  useVisibleTask$,
+  $,
+} from '@qwik.dev/core';
 import Sparkles from 'lucide-icons-qwik/icons/Sparkles';
 import RotateCcw from 'lucide-icons-qwik/icons/RotateCcw';
 import RotateCw from 'lucide-icons-qwik/icons/RotateCw';
@@ -11,547 +17,369 @@ import Plus from 'lucide-icons-qwik/icons/Plus';
 import Home from 'lucide-icons-qwik/icons/Home';
 import MousePointer from 'lucide-icons-qwik/icons/MousePointer';
 import X from 'lucide-icons-qwik/icons/X';
+import Eye from 'lucide-icons-qwik/icons/Eye';
+import EyeOff from 'lucide-icons-qwik/icons/EyeOff';
+import Trash2 from 'lucide-icons-qwik/icons/Trash2';
+import Circle from 'lucide-icons-qwik/icons/Circle';
+import Tornado from 'lucide-icons-qwik/icons/Tornado';
+import InfinityIcon from 'lucide-icons-qwik/icons/InfinityIcon';
+import Target from 'lucide-icons-qwik/icons/Target';
+import CloudRain from 'lucide-icons-qwik/icons/CloudRain';
+import Flame from 'lucide-icons-qwik/icons/Flame';
+import Dices from 'lucide-icons-qwik/icons/Dices';
+import Code from 'lucide-icons-qwik/icons/Code';
+import CirclePlus from 'lucide-icons-qwik/icons/CirclePlus';
+import Layers from 'lucide-icons-qwik/icons/Layers';
+
+import { Nav } from '~/components/Nav';
+import {
+  Utils,
+  ShapeDefaults,
+  ShapeParamLabels,
+  ShapeParamRanges,
+  Presets,
+  ThreeView,
+} from './particle-editor';
+
+const ShapeIcons: Record<string, any> = {
+  ring: Circle,
+  spiral: Tornado,
+  helix: InfinityIcon,
+  vortex: Target,
+  rain: CloudRain,
+  border: Flame,
+  random: Dices,
+  custom: Code,
+};
+
+const PresetIcons: Record<string, any> = {
+  tornado: Tornado,
+  circle: Circle,
+  infinity: InfinityIcon,
+  bullseye: Target,
+  'cloud-rain': CloudRain,
+  rain: CloudRain,
+  fire: Flame,
+  stars: Sparkles,
+  'plus-circle': CirclePlus,
+};
 
 export default component$(() => {
+  const canvasRef = useSignal<HTMLCanvasElement>();
+
+  const store = useStore({
+    packName: 'My Particle Pack',
+    freq: 20,
+    layers: JSON.parse(
+      JSON.stringify(Presets.definitions['Fireflies']?.layers || [])
+    ) as any[],
+    selectedLayerId: Presets.definitions['Fireflies']?.layers[0]?.id || null,
+    isSimulating: false,
+    showPresetsModal: false,
+    showAddLayerModal: false,
+    particleCount: 0,
+    history: [] as string[],
+    historyIndex: -1,
+  });
+
+  const selectedLayer = store.layers.find(
+    (l) => l.id === store.selectedLayerId
+  );
+
+  // Initialize Three.js Viewport
   // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
-    void import('./particle-editor');
+  useVisibleTask$(({ track, cleanup }) => {
+    track(() => store.layers);
+    track(() => store.freq);
+    track(() => store.isSimulating);
+
+    if (!canvasRef.value) return;
+
+    const threeView = new ThreeView(canvasRef.value);
+
+    let animId: number | null = null;
+    const startTime = Date.now();
+
+    const renderLoop = () => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      threeView.updateParticles(store.layers, elapsed);
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    renderLoop();
+
+    cleanup(() => {
+      if (animId) cancelAnimationFrame(animId);
+    });
+  });
+
+  const pushHistory = $(() => {
+    const state = JSON.stringify(store.layers);
+    if (
+      store.historyIndex >= 0 &&
+      store.history[store.historyIndex] === state
+    ) {
+      return;
+    }
+    const newHist = store.history.slice(0, store.historyIndex + 1);
+    newHist.push(state);
+    if (newHist.length > 30) newHist.shift();
+    store.history = newHist;
+    store.historyIndex = newHist.length - 1;
+  });
+
+  const handleUndo = $(() => {
+    if (store.historyIndex > 0) {
+      store.historyIndex--;
+      store.layers = JSON.parse(store.history[store.historyIndex]);
+    }
+  });
+
+  const handleRedo = $(() => {
+    if (store.historyIndex < store.history.length - 1) {
+      store.historyIndex++;
+      store.layers = JSON.parse(store.history[store.historyIndex]);
+    }
+  });
+
+  const addLayer = $((type: string) => {
+    const count = store.layers.length + 1;
+    const defaults = ShapeDefaults[type]
+      ? JSON.parse(JSON.stringify(ShapeDefaults[type]))
+      : {};
+    const newLayer = {
+      id: Utils.generateId(),
+      name: Utils.capitalize(type) + ' ' + count,
+      enabled: true,
+      section: 'main',
+      particle: {
+        type: 'REDSTONE',
+        color: { r: 255, g: 180, b: 50 },
+        size: 1.0,
+      },
+      shape: {
+        type,
+        params: defaults,
+      },
+      position: { x: 0, y: 0, z: 0 },
+      animation: { rotate: false, rotateSpeed: 1.0, float: false },
+    };
+    store.layers = [...store.layers, newLayer];
+    store.selectedLayerId = newLayer.id;
+    store.showAddLayerModal = false;
+    void pushHistory();
+  });
+
+  const deleteLayer = $((id: string) => {
+    store.layers = store.layers.filter((l) => l.id !== id);
+    if (store.selectedLayerId === id) {
+      store.selectedLayerId = store.layers[0]?.id || null;
+    }
+    void pushHistory();
+  });
+
+  const toggleLayerEnabled = $((id: string) => {
+    const layer = store.layers.find((l) => l.id === id);
+    if (layer) {
+      layer.enabled = !layer.enabled;
+      void pushHistory();
+    }
+  });
+
+  const applyPreset = $((presetName: string) => {
+    const def = Presets.definitions[presetName];
+    if (def) {
+      store.layers = JSON.parse(JSON.stringify(def.layers));
+      store.freq = def.frequency || 20;
+      store.selectedLayerId = store.layers[0]?.id || null;
+      store.showPresetsModal = false;
+      void pushHistory();
+    }
   });
 
   return (
     <>
-      {/* Dynamic Style Injection for Editor Controls */}
-      <style
-        dangerouslySetInnerHTML={`
-          .layer-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: rgba(0,0,0,0.25);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-          }
-          .layer-item:hover {
-            border-color: var(--color-gray-700);
-            background: rgba(255,255,255,0.01);
-          }
-          .layer-item.active {
-            border-color: var(--color-gray-500);
-            background: rgba(255,255,255,0.03);
-            box-shadow: 0 0 8px rgba(255,255,255,0.05);
-          }
-          .layer-color-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-            flex-shrink: 0;
-          }
-          .layer-name {
-            flex-grow: 1;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--color-gray-200);
-          }
-          .layer-actions {
-            display: flex;
-            gap: 4px;
-          }
-          .layer-action-btn {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-gray-950);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 4px;
-            color: var(--color-gray-400);
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.1s ease;
-          }
-          .layer-action-btn:hover {
-            border-color: var(--color-gray-600);
-            color: var(--color-gray-200);
-          }
-          .layer-action-btn.danger {
-            color: #f87171;
-          }
-          .layer-action-btn.danger:hover {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.4);
-          }
-          .insp-section {
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 10px;
-            background: rgba(0,0,0,0.2);
-            margin-bottom: 12px;
-            overflow: hidden;
-            padding: 12px;
-          }
-          .insp-section-title {
-            font-size: 10px;
-            font-weight: 850;
-            color: var(--color-gray-400);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 10px;
-            display: block;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            padding-bottom: 6px;
-          }
-          .insp-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 12px;
-          }
-          .insp-row:last-child {
-            margin-bottom: 0;
-          }
-          .insp-label {
-            font-size: 12px;
-            color: var(--color-gray-400);
-            font-weight: 650;
-          }
-          .insp-input, .insp-select {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 6px;
-            padding: 6px 8px;
-            font-size: 11px;
-            color: var(--color-gray-200);
-            outline: none;
-            max-width: 110px;
-            width: 100%;
-          }
-          .insp-input:focus, .insp-select:focus {
-            border-color: var(--color-gray-650);
-          }
-          .insp-slider {
-            flex: 1;
-            height: 4px;
-            background: var(--color-gray-800);
-            border-radius: 2px;
-            outline: none;
-            appearance: none;
-            cursor: pointer;
-          }
-          .insp-num {
-            font-family: monospace;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--color-gray-400);
-            min-width: 28px;
-            text-align: right;
-          }
-          .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-          }
-          .color-picker {
-            background: rgba(0,0,0,0.35);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 6px;
-          }
-          .color-top-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-          }
-          .color-swatch {
-            width: 28px;
-            height: 28px;
-            border-radius: 5px;
-            border: 1px solid var(--color-gray-700);
-            cursor: pointer;
-          }
-          .color-hex {
-            flex: 1;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 11px;
-            color: var(--color-gray-300);
-            font-family: monospace;
-            font-weight: bold;
-            text-transform: uppercase;
-          }
-          .color-slider-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-          .color-slider-label {
-            font-size: 10px;
-            font-weight: 800;
-            width: 12px;
-            color: var(--color-gray-500);
-          }
-          .color-slider-val {
-            font-family: monospace;
-            font-size: 10px;
-            width: 24px;
-            text-align: right;
-            color: var(--color-gray-400);
-          }
-          .shape-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            margin-top: 4px;
-          }
-          .shape-btn {
-            padding: 6px 4px;
-            font-size: 10px;
-            font-weight: 700;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 4px;
-            color: var(--color-gray-400);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            text-transform: uppercase;
-          }
-          .shape-btn:hover {
-            border-color: var(--color-gray-700);
-            color: var(--color-gray-200);
-          }
-          .shape-btn.active {
-            background: var(--color-gray-800);
-            border-color: var(--color-gray-500);
-            color: white;
-          }
-          .preset-grid, .shape-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 12px;
-          }
-          .preset-card, .shape-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-          }
-          .preset-card:hover, .shape-card:hover {
-            border-color: var(--color-gray-500);
-            background: rgba(255,255,255,0.05);
-            transform: translateY(-2px);
-          }
-          .preset-card-title, .shape-card-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--color-gray-200);
-          }
-          .preset-card-icon, .shape-card-icon {
-            font-size: 20px;
-            color: var(--color-gray-400);
-          }
-          .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 36px;
-            height: 20px;
-          }
-          .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-          }
-          .toggle-track {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255,255,255,0.03);
-            border: 1px solid var(--color-gray-800);
-            transition: .2s;
-            border-radius: 20px;
-          }
-          .toggle-track:before {
-            position: absolute;
-            content: "";
-            height: 12px;
-            width: 12px;
-            left: 3px;
-            bottom: 3px;
-            background-color: var(--color-gray-500);
-            transition: .2s;
-            border-radius: 50%;
-          }
-          .toggle-switch input:checked + .toggle-track {
-            background-color: rgba(255,255,255,0.08);
-            border-color: var(--color-gray-500);
-          }
-          .toggle-switch input:checked + .toggle-track:before {
-            transform: translateX(16px);
-            background-color: var(--color-gray-100);
-          }
-          .inspector-empty {
-            text-align: center;
-            padding: 48px 24px;
-            color: var(--color-gray-600);
-          }
-          .inspector-empty i {
-            font-size: 24px;
-            margin-bottom: 8px;
-            display: block;
-          }
-          .inspector-empty p {
-            font-size: 12px;
-            font-weight: 600;
-          }
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-          }
-          .modal-card {
-            width: 100%;
-            max-width: 440px;
-            background: var(--color-bg);
-            border: 1px solid var(--color-gray-800);
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-          }
-          .modal-card.modal-sm {
-            max-width: 320px;
-          }
-          .modal-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--color-gray-850);
-            background: rgba(255,255,255,0.01);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-          .modal-header h3 {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--color-gray-200);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-          .modal-close {
-            background: none;
-            border: none;
-            color: var(--color-gray-500);
-            cursor: pointer;
-            font-size: 14px;
-            transition: color 0.15s ease;
-          }
-          .modal-close:hover {
-            color: var(--color-gray-300);
-          }
-          .modal-body {
-            padding: 16px;
-            font-size: 12px;
-            color: var(--color-gray-400);
-            line-height: 1.5;
-          }
-          .loading-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: var(--color-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-          .loading-inner {
-            text-align: center;
-            max-width: 260px;
-          }
-          .loading-inner h1 {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--color-gray-400);
-            margin-top: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-          }
-          .loading-spinner {
-            width: 36px;
-            height: 36px;
-            margin: 0 auto;
-            border: 3px solid rgba(255,255,255,0.03);
-            border-top-color: var(--color-gray-500);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-          }
-          .loading-bar-track {
-            width: 140px;
-            height: 2px;
-            margin: 16px auto 0;
-            background: rgba(255,255,255,0.03);
-            border-radius: 2px;
-            overflow: hidden;
-          }
-          .loading-bar-fill {
-            height: 100%;
-            width: 30%;
-            background: var(--color-gray-400);
-            border-radius: 2px;
-            animation: loadSlide 1.4s ease-in-out infinite;
-          }
-          @keyframes loadSlide { 0% { transform: translateX(-120%); } 100% { transform: translateX(350%); } }
-        `}
-      />
-
-      {/* Loading Overlay */}
-      <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-inner">
-          <div class="loading-spinner"></div>
-          <h1>Loading Particle Editor...</h1>
-          <div class="loading-bar-track">
-            <div class="loading-bar-fill"></div>
-          </div>
-        </div>
-      </div>
-
       <div class="flex w-full flex-col gap-6" id="app">
-        {/* Editor Control Bar */}
-        <header class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-800/80 bg-gray-900/50 p-4 shadow-lg backdrop-blur">
-          <div class="flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700/50 bg-gray-800/80 text-gray-300">
-              <Sparkles class="h-4 w-4" />
-            </div>
-            <div>
-              <h1 class="text-sm leading-none font-black tracking-wider text-gray-100 uppercase">
-                Particle Editor
-              </h1>
-              <span class="mt-1 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Cosmetics Config
-              </span>
-            </div>
+        {/* Editor Control Bar via Nav.tsx component */}
+        <Nav>
+          <div q:slot="icon">
+            <Sparkles class="h-4 w-4" />
           </div>
-          <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
-              <label
-                for="packName"
-                class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
-              >
-                Pack Name
-              </label>
-              <input
-                type="text"
-                id="packName"
-                class="w-36 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
-                value="My Particle Pack"
-                spellcheck={false}
-              />
-            </div>
+
+          <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
+            <label
+              for="packName"
+              class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
+            >
+              Pack Name
+            </label>
+            <input
+              type="text"
+              id="packName"
+              class="w-36 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
+              value={store.packName}
+              onInput$={(e) => {
+                store.packName = (e.target as HTMLInputElement).value;
+              }}
+              spellcheck={false}
+            />
           </div>
+
           <div class="flex flex-wrap items-center gap-2">
             <button
-              id="btnUndo"
               class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Undo (Ctrl+Z)"
-              disabled
+              disabled={store.historyIndex <= 0}
+              onClick$={handleUndo}
             >
               <RotateCcw class="h-4 w-4" />
             </button>
             <button
-              id="btnRedo"
               class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Redo (Ctrl+Y)"
-              disabled
+              disabled={store.historyIndex >= store.history.length - 1}
+              onClick$={handleRedo}
             >
               <RotateCw class="h-4 w-4" />
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
-              id="btnPresets"
               class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+              onClick$={() => (store.showPresetsModal = true)}
             >
               <Library class="h-4 w-4" />
               <span>Presets</span>
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
-              id="btnRun"
               class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-gray-600 to-gray-500 px-4 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all hover:from-gray-500 hover:to-gray-400"
+              onClick$={() => (store.isSimulating = !store.isSimulating)}
             >
-              <Play class="h-4 w-4 fill-current" />
-              <span>Run</span>
-            </button>
-            <button
-              id="btnStop"
-              class="hover:border-red-850 flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-red-900/40 bg-red-950/40 px-4 text-xs font-bold tracking-wider text-red-400 uppercase transition-all hover:bg-red-900/20"
-              style="display:none"
-            >
-              <Square class="h-4 w-4 fill-current" />
-              <span>Stop</span>
+              {store.isSimulating ? (
+                <>
+                  <Square class="h-4 w-4 fill-current" />
+                  <span>Stop</span>
+                </>
+              ) : (
+                <>
+                  <Play class="h-4 w-4 fill-current" />
+                  <span>Run</span>
+                </>
+              )}
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
-              id="btnDownload"
               class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+              onClick$={() => {
+                const yaml = store.layers
+                  .map((l) => JSON.stringify(l))
+                  .join('\n');
+                const blob = new Blob([yaml], { type: 'text/yaml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${store.packName}.yml`;
+                a.click();
+              }}
             >
               <Download class="h-4 w-4" />
               <span>Download</span>
             </button>
             <button
-              id="btnCopy"
               class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               title="Copy YAML"
+              onClick$={() => {
+                const yaml = store.layers
+                  .map((l) => JSON.stringify(l))
+                  .join('\n');
+                void navigator.clipboard.writeText(yaml);
+              }}
             >
               <Clipboard class="h-4 w-4" />
             </button>
           </div>
-        </header>
+        </Nav>
 
         {/* Workspace Grid */}
         <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL: Layers */}
-          <aside
-            class="flex h-[500px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]"
-            id="panelLeft"
-          >
+          <aside class="flex h-[500px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]">
             <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
               <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Layers
               </span>
               <button
-                id="btnAddLayer"
                 class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
                 title="Add layer"
+                onClick$={() => (store.showAddLayerModal = true)}
               >
                 <Plus class="h-3.5 w-3.5" />
               </button>
             </div>
-            <div class="flex-1 overflow-y-auto p-4" id="layerList"></div>
+            <div class="flex-1 space-y-2 overflow-y-auto p-4">
+              {store.layers.length === 0 ? (
+                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-800/80 bg-gray-950/40 p-8 text-center text-xs text-gray-500">
+                  <Layers class="h-6 w-6 text-gray-600" />
+                  <p class="text-xs font-semibold text-gray-500">
+                    No layers yet. Click "+ Add Layer" to start.
+                  </p>
+                </div>
+              ) : (
+                store.layers.map((layer) => {
+                  const ShapeIcon =
+                    ShapeIcons[layer.shape?.type || 'ring'] || Circle;
+                  const isSelected = layer.id === store.selectedLayerId;
+                  return (
+                    <div
+                      key={layer.id}
+                      class={[
+                        'group flex cursor-pointer items-center justify-between rounded-xl border p-2.5 transition-all duration-150',
+                        isSelected
+                          ? 'border-gray-700 bg-gray-900/80 text-white shadow-sm'
+                          : 'border-gray-800/60 bg-gray-950/40 text-gray-400 hover:border-gray-700 hover:bg-gray-900/40 hover:text-gray-200',
+                        !layer.enabled ? 'opacity-50' : '',
+                      ]}
+                      onClick$={() => (store.selectedLayerId = layer.id)}
+                    >
+                      <div class="flex min-w-0 flex-grow items-center gap-2">
+                        <button
+                          class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-gray-950 text-gray-400 transition-colors hover:border-gray-700 hover:text-gray-200"
+                          title={layer.enabled ? 'Hide' : 'Show'}
+                          onClick$={(e) => {
+                            e.stopPropagation();
+                            void toggleLayerEnabled(layer.id);
+                          }}
+                        >
+                          {layer.enabled ? (
+                            <Eye class="h-3.5 w-3.5" />
+                          ) : (
+                            <EyeOff class="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-800/60 bg-gray-950/60 text-gray-400">
+                          <ShapeIcon class="h-3.5 w-3.5" />
+                        </span>
+                        <span class="flex-grow truncate text-xs font-semibold text-gray-200">
+                          {layer.name}
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <button
+                          class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-red-900/40 bg-red-950/30 text-red-400 transition-colors hover:border-red-700/60 hover:bg-red-900/50 hover:text-red-300"
+                          title="Delete"
+                          onClick$={(e) => {
+                            e.stopPropagation();
+                            void deleteLayer(layer.id);
+                          }}
+                        >
+                          <Trash2 class="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
             <div class="border-t border-gray-800/80 bg-black/10 p-4">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center justify-between">
@@ -561,11 +389,8 @@ export default component$(() => {
                   >
                     Simulation Speed
                   </label>
-                  <span
-                    id="freqValue"
-                    class="font-mono text-xs font-bold text-gray-400"
-                  >
-                    20
+                  <span class="font-mono text-xs font-bold text-gray-400">
+                    {store.freq}
                   </span>
                 </div>
                 <input
@@ -573,39 +398,34 @@ export default component$(() => {
                   id="freqSlider"
                   min="1"
                   max="40"
-                  value="20"
-                  class="insp-slider w-full cursor-pointer"
+                  value={store.freq}
+                  onInput$={(e) => {
+                    store.freq = parseInt(
+                      (e.target as HTMLInputElement).value,
+                      10
+                    );
+                  }}
+                  class="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gray-400"
                 />
               </div>
             </div>
           </aside>
 
-          {/* Hidden drag handles to satisfy layout scripts */}
-          <div class="hidden" id="resizeLeft"></div>
-          <div class="hidden" id="resizeRight"></div>
-
           {/* CENTER PANEL: 3D Viewport */}
           <div class="flex flex-col gap-4 lg:col-span-4">
-            <div
-              class="relative flex h-[400px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[650px]"
-              id="viewportWrap"
-            >
+            <div class="relative flex h-[400px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[650px]">
               <canvas
-                id="viewport"
+                ref={canvasRef}
                 class="block h-full w-full flex-1 bg-black"
               ></canvas>
               <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
-                <span
-                  class="rounded-lg border border-gray-800/80 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-300 uppercase"
-                  id="particleCount"
-                >
-                  0 particles
+                <span class="rounded-lg border border-gray-800/80 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-300 uppercase backdrop-blur-sm">
+                  {store.layers.length} layers
                 </span>
               </div>
               <div class="absolute right-4 bottom-4 z-10">
                 <button
-                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-black/60 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
-                  id="btnResetCam"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-black/60 text-gray-300 backdrop-blur-sm transition-all hover:border-gray-700 hover:text-white"
                   title="Reset camera"
                 >
                   <Home class="h-4 w-4" />
@@ -615,56 +435,231 @@ export default component$(() => {
           </div>
 
           {/* RIGHT PANEL: Inspector */}
-          <aside
-            class="flex h-[450px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]"
-            id="panelRight"
-          >
+          <aside class="flex h-[450px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]">
             <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
               <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Inspector
               </span>
             </div>
-            <div class="flex-1 overflow-y-auto p-4" id="inspector">
-              <div class="inspector-empty flex h-full flex-col items-center justify-center p-8 text-center text-gray-600">
-                <MousePointer class="mb-2 block h-6 w-6" />
-                <p class="text-xs font-bold tracking-wider text-gray-500 uppercase">
-                  Select a layer to edit
-                </p>
-              </div>
+            <div class="flex-1 space-y-4 overflow-y-auto p-4">
+              {!selectedLayer ? (
+                <div class="flex h-full flex-col items-center justify-center p-8 text-center text-gray-600">
+                  <MousePointer class="mb-2 block h-6 w-6" />
+                  <p class="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Select a layer to edit
+                  </p>
+                </div>
+              ) : (
+                <div class="space-y-4">
+                  {/* Layer Name & Shape */}
+                  <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                    <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+                      Layer Info
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-[10px] font-bold text-gray-400 uppercase">
+                        Layer Name
+                      </label>
+                      <input
+                        type="text"
+                        class="w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-gray-600"
+                        value={selectedLayer.name}
+                        onInput$={(e) => {
+                          selectedLayer.name = (
+                            e.target as HTMLInputElement
+                          ).value;
+                          void pushHistory();
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Particle Color & Size */}
+                  <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                    <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+                      Particle Appearance
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                      <label class="text-xs font-medium text-gray-300">
+                        Color
+                      </label>
+                      <input
+                        type="color"
+                        class="h-8 w-14 cursor-pointer rounded-lg border border-gray-800 bg-gray-950 p-0.5"
+                        value={Utils.rgbToHex(
+                          selectedLayer.particle?.color?.r || 255,
+                          selectedLayer.particle?.color?.g || 180,
+                          selectedLayer.particle?.color?.b || 50
+                        )}
+                        onInput$={(e) => {
+                          const hex = (e.target as HTMLInputElement).value;
+                          selectedLayer.particle.color = Utils.hexToRgb(hex);
+                          void pushHistory();
+                        }}
+                      />
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                      <label class="text-xs font-medium text-gray-300">
+                        Size
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        max="5.0"
+                        class="w-24 rounded-lg border border-gray-800 bg-gray-950 px-2.5 py-1 text-xs text-gray-200 outline-none"
+                        value={selectedLayer.particle?.size || 1.0}
+                        onInput$={(e) => {
+                          selectedLayer.particle.size =
+                            parseFloat((e.target as HTMLInputElement).value) ||
+                            1;
+                          void pushHistory();
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Shape Parameters */}
+                  {selectedLayer.shape?.params && (
+                    <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                      <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+                        {Utils.capitalize(selectedLayer.shape.type)} Parameters
+                      </div>
+                      {Object.keys(selectedLayer.shape.params).map((key) => {
+                        const val = selectedLayer.shape.params[key];
+                        const label =
+                          ShapeParamLabels[key] || Utils.capitalize(key);
+                        const range = ShapeParamRanges[key] || {
+                          min: 0.1,
+                          max: 10,
+                          step: 0.1,
+                        };
+                        return (
+                          <div
+                            key={key}
+                            class="flex items-center justify-between gap-3 text-xs text-gray-300"
+                          >
+                            <label class="text-xs font-medium text-gray-300">
+                              {label}
+                            </label>
+                            <input
+                              type="number"
+                              min={range.min}
+                              max={range.max}
+                              step={range.step}
+                              class="w-24 rounded-lg border border-gray-800 bg-gray-950 px-2.5 py-1 text-xs text-gray-200 outline-none"
+                              value={val}
+                              onInput$={(e) => {
+                                selectedLayer.shape.params[key] =
+                                  parseFloat(
+                                    (e.target as HTMLInputElement).value
+                                  ) || 0;
+                                void pushHistory();
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </aside>
         </main>
       </div>
 
       {/* PRESETS MODAL */}
-      <div id="presetsModal" class="modal-overlay" style="display:none">
-        <div class="modal-card">
-          <div class="modal-header">
-            <h3>Presets</h3>
-            <button class="modal-close" id="closePresetsModal">
-              <X class="h-4 w-4" />
-            </button>
-          </div>
-          <div class="modal-body max-h-[350px] overflow-y-auto p-4">
-            <div class="preset-grid" id="presetGrid"></div>
+      {store.showPresetsModal && (
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div class="w-full max-w-lg space-y-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
+              <h3 class="text-xs font-bold tracking-wider text-gray-200 uppercase">
+                Presets
+              </h3>
+              <button
+                class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-300"
+                onClick$={() => (store.showPresetsModal = false)}
+              >
+                <X class="h-4 w-4" />
+              </button>
+            </div>
+            <div class="max-h-[350px] overflow-y-auto p-1">
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {Object.keys(Presets.definitions).map((presetName) => {
+                  const preset = Presets.definitions[presetName];
+                  const IconComp = PresetIcons[preset.icon] || Circle;
+                  return (
+                    <div
+                      key={presetName}
+                      class="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-gray-800/80 bg-gray-900/40 p-4 text-center backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg"
+                      onClick$={() => void applyPreset(presetName)}
+                    >
+                      <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-transform group-hover:scale-110"
+                        style={{ color: preset.accentColor }}
+                      >
+                        <IconComp class="h-5 w-5" />
+                      </div>
+                      <span class="text-xs font-bold text-gray-200">
+                        {presetName}
+                      </span>
+                      <span class="line-clamp-2 text-[11px] text-gray-500">
+                        {preset.description}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ADD LAYER MODAL */}
-      <div id="addLayerModal" class="modal-overlay" style="display:none">
-        <div class="modal-card modal-sm">
-          <div class="modal-header">
-            <h3>Add Layer</h3>
-            <button class="modal-close" id="closeAddLayerModal">
-              <X class="h-4 w-4" />
-            </button>
-          </div>
-          <div class="modal-body max-h-[300px] overflow-y-auto p-4">
-            <div class="shape-grid" id="addLayerGrid"></div>
+      {store.showAddLayerModal && (
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div class="w-full max-w-md space-y-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
+              <h3 class="text-xs font-bold tracking-wider text-gray-200 uppercase">
+                Add Layer
+              </h3>
+              <button
+                class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-300"
+                onClick$={() => (store.showAddLayerModal = false)}
+              >
+                <X class="h-4 w-4" />
+              </button>
+            </div>
+            <div class="max-h-[300px] overflow-y-auto p-1">
+              <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  'ring',
+                  'spiral',
+                  'helix',
+                  'vortex',
+                  'rain',
+                  'border',
+                  'random',
+                  'custom',
+                ].map((type) => {
+                  const ShapeComp = ShapeIcons[type] || Circle;
+                  return (
+                    <div
+                      key={type}
+                      class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-800/80 bg-gray-900/40 p-3.5 text-xs font-semibold text-gray-300 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white"
+                      onClick$={() => void addLayer(type)}
+                    >
+                      <ShapeComp class="h-4 w-4 text-gray-400" />
+                      <span>{Utils.capitalize(type)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 });

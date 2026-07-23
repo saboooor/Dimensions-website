@@ -328,8 +328,10 @@ class Viewport {
       });
       ro.observe(parent);
     }
+  }
 
-    this.resize();
+  setDimensions(_pw: number, _ph: number): void {
+    this._buildPortal();
   }
 
   resize(): void {
@@ -625,7 +627,11 @@ const BlockSelector = {
       textureList.forEach((id) => {
         if (filterLower && id.toLowerCase().indexOf(filterLower) === -1) return;
         const tile = document.createElement('div');
-        tile.className = 'block-tile' + (selected === id ? ' selected' : '');
+        tile.className =
+          'aspect-square rounded-lg border bg-cover bg-center cursor-pointer transition-all duration-150 hover:scale-105 shadow-sm ' +
+          (selected === id
+            ? 'border-gray-400 ring-2 ring-gray-400/40 shadow-lg'
+            : 'border-gray-800/80 hover:border-gray-600');
         tile.style.backgroundImage =
           "url('" + base + folder + '/' + id + ".png')";
         tile.title = id.replace(/_/g, ' ');
@@ -995,37 +1001,39 @@ const AddonManager = {
 
     this.addons.forEach((addon) => {
       const card = document.createElement('div');
-      card.className = 'addon-card' + (addon.enabled ? ' enabled' : '');
+      card.className =
+        'flex flex-col gap-2 rounded-xl border p-4 transition-all duration-150 ' +
+        (addon.enabled
+          ? 'border-gray-700 bg-gray-900/60 shadow-sm'
+          : 'border-gray-800/80 bg-gray-950/40 opacity-75 hover:border-gray-700');
 
       const nameRow = document.createElement('div');
-      nameRow.className = 'addon-card-top';
+      nameRow.className = 'flex items-center justify-between gap-2';
 
       const nameEl = document.createElement('span');
-      nameEl.className = 'addon-card-name';
+      nameEl.className = 'text-xs font-bold text-gray-200';
       nameEl.textContent = addon.name;
       nameRow.appendChild(nameEl);
 
-      const toggle = document.createElement('label');
-      toggle.className = 'toggle-switch toggle-sm';
-      toggle.innerHTML =
-        '<input type="checkbox"' +
-        (addon.enabled ? ' checked' : '') +
-        '><span class="toggle-track"></span>';
-      toggle.addEventListener('click', (e) => {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className =
+        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ' +
+        (addon.enabled ? 'bg-gray-600' : 'bg-gray-950 border-gray-800');
+      toggleBtn.innerHTML =
+        '<span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ' +
+        (addon.enabled ? 'translate-x-4' : 'translate-x-0') +
+        '"></span>';
+      toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        this.toggle(addon.name);
       });
-      const input = toggle.querySelector('input');
-      if (input) {
-        input.addEventListener('change', () => {
-          this.toggle(addon.name);
-        });
-      }
-      nameRow.appendChild(toggle);
+      nameRow.appendChild(toggleBtn);
       card.appendChild(nameRow);
 
       if (addon.description) {
-        const desc = document.createElement('span');
-        desc.className = 'addon-card-desc';
+        const desc = document.createElement('p');
+        desc.className = 'text-[11px] text-gray-400 leading-relaxed';
         desc.textContent = addon.description;
         card.appendChild(desc);
       }
@@ -1825,4 +1833,4 @@ if (typeof document !== 'undefined') {
   }
 }
 
-export {};
+export { Utils, Viewport as ViewportCanvas };

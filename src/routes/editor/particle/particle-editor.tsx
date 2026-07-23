@@ -963,20 +963,22 @@ const Presets = {
     Object.keys(this.definitions).forEach((name) => {
       const preset = this.definitions[name];
       const card = document.createElement('div');
-      card.className = 'preset-card';
+      card.className =
+        'group flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-800/80 bg-gray-900/40 p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg backdrop-blur-sm';
 
       const iconDiv = document.createElement('div');
-      iconDiv.className = 'preset-card-icon';
+      iconDiv.className =
+        'flex h-10 w-10 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-transform group-hover:scale-110';
       iconDiv.style.color = preset.accentColor;
       const IconComp = PresetIconComponents[preset.icon] || Circle;
       void render(iconDiv, <IconComp size={24} />);
 
       const nameDiv = document.createElement('div');
-      nameDiv.className = 'preset-card-name';
+      nameDiv.className = 'text-xs font-bold text-gray-200';
       nameDiv.textContent = name;
 
       const descDiv = document.createElement('div');
-      descDiv.className = 'preset-card-desc';
+      descDiv.className = 'text-[11px] text-gray-500 line-clamp-2';
       descDiv.textContent = preset.description;
 
       card.appendChild(iconDiv);
@@ -1477,11 +1479,13 @@ class App {
 
     if (this.layers.length === 0) {
       const empty = document.createElement('div');
-      empty.className = 'empty-state flex flex-col items-center gap-2';
+      empty.className =
+        'flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-800/80 bg-gray-950/40 p-8 text-center text-xs text-gray-500 gap-2';
       const iconWrap = document.createElement('div');
       void render(iconWrap, <Layers size={24} />);
       empty.appendChild(iconWrap);
       const msg = document.createElement('p');
+      msg.className = 'text-xs font-semibold text-gray-500';
       msg.textContent = 'No layers yet. Click "+ Add Layer" to start.';
       empty.appendChild(msg);
       list.appendChild(empty);
@@ -1491,15 +1495,18 @@ class App {
     this.layers.forEach((layer) => {
       const item = document.createElement('div');
       item.className =
-        'layer-item' +
-        (layer.id === this.selectedLayerId ? ' selected' : '') +
-        (!layer.enabled ? ' disabled' : '');
+        'group flex items-center justify-between rounded-xl border p-2.5 cursor-pointer transition-all duration-150 ' +
+        (layer.id === this.selectedLayerId
+          ? 'border-gray-700 bg-gray-900/80 text-white shadow-sm'
+          : 'border-gray-800/60 bg-gray-950/40 text-gray-400 hover:border-gray-700 hover:bg-gray-900/40 hover:text-gray-200') +
+        (!layer.enabled ? ' opacity-50' : '');
 
       const left = document.createElement('div');
-      left.className = 'layer-item-left';
+      left.className = 'flex items-center gap-2 flex-grow min-w-0';
 
       const eye = document.createElement('button');
-      eye.className = 'layer-btn';
+      eye.className =
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-gray-800 bg-gray-950 text-gray-400 transition-colors hover:border-gray-700 hover:text-gray-200 cursor-pointer';
       eye.title = layer.enabled ? 'Hide' : 'Show';
       const EyeIconComponent = layer.enabled ? Eye : EyeOff;
       void render(eye, <EyeIconComponent size={14} />);
@@ -1510,24 +1517,26 @@ class App {
       left.appendChild(eye);
 
       const shapeIcon = document.createElement('span');
-      shapeIcon.className = 'layer-icon';
+      shapeIcon.className =
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-gray-800/60 bg-gray-950/60 text-gray-400';
       const shapeType = layer.shape ? layer.shape.type : 'ring';
       const ShapeComp = ShapeIconComponents[shapeType] || Circle;
       void render(shapeIcon, <ShapeComp size={14} />);
       left.appendChild(shapeIcon);
 
       const name = document.createElement('span');
-      name.className = 'layer-name';
+      name.className = 'text-xs font-semibold text-gray-200 truncate flex-grow';
       name.textContent = layer.name;
       left.appendChild(name);
 
       item.appendChild(left);
 
       const right = document.createElement('div');
-      right.className = 'layer-item-right';
+      right.className = 'flex items-center gap-1';
 
       const del = document.createElement('button');
-      del.className = 'layer-btn danger';
+      del.className =
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-red-900/40 bg-red-950/30 text-red-400 transition-colors hover:border-red-700/60 hover:bg-red-900/50 hover:text-red-300 cursor-pointer';
       del.title = 'Delete';
       void render(del, <Trash2 size={14} />);
       del.addEventListener('click', (e) => {
@@ -1688,13 +1697,15 @@ class App {
 
   _createFieldGroup(titleText: string): HTMLElement {
     const group = document.createElement('div');
-    group.className = 'design-section';
+    group.className =
+      'rounded-xl border border-gray-800/80 bg-gray-900/30 p-4 space-y-3';
     const head = document.createElement('div');
-    head.className = 'design-section-head';
-    head.innerHTML = '<h4>' + titleText + '</h4>';
+    head.className =
+      'text-[11px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b border-gray-800/60';
+    head.textContent = titleText;
     group.appendChild(head);
     const body = document.createElement('div');
-    body.className = 'design-section-body space-y-3';
+    body.className = 'space-y-3 pt-2';
     group.appendChild(body);
     return body;
   }
@@ -1829,7 +1840,8 @@ class App {
     if (grid) {
       shapeTypes.forEach((type) => {
         const card = document.createElement('div');
-        card.className = 'shape-card flex items-center gap-2';
+        card.className =
+          'flex items-center gap-3 rounded-xl border border-gray-800/80 bg-gray-900/40 p-3.5 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white text-xs font-semibold text-gray-300 backdrop-blur-sm';
         const ShapeComp = ShapeIconComponents[type] || Circle;
         const iconWrap = document.createElement('span');
         void render(iconWrap, <ShapeComp size={18} />);
@@ -1905,4 +1917,15 @@ if (typeof document !== 'undefined') {
   }
 }
 
-export {};
+export {
+  Utils,
+  ShapeDefaults,
+  ShapeParamLabels,
+  ShapeParamRanges,
+  ShapeIconComponents,
+  PresetIconComponents,
+  Shapes,
+  Compiler,
+  Presets,
+  ThreeView,
+};
