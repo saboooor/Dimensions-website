@@ -1,13 +1,18 @@
-import { component$, useStore, $ } from "@builder.io/qwik";
-import { routeLoader$, routeAction$, Form, zod$, z } from "@builder.io/qwik-city";
-import { eq, and, or, desc } from "drizzle-orm";
-import { getDB, userPortals, users } from "../../util/db";
-import { getSessionUserId, getSessionUser, isAdmin } from "../../util/auth";
+import { component$, useStore, $ } from '@qwik.dev/core';
+import { routeLoader$, routeAction$, zod$, z } from '@qwik.dev/router';
+import { eq, or, desc } from 'drizzle-orm';
+import { getDB, userPortals, users } from '../../util/db';
+import { getSessionUserId, getSessionUser, isAdmin } from '../../util/auth';
+import Plus from 'lucide-icons-qwik/icons/Plus';
+import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
+import ImageIcon from 'lucide-icons-qwik/icons/Image';
+import Heart from 'lucide-icons-qwik/icons/Heart';
+import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
 
 export interface PortalCardData {
   id: number;
   portalID: string;
-  maker: number;
+  maker: string;
   creator: string;
   img: string;
   public: number;
@@ -24,9 +29,12 @@ export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
   const user = await getSessionUser(requestEvent);
 
   const limit = 8;
-  
+
   // By default, show public portals or self-owned portals
-  const queryWhere = or(eq(userPortals.public, 1), eq(userPortals.maker, loggedInId));
+  const queryWhere = or(
+    eq(userPortals.public, 1),
+    eq(userPortals.maker, loggedInId || '')
+  );
 
   try {
     const list = await db.query.userPortals.findMany({
@@ -36,42 +44,44 @@ export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
     });
 
     const makerIds = [...new Set(list.map((p) => p.maker))];
-    const makersMap = new Map<number, string>();
+    const makersMap = new Map<string, string>();
 
     if (makerIds.length > 0) {
       const makersList = await db.query.users.findMany({
         where: or(...makerIds.map((id) => eq(users.id, id))),
       });
-      makersList.forEach((m) => makersMap.set(m.id, m.username));
+      makersList.forEach((m) => makersMap.set(m.id, m.username || 'Unknown'));
     }
 
     const portals: PortalCardData[] = list.map((p) => {
-      let likesList: number[] = [];
+      let likesList: (string | number)[] = [];
       try {
-        likesList = JSON.parse(p.liked) as number[];
-      } catch (e) {
+        likesList = JSON.parse(p.liked);
+      } catch {
         // ignore
       }
       return {
         id: p.id,
         portalID: p.portalID,
         maker: p.maker,
-        creator: makersMap.get(p.maker) || "Unknown",
+        creator: makersMap.get(p.maker) || 'Unknown',
         img: p.img,
         public: p.public,
         likesCount: likesList.length,
-        isLiked: likesList.includes(loggedInId),
+        isLiked: loggedInId
+          ? likesList.map(String).includes(loggedInId)
+          : false,
       };
     });
 
     return {
       portals,
       hasMore: portals.length === limit,
-      isLoggedIn: loggedInId > 0,
+      isLoggedIn: !!loggedInId,
       isAdmin: isAdmin(user),
     };
   } catch (err) {
-    console.error("Initial portals loader error:", err);
+    console.error('Initial portals loader error:', err);
     return { portals: [], hasMore: false, isLoggedIn: false, isAdmin: false };
   }
 });
@@ -83,7 +93,7 @@ export const useToggleLikeAction = routeAction$(
   async (formData, requestEvent) => {
     const { portalId } = formData;
     const userId = getSessionUserId(requestEvent);
-    if (userId === 0) return { success: false, message: "Must be logged in." };
+    if (!userId) return { success: false, message: 'Must be logged in.' };
 
     const db = getDB(requestEvent);
 
@@ -92,16 +102,17 @@ export const useToggleLikeAction = routeAction$(
         where: eq(userPortals.id, portalId),
       });
 
-      if (!portal) return { success: false, message: "Portal not found." };
+      if (!portal) return { success: false, message: 'Portal not found.' };
 
-      let likedList: number[] = [];
+      let likedList: (string | number)[] = [];
       try {
-        likedList = JSON.parse(portal.liked) as number[];
-      } catch (e) {
+        likedList = JSON.parse(portal.liked);
+      } catch {
         likedList = [];
       }
 
-      const userIndex = likedList.indexOf(userId);
+      const strLikedList = likedList.map(String);
+      const userIndex = strLikedList.indexOf(userId);
       if (userIndex > -1) {
         likedList.splice(userIndex, 1); // Unlike
       } else {
@@ -111,17 +122,16 @@ export const useToggleLikeAction = routeAction$(
       await db
         .update(userPortals)
         .set({ liked: JSON.stringify(likedList) })
-        .where(eq(userPortals.id, portalId))
-        .run();
+        .where(eq(userPortals.id, portalId));
 
       return {
         success: true,
-        likesCount: likedList.length,
         isLiked: userIndex === -1,
+        likesCount: likedList.length,
       };
     } catch (err) {
-      console.error("Toggle like error:", err);
-      return { success: false, message: "Database error." };
+      console.error('Toggle like error:', err);
+      return { success: false, message: 'Failed to update like.' };
     }
   },
   zod$({
@@ -130,64 +140,64 @@ export const useToggleLikeAction = routeAction$(
 );
 
 export default component$(() => {
-  const loaderSig = useInitialPortalsLoader();
-  const likeActionSig = useToggleLikeAction();
+  const initialData = useInitialPortalsLoader();
+  const toggleLikeAction = useToggleLikeAction();
 
-  // Use a reactive store to manage client-side state
   const state = useStore({
-    portals: loaderSig.value.portals,
+    portals: initialData.value.portals,
     page: 1,
-    hasMore: loaderSig.value.hasMore,
+    hasMore: initialData.value.hasMore,
+    loading: false,
     showAll: false,
-    loadingMore: false,
   });
 
   const loadMore = $(async () => {
-    if (state.loadingMore) return;
-    state.loadingMore = true;
-    
-    const nextPage = state.page + 1;
+    if (state.loading || !state.hasMore) return;
+    state.loading = true;
+
     try {
-      const res = await fetch(`/portals/api?page=${nextPage}&showAll=${state.showAll}`);
+      const nextPage = state.page + 1;
+      const res = await fetch(
+        `/portals/api?page=${nextPage}&showAll=${state.showAll}`
+      );
       const data = (await res.json()) as any;
-      
+
       if (data.success) {
         state.portals = [...state.portals, ...data.portals];
         state.page = nextPage;
         state.hasMore = data.hasMore;
       }
-    } catch (e) {
-      console.error("Failed to load more portals:", e);
+    } catch (err) {
+      console.error('Load more portals failed', err);
     } finally {
-      state.loadingMore = false;
+      state.loading = false;
     }
   });
 
-  const toggleShowAll = $(async () => {
-    state.showAll = !state.showAll;
+  const handleToggleShowAll = $(async (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    state.showAll = target.checked;
     state.page = 1;
-    state.portals = [];
-    state.loadingMore = true;
-    
+    state.loading = true;
+
     try {
       const res = await fetch(`/portals/api?page=1&showAll=${state.showAll}`);
       const data = (await res.json()) as any;
-      
+
       if (data.success) {
         state.portals = data.portals;
         state.hasMore = data.hasMore;
       }
-    } catch (e) {
-      console.error("Failed to toggle admin view:", e);
+    } catch (err) {
+      console.error('Toggle show all portals failed', err);
     } finally {
-      state.loadingMore = false;
+      state.loading = false;
     }
   });
 
   const handleLike = $(async (portalId: number) => {
-    if (!loaderSig.value.isLoggedIn) return;
+    if (!initialData.value.isLoggedIn) return;
 
-    // Optimistic UI Update
     state.portals = state.portals.map((p) => {
       if (p.id === portalId) {
         const nextIsLiked = !p.isLiked;
@@ -200,95 +210,109 @@ export default component$(() => {
       return p;
     });
 
-    // Trigger action in background
-    await likeActionSig.submit({ portalId });
+    await toggleLikeAction.submit({ portalId });
   });
 
   return (
     <div class="space-y-8">
-      {/* Header title */}
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Page Header */}
+      <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-2">
-            <i class="bx bx-cloud-download text-blue-500"></i>
-            <span>Browse Portals</span>
+          <h1 class="text-3xl font-black tracking-tight text-gray-100">
+            Community Portals
           </h1>
-          <p class="text-xs text-gray-500">Discover and download custom portal configurations created by the community</p>
+          <p class="mt-1 text-sm text-gray-400">
+            Browse, search, and download portal configurations created by the
+            community
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4">
+          {initialData.value.isAdmin && (
+            <label class="border-gray-850 flex cursor-pointer items-center gap-2 rounded-xl border bg-gray-900 px-3.5 py-2 text-xs font-semibold text-gray-300">
+              <input
+                type="checkbox"
+                onChange$={handleToggleShowAll}
+                class="rounded border-gray-700 bg-gray-950 text-gray-400 focus:ring-0"
+              />
+              <span>Show All (Admin)</span>
+            </label>
+          )}
+
+          <a
+            href="/editor/portal"
+            class="flex items-center gap-2 rounded-xl bg-gray-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-gray-500"
+          >
+            <Plus class="h-4 w-4" />
+            <span>Create Portal</span>
+          </a>
         </div>
       </div>
 
-      {/* Admin Panel */}
-      {loaderSig.value.isAdmin && (
-        <div class="bg-gray-900/40 border border-gray-900 rounded-2xl p-4 flex items-center justify-between shadow-md">
-          <div class="flex items-center gap-2 text-gray-300">
-            <i class="bi bi-shield-lock-fill text-gray-500"></i>
-            <span class="text-xs font-semibold">Admin Options</span>
-          </div>
-          <button
-            onClick$={toggleShowAll}
-            class={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-              state.showAll
-                ? "bg-gray-600 hover:bg-gray-500 text-white"
-                : "bg-gray-800 hover:bg-gray-750 text-gray-300 border border-gray-700"
-            }`}
-          >
-            {state.showAll ? "Showing All (Incl. Private)" : "Show All"}
-          </button>
-        </div>
-      )}
-
       {/* Portals Grid */}
-      {state.portals.length > 0 ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {state.portals.length === 0 ? (
+        <div class="rounded-2xl border border-gray-900 bg-gray-950/40 p-12 text-center text-gray-500">
+          <Grid3x3 class="mx-auto mb-3 h-10 w-10" />
+          <p class="text-sm font-semibold">No portals found.</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {state.portals.map((portal) => (
             <div
               key={portal.id}
-              class="bg-gray-900/30 border border-gray-900 rounded-2xl p-4 flex flex-col justify-between hover:border-gray-800 transition-all shadow-md group"
+              class="group flex flex-col justify-between rounded-2xl border border-gray-900 bg-gray-900/30 p-4 shadow-md transition-all hover:border-gray-800"
             >
               <div class="space-y-3">
                 {/* Image preview */}
                 {portal.img ? (
-                  <div class="h-40 w-full bg-gray-950 rounded-xl overflow-hidden flex items-center justify-center border border-gray-900 relative">
+                  <div class="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border border-gray-900 bg-gray-950">
                     <img
                       src={portal.img}
                       alt="Portal Preview"
-                      class="h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                      class="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      width="256"
+                      height="160"
                     />
                     {portal.public === 0 && (
-                      <span class="absolute top-2 right-2 px-2 py-0.5 bg-gray-950/90 border border-gray-800 text-[9px] text-gray-400 font-semibold uppercase tracking-wider rounded">
+                      <span class="absolute top-2 right-2 rounded border border-gray-800 bg-gray-950/90 px-2 py-0.5 text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
                         Private
                       </span>
                     )}
                   </div>
                 ) : (
-                  <div class="h-40 w-full bg-gray-950 rounded-xl flex items-center justify-center border border-gray-900 text-gray-700">
-                    <i class="bi bi-image text-4xl"></i>
+                  <div class="flex h-40 w-full items-center justify-center rounded-xl border border-gray-900 bg-gray-950 text-gray-700">
+                    <ImageIcon class="h-10 w-10" />
                   </div>
                 )}
 
-                {/* Info & Liking */}
+                {/* Portal metadata */}
                 <div class="flex items-start justify-between gap-2">
                   <div>
-                    <h3 class="font-bold text-sm text-gray-200 truncate max-w-[150px] group-hover:text-white transition-colors">
-                      <a href={`/editor/portal/?portal=${portal.id}`}>{portal.portalID}</a>
+                    <h3 class="font-bold text-gray-200 transition-colors group-hover:text-white">
+                      {portal.portalID}
                     </h3>
-                    <p class="text-[10px] text-gray-500 mt-0.5">
-                      by{" "}
-                      <a href={`/profile/${portal.maker}`} class="hover:text-gray-300 font-semibold underline">
+                    <p class="mt-0.5 text-[10px] text-gray-500">
+                      by{' '}
+                      <a
+                        href={`/profile/${portal.maker}`}
+                        class="font-semibold underline hover:text-gray-300"
+                      >
                         {portal.creator}
                       </a>
                     </p>
                   </div>
                   <button
                     onClick$={() => handleLike(portal.id)}
-                    disabled={!loaderSig.value.isLoggedIn}
-                    class={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${
+                    disabled={!initialData.value.isLoggedIn}
+                    class={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-all ${
                       portal.isLiked
-                        ? "bg-red-950/20 border-red-900/30 text-red-500"
-                        : "bg-gray-950/40 border-gray-900 text-gray-500 hover:text-gray-300"
+                        ? 'border-red-900/30 bg-red-950/20 text-red-500'
+                        : 'border-gray-900 bg-gray-950/40 text-gray-500 hover:text-gray-300'
                     }`}
                   >
-                    <i class={`bi ${portal.isLiked ? "bi-heart-fill" : "bi-heart"}`}></i>
+                    <Heart
+                      class={`h-3.5 w-3.5 ${portal.isLiked ? 'fill-current' : ''}`}
+                    />
                     <span>{portal.likesCount}</span>
                   </button>
                 </div>
@@ -297,17 +321,12 @@ export default component$(() => {
               {/* Open button */}
               <a
                 href={`/editor/portal/?portal=${portal.id}`}
-                class="mt-4 w-full text-center bg-gray-900 hover:bg-gray-800 border border-gray-850 text-gray-300 text-xs font-semibold py-2 rounded-lg transition-all"
+                class="border-gray-850 mt-4 w-full rounded-lg border bg-gray-900 py-2 text-center text-xs font-semibold text-gray-300 transition-all hover:bg-gray-800"
               >
                 Open in Editor
               </a>
             </div>
           ))}
-        </div>
-      ) : (
-        <div class="text-center py-16 bg-gray-900/10 border border-dashed border-gray-900 rounded-3xl">
-          <i class="bi bi-folder2-open text-4xl text-gray-700"></i>
-          <p class="text-gray-500 text-sm mt-3 font-semibold">No portals found...</p>
         </div>
       )}
 
@@ -316,15 +335,15 @@ export default component$(() => {
         <div class="flex justify-center pt-4">
           <button
             onClick$={loadMore}
-            disabled={state.loadingMore}
-            class="bg-gray-600 hover:bg-gray-500 disabled:bg-gray-850 disabled:text-gray-650 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md transition-all text-sm flex items-center gap-2"
+            disabled={state.loading}
+            class="disabled:bg-gray-850 disabled:text-gray-650 flex items-center gap-2 rounded-xl bg-gray-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gray-500"
           >
-            {state.loadingMore ? (
+            {state.loading ? (
               <span>Loading...</span>
             ) : (
               <>
                 <span>Load More Portals</span>
-                <i class="bi bi-arrow-down-short text-lg"></i>
+                <ChevronDown class="h-4 w-4" />
               </>
             )}
           </button>

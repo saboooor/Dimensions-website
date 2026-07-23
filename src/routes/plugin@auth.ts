@@ -66,27 +66,34 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
                 const newImageUrl = `https://cdn.discordapp.com/avatars/${(profile as any).id}/${avatarHash}.${format}`;
                 user.image = newImageUrl;
 
-                await db.update(users)
+                await db
+                  .update(users)
                   .set({ image: newImageUrl })
                   .where(eq(users.id, user.id));
               }
             } catch (error) {
-              console.error('Failed to refresh Discord profile picture on sign in:', error);
+              console.error(
+                'Failed to refresh Discord profile picture on sign in:',
+                error
+              );
             }
           }
           return true;
         },
-        async session({ session }) {
+        session({ session }) {
           const { id, name, email, image } = session.user;
 
           return {
             expires: session.expires,
             user: {
-              id, name, email, image
+              id,
+              name,
+              email,
+              image,
             },
           };
         },
       },
     };
-  },
+  }
 );

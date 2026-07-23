@@ -1,14 +1,14 @@
-import { component$ } from "@builder.io/qwik";
-import { routeLoader$ } from "@builder.io/qwik-city";
-import { getSessionUserId } from "../../util/auth";
+import { component$ } from '@qwik.dev/core';
+import { routeLoader$ } from '@qwik.dev/router';
+import { getSessionUserId } from '../../util/auth';
 
 /**
  * Loader to redirect '/profile' to '/profile/[loggedInUserId]'
  */
-export const useProfileIndexLoader = routeLoader$(async (requestEvent) => {
+export const useProfileIndexLoader = routeLoader$((requestEvent) => {
   const userId = getSessionUserId(requestEvent);
-  if (userId === 0) {
-    throw requestEvent.redirect(302, "/login");
+  if (!userId) {
+    throw requestEvent.redirect(302, '/login');
   }
   throw requestEvent.redirect(302, `/profile/${userId}`);
 });

@@ -91,22 +91,15 @@
           "name": "accounts_userId_users_id_fk",
           "tableFrom": "accounts",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "accounts_provider_providerAccountId_pk": {
-          "columns": [
-            "provider",
-            "providerAccountId"
-          ],
+          "columns": ["provider", "providerAccountId"],
           "name": "accounts_provider_providerAccountId_pk"
         }
       },
@@ -253,9 +246,7 @@
       "indexes": {
         "claim_rewards_code_unique": {
           "name": "claim_rewards_code_unique",
-          "columns": [
-            "code"
-          ],
+          "columns": ["code"],
           "isUnique": true
         }
       },
@@ -299,9 +290,7 @@
       "indexes": {
         "cosmetics_name_unique": {
           "name": "cosmetics_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -347,9 +336,7 @@
       "indexes": {
         "dimensionsSubscriptions_serverUnique_unique": {
           "name": "dimensionsSubscriptions_serverUnique_unique",
-          "columns": [
-            "serverUnique"
-          ],
+          "columns": ["serverUnique"],
           "isUnique": true
         }
       },
@@ -393,9 +380,7 @@
       "indexes": {
         "registered_addons_name_unique": {
           "name": "registered_addons_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -435,12 +420,8 @@
           "name": "sessions_userId_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -508,9 +489,7 @@
       "indexes": {
         "subscription_coupons_coupon_unique": {
           "name": "subscription_coupons_coupon_unique",
-          "columns": [
-            "coupon"
-          ],
+          "columns": ["coupon"],
           "isUnique": true
         }
       },
@@ -748,16 +727,12 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "users_username_unique": {
           "name": "users_username_unique",
-          "columns": [
-            "username"
-          ],
+          "columns": ["username"],
           "isUnique": true
         }
       },
@@ -795,10 +770,7 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "verificationTokens_identifier_token_pk": {
-          "columns": [
-            "identifier",
-            "token"
-          ],
+          "columns": ["identifier", "token"],
           "name": "verificationTokens_identifier_token_pk"
         }
       },

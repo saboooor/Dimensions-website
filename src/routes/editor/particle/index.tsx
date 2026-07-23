@@ -1,9 +1,21 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from '@qwik.dev/core';
+import Sparkles from 'lucide-icons-qwik/icons/Sparkles';
+import RotateCcw from 'lucide-icons-qwik/icons/RotateCcw';
+import RotateCw from 'lucide-icons-qwik/icons/RotateCw';
+import Library from 'lucide-icons-qwik/icons/Library';
+import Play from 'lucide-icons-qwik/icons/Play';
+import Square from 'lucide-icons-qwik/icons/Square';
+import Download from 'lucide-icons-qwik/icons/Download';
+import Clipboard from 'lucide-icons-qwik/icons/Clipboard';
+import Plus from 'lucide-icons-qwik/icons/Plus';
+import Home from 'lucide-icons-qwik/icons/Home';
+import MousePointer from 'lucide-icons-qwik/icons/MousePointer';
+import X from 'lucide-icons-qwik/icons/X';
 
 export default component$(() => {
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
-    import("./particle-editor");
+    void import('./particle-editor');
   });
 
   return (
@@ -428,84 +440,142 @@ export default component$(() => {
         </div>
       </div>
 
-      <div class="w-full flex flex-col gap-6" id="app">
+      <div class="flex w-full flex-col gap-6" id="app">
         {/* Editor Control Bar */}
-        <header class="bg-gray-900/50 backdrop-blur border border-gray-800/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+        <header class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-800/80 bg-gray-900/50 p-4 shadow-lg backdrop-blur">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/50 flex items-center justify-center text-gray-300">
-              <i class="bi bi-stars text-sm"></i>
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700/50 bg-gray-800/80 text-gray-300">
+              <Sparkles class="h-4 w-4" />
             </div>
             <div>
-              <h1 class="text-sm font-black text-gray-100 tracking-wider uppercase leading-none">Particle Editor</h1>
-              <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 block">Cosmetics Config</span>
+              <h1 class="text-sm leading-none font-black tracking-wider text-gray-100 uppercase">
+                Particle Editor
+              </h1>
+              <span class="mt-1 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                Cosmetics Config
+              </span>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 bg-black/40 border border-gray-800/80 rounded-xl px-3 py-2">
-              <label for="packName" class="text-[10px] text-gray-500 font-bold uppercase tracking-wider select-none">Pack Name</label>
+            <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
+              <label
+                for="packName"
+                class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
+              >
+                Pack Name
+              </label>
               <input
                 type="text"
                 id="packName"
-                class="bg-transparent border-none text-gray-200 text-xs font-semibold focus:outline-none w-36 placeholder-gray-700"
+                class="w-36 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
                 value="My Particle Pack"
                 spellcheck={false}
               />
             </div>
           </div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <button id="btnUndo" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer" title="Undo (Ctrl+Z)" disabled>
-              <i class="bi bi-arrow-counterclockwise text-sm"></i>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              id="btnUndo"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              title="Undo (Ctrl+Z)"
+              disabled
+            >
+              <RotateCcw class="h-4 w-4" />
             </button>
-            <button id="btnRedo" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer" title="Redo (Ctrl+Y)" disabled>
-              <i class="bi bi-arrow-clockwise text-sm"></i>
+            <button
+              id="btnRedo"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              title="Redo (Ctrl+Y)"
+              disabled
+            >
+              <RotateCw class="h-4 w-4" />
             </button>
-            <div class="h-6 w-px bg-gray-800 mx-1"></div>
-            <button id="btnPresets" class="px-4 h-9 bg-gray-950 border border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-              <i class="bi bi-collection-fill text-sm"></i>
+            <div class="mx-1 h-6 w-px bg-gray-800"></div>
+            <button
+              id="btnPresets"
+              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+            >
+              <Library class="h-4 w-4" />
               <span>Presets</span>
             </button>
-            <div class="h-6 w-px bg-gray-800 mx-1"></div>
-            <button id="btnRun" class="px-4 h-9 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-              <i class="bi bi-play-fill text-sm"></i>
+            <div class="mx-1 h-6 w-px bg-gray-800"></div>
+            <button
+              id="btnRun"
+              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-gray-600 to-gray-500 px-4 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all hover:from-gray-500 hover:to-gray-400"
+            >
+              <Play class="h-4 w-4 fill-current" />
               <span>Run</span>
             </button>
             <button
               id="btnStop"
-              class="px-4 h-9 bg-red-950/40 border border-red-900/40 hover:bg-red-900/20 hover:border-red-850 text-red-400 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
+              class="hover:border-red-850 flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-red-900/40 bg-red-950/40 px-4 text-xs font-bold tracking-wider text-red-400 uppercase transition-all hover:bg-red-900/20"
               style="display:none"
             >
-              <i class="bi bi-stop-fill text-sm"></i>
+              <Square class="h-4 w-4 fill-current" />
               <span>Stop</span>
             </button>
-            <div class="h-6 w-px bg-gray-800 mx-1"></div>
-            <button id="btnDownload" class="px-4 h-9 bg-gray-950 border border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-              <i class="bi bi-download text-sm"></i>
+            <div class="mx-1 h-6 w-px bg-gray-800"></div>
+            <button
+              id="btnDownload"
+              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+            >
+              <Download class="h-4 w-4" />
               <span>Download</span>
             </button>
-            <button id="btnCopy" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl transition-all cursor-pointer" title="Copy YAML">
-              <i class="bi bi-clipboard text-sm"></i>
+            <button
+              id="btnCopy"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+              title="Copy YAML"
+            >
+              <Clipboard class="h-4 w-4" />
             </button>
           </div>
         </header>
 
         {/* Workspace Grid */}
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL: Layers */}
-          <aside class="lg:col-span-4 bg-gray-900/40 backdrop-blur border border-gray-800/80 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[500px] lg:h-[650px]" id="panelLeft">
-            <div class="px-4 py-3 border-b border-gray-800/80 bg-black/20 flex justify-between items-center">
-              <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Layers</span>
-              <button id="btnAddLayer" class="w-7 h-7 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-md transition-all cursor-pointer" title="Add layer">
-                <i class="bi bi-plus-lg text-xs"></i>
+          <aside
+            class="flex h-[500px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]"
+            id="panelLeft"
+          >
+            <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
+              <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
+                Layers
+              </span>
+              <button
+                id="btnAddLayer"
+                class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+                title="Add layer"
+              >
+                <Plus class="h-3.5 w-3.5" />
               </button>
             </div>
             <div class="flex-1 overflow-y-auto p-4" id="layerList"></div>
-            <div class="p-4 border-t border-gray-800/80 bg-black/10">
+            <div class="border-t border-gray-800/80 bg-black/10 p-4">
               <div class="flex flex-col gap-2">
-                <div class="flex justify-between items-center">
-                  <label for="freqSlider" class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Simulation Speed</label>
-                  <span id="freqValue" class="font-mono text-xs text-gray-400 font-bold">20</span>
+                <div class="flex items-center justify-between">
+                  <label
+                    for="freqSlider"
+                    class="text-[11px] font-bold tracking-wider text-gray-400 uppercase"
+                  >
+                    Simulation Speed
+                  </label>
+                  <span
+                    id="freqValue"
+                    class="font-mono text-xs font-bold text-gray-400"
+                  >
+                    20
+                  </span>
                 </div>
-                <input type="range" id="freqSlider" min="1" max="40" value="20" class="insp-slider w-full cursor-pointer" />
+                <input
+                  type="range"
+                  id="freqSlider"
+                  min="1"
+                  max="40"
+                  value="20"
+                  class="insp-slider w-full cursor-pointer"
+                />
               </div>
             </div>
           </aside>
@@ -515,29 +585,51 @@ export default component$(() => {
           <div class="hidden" id="resizeRight"></div>
 
           {/* CENTER PANEL: 3D Viewport */}
-          <div class="lg:col-span-4 flex flex-col gap-4">
-            <div class="relative bg-gray-950 border border-gray-800/80 rounded-2xl overflow-hidden shadow-2xl h-[400px] lg:h-[650px] w-full flex flex-col justify-between" id="viewportWrap">
-              <canvas id="viewport" class="flex-1 w-full h-full block bg-black"></canvas>
+          <div class="flex flex-col gap-4 lg:col-span-4">
+            <div
+              class="relative flex h-[400px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[650px]"
+              id="viewportWrap"
+            >
+              <canvas
+                id="viewport"
+                class="block h-full w-full flex-1 bg-black"
+              ></canvas>
               <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
-                <span class="px-2.5 py-1 bg-black/60 border border-gray-800/80 text-[10px] font-bold tracking-wider uppercase rounded-lg text-gray-300" id="particleCount">0 particles</span>
+                <span
+                  class="rounded-lg border border-gray-800/80 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-300 uppercase"
+                  id="particleCount"
+                >
+                  0 particles
+                </span>
               </div>
-              <div class="absolute bottom-4 right-4 z-10">
-                <button class="w-9 h-9 flex items-center justify-center bg-black/60 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg transition-all cursor-pointer" id="btnResetCam" title="Reset camera">
-                  <i class="bi bi-house"></i>
+              <div class="absolute right-4 bottom-4 z-10">
+                <button
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-black/60 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+                  id="btnResetCam"
+                  title="Reset camera"
+                >
+                  <Home class="h-4 w-4" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* RIGHT PANEL: Inspector */}
-          <aside class="lg:col-span-4 bg-gray-900/40 backdrop-blur border border-gray-800/80 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[450px] lg:h-[650px]" id="panelRight">
-            <div class="px-4 py-3 border-b border-gray-800/80 bg-black/20 flex justify-between items-center">
-              <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Inspector</span>
+          <aside
+            class="flex h-[450px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]"
+            id="panelRight"
+          >
+            <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
+              <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
+                Inspector
+              </span>
             </div>
             <div class="flex-1 overflow-y-auto p-4" id="inspector">
-              <div class="inspector-empty flex flex-col items-center justify-center text-center p-8 text-gray-600 h-full">
-                <i class="bi bi-cursor text-2xl mb-2 block"></i>
-                <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Select a layer to edit</p>
+              <div class="inspector-empty flex h-full flex-col items-center justify-center p-8 text-center text-gray-600">
+                <MousePointer class="mb-2 block h-6 w-6" />
+                <p class="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                  Select a layer to edit
+                </p>
               </div>
             </div>
           </aside>
@@ -550,10 +642,10 @@ export default component$(() => {
           <div class="modal-header">
             <h3>Presets</h3>
             <button class="modal-close" id="closePresetsModal">
-              <i class="bi bi-x-lg"></i>
+              <X class="h-4 w-4" />
             </button>
           </div>
-          <div class="modal-body overflow-y-auto max-h-[350px] p-4">
+          <div class="modal-body max-h-[350px] overflow-y-auto p-4">
             <div class="preset-grid" id="presetGrid"></div>
           </div>
         </div>
@@ -565,10 +657,10 @@ export default component$(() => {
           <div class="modal-header">
             <h3>Add Layer</h3>
             <button class="modal-close" id="closeAddLayerModal">
-              <i class="bi bi-x-lg"></i>
+              <X class="h-4 w-4" />
             </button>
           </div>
-          <div class="modal-body overflow-y-auto max-h-[300px] p-4">
+          <div class="modal-body max-h-[300px] overflow-y-auto p-4">
             <div class="shape-grid" id="addLayerGrid"></div>
           </div>
         </div>

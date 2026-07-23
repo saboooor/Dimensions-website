@@ -10,11 +10,12 @@ const blocksPath = path.join(projectRoot, 'public/editor/portal/Images/blocks');
 const framesPath = path.join(projectRoot, 'public/editor/portal/Images/frames');
 const itemsPath = path.join(projectRoot, 'public/editor/portal/Images/items');
 
-const getPngBasenames = (dirPath) => {
+const getPngBasenames = (dirPath: string): string[] => {
   try {
-    return fs.readdirSync(dirPath)
-      .filter(file => file.endsWith('.png'))
-      .map(file => file.replace('.png', ''));
+    return fs
+      .readdirSync(dirPath)
+      .filter((file) => file.endsWith('.png'))
+      .map((file) => file.replace('.png', ''));
   } catch (e) {
     console.error('Failed to read directory', dirPath, e);
     return [];

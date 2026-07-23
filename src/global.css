@@ -1,11 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@import "@luminescent/ui";
+@import '@luminescent/ui';
 
 .markdown {
-  @import "@luminescent/ui/formatting";
+  @import '@luminescent/ui/formatting';
 }
 
 @source "../node_modules/@luminescent/ui-qwik";
@@ -13,7 +13,11 @@
 @theme {
   --lum-border-radius: 0.625rem;
   --color-lum-gradient: var(--color-gray-950);
-  --color-gray-850: color-mix(in oklab, var(--color-gray-900), var(--color-gray-800) 50%);
+  --color-gray-850: color-mix(
+    in oklab,
+    var(--color-gray-900),
+    var(--color-gray-800) 50%
+  );
   --color-green: var(--color-green-900);
   --color-red: var(--color-red-900);
   --color-orange: var(--color-orange-900);
@@ -61,7 +65,8 @@
   }
 }
 
-a.lum-btn, a.lum-card {
+a.lum-btn,
+a.lum-card {
   color: var(--color-text) !important;
   text-decoration: none;
 }
@@ -72,11 +77,12 @@ html {
 }
 
 hr {
-  @apply my-6 border-lum-border/10;
+  @apply border-lum-border/10 my-6;
 }
 
 .font-mc {
-  font-family: MinecraftRegular, MinecraftOfficial, MinecraftRegularAlt, MinecraftRus;
+  font-family:
+    MinecraftRegular, MinecraftOfficial, MinecraftRegularAlt, MinecraftRus;
 }
 
 .font-mc-bold {

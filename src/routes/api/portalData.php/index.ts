@@ -1,25 +1,25 @@
-import { type RequestHandler } from "@builder.io/qwik-city";
-import { sql, eq, or } from "drizzle-orm";
-import { dump } from "js-yaml";
-import { getDB, users, userPortals } from "~/util/db";
+import { type RequestHandler } from '@qwik.dev/router';
+import { sql, eq, or } from 'drizzle-orm';
+import { dump } from 'js-yaml';
+import { getDB, users, userPortals } from '~/util/db';
 
 // Helper to convert flat state to nested object for YAML conversion
 function toNested(state: Record<string, any>) {
   const result: Record<string, any> = {};
   for (const key of Object.keys(state)) {
     const val = state[key];
-    if (val === "skip" || val === undefined) continue;
+    if (val === 'skip' || val === undefined) continue;
 
-    if (key.indexOf(".") === -1) {
+    if (key.indexOf('.') === -1) {
       result[key] = val;
     } else {
-      const parts = key.split(".");
+      const parts = key.split('.');
       let obj = result;
       for (let j = 0; j < parts.length; j++) {
         if (j === parts.length - 1) {
           obj[parts[j]] = val;
         } else {
-          if (!obj[parts[j]] || typeof obj[parts[j]] !== "object") {
+          if (!obj[parts[j]] || typeof obj[parts[j]] !== 'object') {
             obj[parts[j]] = {};
           }
           obj = obj[parts[j]];
@@ -31,8 +31,8 @@ function toNested(state: Record<string, any>) {
 }
 
 export const onGet: RequestHandler = async (requestEvent) => {
-  const rawUuid = requestEvent.url.searchParams.get("all") || "";
-  const uuid = rawUuid.replace(/-/g, "").toLowerCase();
+  const rawUuid = requestEvent.url.searchParams.get('all') || '';
+  const uuid = rawUuid.replace(/-/g, '').toLowerCase();
 
   const db = getDB(requestEvent);
 
@@ -54,10 +54,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
   let portalsList = [];
   if (userRow) {
     portalsList = await db.query.userPortals.findMany({
-      where: or(
-        eq(userPortals.public, 1),
-        eq(userPortals.maker, userRow.id)
-      ),
+      where: or(eq(userPortals.public, 1), eq(userPortals.maker, userRow.id)),
     });
   } else {
     portalsList = await db.query.userPortals.findMany({
@@ -67,7 +64,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
 
   // 3. Fetch all creators to map usernames
   const allUsers = await db.query.users.findMany();
-  const userMap = new Map(allUsers.map(u => [u.id, u.username]));
+  const userMap = new Map(allUsers.map((u) => [u.id, u.username]));
 
   // 4. Build response mapping
   const responseMap: Record<string, any> = {};
@@ -76,21 +73,21 @@ export const onGet: RequestHandler = async (requestEvent) => {
     let likesCount = 0;
     try {
       likesCount = JSON.parse(portal.liked).length;
-    } catch (e) {
+    } catch {
       // ignore
     }
 
-    let blockMaterial = "STONE";
-    let yamlString = "";
+    let blockMaterial = 'STONE';
+    let yamlString = '';
 
     try {
       // Parse portal save string
       const parsedData = JSON.parse(portal.data);
       const portalState = parsedData.data || {};
-      
+
       // Extract frame material (defaults to STONE if not found)
-      blockMaterial = portalState["Portal.Frame.Material"] || "STONE";
-      
+      blockMaterial = portalState['Portal.Frame.Material'] || 'STONE';
+
       // Convert to nested object and then to YAML
       const nested = toNested(portalState);
       yamlString = dump(nested);
@@ -98,7 +95,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
       console.error(`Failed to parse portal data for ID ${portal.id}`, e);
     }
 
-    const creatorName = userMap.get(portal.maker) || "Unknown";
+    const creatorName = userMap.get(portal.maker) || 'Unknown';
 
     responseMap[portal.id.toString()] = {
       file: portal.portalID,
@@ -109,6 +106,6 @@ export const onGet: RequestHandler = async (requestEvent) => {
     };
   }
 
-  requestEvent.headers.set("Content-Type", "application/json");
+  requestEvent.headers.set('Content-Type', 'application/json');
   requestEvent.send(200, JSON.stringify(responseMap));
 };

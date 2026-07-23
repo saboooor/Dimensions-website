@@ -1,8 +1,12 @@
-import { component$, useSignal } from "@builder.io/qwik";
-import { routeLoader$, routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
-import { eq } from "drizzle-orm";
-import { getDB, users } from "~/util/db";
-import { getSessionUserId } from "~/util/auth";
+import { component$, useSignal } from '@qwik.dev/core';
+import { routeLoader$, routeAction$, zod$, z, Form } from '@qwik.dev/router';
+import { eq } from 'drizzle-orm';
+import Gamepad2 from 'lucide-icons-qwik/icons/Gamepad2';
+import UserIcon from 'lucide-icons-qwik/icons/User';
+import AlertCircle from 'lucide-icons-qwik/icons/AlertCircle';
+import CheckCircle2 from 'lucide-icons-qwik/icons/CheckCircle2';
+import { getDB, users } from '~/util/db';
+import { getSessionUserId } from '~/util/auth';
 
 /**
  * Handle unlinking Minecraft account or check if already linked.
@@ -10,19 +14,22 @@ import { getSessionUserId } from "~/util/auth";
 export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
   const userId = getSessionUserId(requestEvent);
   if (!userId) {
-    throw requestEvent.redirect(302, "/login?error=auth_required");
+    throw requestEvent.redirect(302, '/login?error=auth_required');
   }
 
-  const unlink = requestEvent.url.searchParams.get("unlink") === "true";
+  const unlink = requestEvent.url.searchParams.get('unlink') === 'true';
   const db = getDB(requestEvent);
 
   if (unlink) {
     // Clear minecraftAccount in the database
     await db
       .update(users)
-      .set({ minecraftAccount: "" })
+      .set({ minecraftAccount: '' })
       .where(eq(users.id, userId));
-    throw requestEvent.redirect(302, `/profile/${userId}?success=minecraft_unlinked`);
+    throw requestEvent.redirect(
+      302,
+      `/profile/${userId}?success=minecraft_unlinked`
+    );
   }
 
   const userRow = await db.query.users.findFirst({
@@ -31,7 +38,7 @@ export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
 
   return {
     userId,
-    minecraftAccount: userRow?.minecraftAccount || "",
+    minecraftAccount: userRow?.minecraftAccount || '',
   };
 });
 
@@ -42,7 +49,7 @@ export const useLinkMinecraftAction = routeAction$(
   async (formData, requestEvent) => {
     const userId = getSessionUserId(requestEvent);
     if (!userId) {
-      return { success: false, message: "Authentication required." };
+      return { success: false, message: 'Authentication required.' };
     }
 
     const { username } = formData;
@@ -57,18 +64,18 @@ export const useLinkMinecraftAction = routeAction$(
       if (mojangRes.status === 204 || mojangRes.status === 404) {
         return {
           success: false,
-          message: "Minecraft username not found. Please check spelling.",
+          message: 'Minecraft username not found. Please check spelling.',
         };
       }
 
       if (!mojangRes.ok) {
         return {
           success: false,
-          message: "Failed to connect to Mojang API. Please try again later.",
+          message: 'Failed to connect to Mojang API. Please try again later.',
         };
       }
 
-      const profile = (await mojangRes.json()) as { name: string; id: string };
+      const profile: any = await mojangRes.json();
       const uuid = profile.id; // Mojang returns UUID without dashes
 
       // 2. Update user in the database
@@ -83,22 +90,26 @@ export const useLinkMinecraftAction = routeAction$(
         redirectUrl: `/profile/${userId}?success=minecraft_linked`,
       };
     } catch (err) {
-      console.error("Minecraft linking failed", err);
+      console.error('Minecraft linking failed', err);
       return {
         success: false,
-        message: "An unexpected error occurred. Please try again.",
+        message: 'An unexpected error occurred. Please try again.',
       };
     }
   },
   zod$({
-    username: z.string().min(3).max(16).regex(/^[a-zA-Z0-9_]+$/),
+    username: z
+      .string()
+      .min(3)
+      .max(16)
+      .regex(/^[a-zA-Z0-9_]+$/),
   })
 );
 
 export default component$(() => {
   const loaderSig = useLinkMinecraftLoader();
   const actionSig = useLinkMinecraftAction();
-  const usernameVal = useSignal("");
+  const usernameVal = useSignal('');
 
   // Handle redirect if success is returned in action
   if (actionSig.value?.success && actionSig.value?.redirectUrl) {
@@ -106,30 +117,34 @@ export default component$(() => {
   }
 
   return (
-    <div class="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
-      <div class="w-full max-w-md bg-gray-900/50 border border-gray-850 rounded-2xl p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
+    <div class="flex min-h-[calc(100vh-8rem)] items-center justify-center p-4">
+      <div class="border-gray-850 relative w-full max-w-md overflow-hidden rounded-2xl border bg-gray-900/50 p-8 shadow-2xl backdrop-blur-md">
         {/* Glow effect */}
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="pointer-events-none absolute -top-24 -left-24 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div class="pointer-events-none absolute -right-24 -bottom-24 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl"></div>
 
-        <div class="text-center mb-8">
-          <i class="bi bi-controller text-5xl text-emerald-500 inline-block mb-3 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse"></i>
+        <div class="mb-8 text-center">
+          <Gamepad2 class="mb-3 inline-block h-12 w-12 animate-pulse text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" />
           <h1 class="text-2xl font-black tracking-tight text-gray-100">
             Link Minecraft Account
           </h1>
-          <p class="text-xs text-gray-400 mt-2 max-w-xs mx-auto">
-            Link your official Minecraft profile to customize in-game portal cosmetics and access premium features.
+          <p class="mx-auto mt-2 max-w-xs text-xs text-gray-400">
+            Link your official Minecraft profile to customize in-game portal
+            cosmetics and access premium features.
           </p>
         </div>
 
         <Form action={actionSig} class="space-y-6">
           <div>
-            <label for="username" class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+            <label
+              for="username"
+              class="mb-2 block text-[10px] font-bold tracking-wider text-gray-400 uppercase"
+            >
               Minecraft Username
             </label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
-                <i class="bi bi-person-fill"></i>
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                <UserIcon class="h-4 w-4" />
               </span>
               <input
                 type="text"
@@ -138,42 +153,45 @@ export default component$(() => {
                 required
                 placeholder="e.g. Saboooor"
                 bind:value={usernameVal}
-                class="w-full pl-10 pr-4 py-3 bg-gray-950/50 border border-gray-800 rounded-xl text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all duration-200"
+                class="w-full rounded-xl border border-gray-800 bg-gray-950/50 py-3 pr-4 pl-10 text-sm text-gray-200 placeholder-gray-600 transition-all duration-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 focus:outline-none"
               />
             </div>
-            <p class="text-[10px] text-gray-500 mt-2">
+            <p class="mt-2 text-[10px] text-gray-500">
               Must be a registered premium Java Edition Minecraft account.
             </p>
           </div>
 
           {actionSig.value && !actionSig.value.success && (
-            <div class="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg flex items-center gap-2">
-              <i class="bi bi-exclamation-circle-fill"></i>
+            <div class="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+              <AlertCircle class="h-4 w-4" />
               <span>{actionSig.value.message}</span>
             </div>
           )}
 
           {actionSig.value?.success && (
-            <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center gap-2">
-              <i class="bi bi-check-circle-fill"></i>
+            <div class="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-400">
+              <CheckCircle2 class="h-4 w-4" />
               <span>{actionSig.value.message}</span>
-              <meta http-equiv="refresh" content={`1;url=${actionSig.value.redirectUrl}`} />
+              <meta
+                http-equiv="refresh"
+                content={`1;url=${actionSig.value.redirectUrl}`}
+              />
             </div>
           )}
 
           <div class="flex items-center gap-3">
             <a
               href={`/profile/${loaderSig.value.userId}`}
-              class="w-1/3 text-center py-3 bg-gray-900 border border-gray-850 hover:bg-gray-850 text-gray-400 text-xs font-bold rounded-xl transition-all duration-200"
+              class="border-gray-850 hover:bg-gray-850 w-1/3 rounded-xl border bg-gray-900 py-3 text-center text-xs font-bold text-gray-400 transition-all duration-200"
             >
               Cancel
             </a>
             <button
               type="submit"
               disabled={actionSig.isRunning}
-              class="w-2/3 py-3 bg-emerald-600 hover:bg-emerald-550 active:scale-98 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/15"
+              class="hover:bg-emerald-550 w-2/3 rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/15 transition-all duration-200 active:scale-98 disabled:opacity-50"
             >
-              {actionSig.isRunning ? "Connecting..." : "Link Account"}
+              {actionSig.isRunning ? 'Connecting...' : 'Link Account'}
             </button>
           </div>
         </Form>

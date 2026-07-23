@@ -7,13 +7,13 @@ export type AppDatabase = DrizzleD1Database<typeof DatabaseSchema>;
 
 let _db: AppDatabase;
 
-export function getDB() {
+export function getDB(_requestEvent?: unknown) {
   if (!_db) throw new Error('DB not set');
   return _db;
 }
 
 export async function initializeDbIfNeeded(
-  factory: () => Promise<AppDatabase>,
+  factory: () => Promise<AppDatabase>
 ) {
   if (!_db) _db = await factory();
 }

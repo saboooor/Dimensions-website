@@ -1,27 +1,30 @@
-import { component$ } from "@builder.io/qwik";
-import { routeLoader$, Form } from "@builder.io/qwik-city";
-import { getSessionUserId } from "../../util/auth";
-import { useSignIn } from "~/routes/plugin@auth";
+import { component$ } from '@qwik.dev/core';
+import { routeLoader$, Form } from '@qwik.dev/router';
+import CheckCircle2 from 'lucide-icons-qwik/icons/CheckCircle2';
+import AlertTriangle from 'lucide-icons-qwik/icons/AlertTriangle';
+import SiDiscord from 'simple-icons-qwik/icons/SiDiscord';
+import { getSessionUserId } from '../../util/auth';
+import { useSignIn } from '~/routes/plugin@auth';
 
 /**
  * Loader to handle:
  * 1. Redirecting already logged-in users to home.
  * 2. Mapping Auth.js Discord OAuth error parameters to friendly messages.
  */
-export const useLoginLoader = routeLoader$(async (requestEvent) => {
+export const useLoginLoader = routeLoader$((requestEvent) => {
   // If already logged in, redirect to home
   const userId = getSessionUserId(requestEvent);
-  if (userId > 0) {
-    throw requestEvent.redirect(302, "/");
+  if (userId) {
+    throw requestEvent.redirect(302, '/');
   }
 
-  const msg = requestEvent.url.searchParams.get("msg") || "";
-  const error = requestEvent.url.searchParams.get("error") || "";
+  const msg = requestEvent.url.searchParams.get('msg') || '';
+  const error = requestEvent.url.searchParams.get('error') || '';
 
-  let errorMsg = "";
+  let errorMsg = '';
   if (error) {
-    if (error === "CallbackRouteError") {
-      errorMsg = "Failed to sign in with Discord. Please try again.";
+    if (error === 'CallbackRouteError') {
+      errorMsg = 'Failed to sign in with Discord. Please try again.';
     } else {
       errorMsg = `Authentication failed: ${error}`;
     }
@@ -38,31 +41,43 @@ export default component$(() => {
   const signInSig = useSignIn();
 
   return (
-    <div class="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center py-6">
-      <div class="w-full max-w-md bg-gray-900/50 backdrop-blur-md border border-gray-800/80 rounded-2xl p-8 shadow-xl">
+    <div class="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center py-6">
+      <div class="w-full max-w-md rounded-2xl border border-gray-800/80 bg-gray-900/50 p-8 shadow-xl backdrop-blur-md">
         {/* Header */}
-        <div class="text-center mb-8">
-          <a href="/" class="inline-flex items-center gap-2 mb-3 justify-center">
-            <img src="/assets/img/logo.png" alt="Dimensions Logo" class="h-10 w-10 object-contain" />
-            <span class="font-bold text-2xl tracking-wide bg-gradient-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
+        <div class="mb-8 text-center">
+          <a
+            href="/"
+            class="mb-3 inline-flex items-center justify-center gap-2"
+          >
+            {/* eslint-disable-next-line qwik/jsx-img-tag */}
+            <img
+              src="/assets/img/logo.png"
+              alt="Dimensions Logo"
+              class="h-10 w-10 object-contain"
+              width="40"
+              height="40"
+            />
+            <span class="bg-gradient-to-r from-gray-500 to-gray-300 bg-clip-text text-2xl font-bold tracking-wide text-transparent">
               Dimensions
             </span>
           </a>
           <h1 class="text-xl font-bold text-gray-100">Login to Dimensions</h1>
-          <p class="text-sm text-gray-500 mt-1">Sign in with your Discord account to get started</p>
+          <p class="mt-1 text-sm text-gray-500">
+            Sign in with your Discord account to get started
+          </p>
         </div>
 
         {/* Notifications */}
         {loaderSig.value.successMsg && (
-          <div class="mb-4 bg-emerald-950/40 border border-emerald-900/50 text-emerald-400 text-sm px-4 py-3 rounded-lg flex items-start gap-2 animate-in fade-in duration-200">
-            <i class="bi bi-check-circle-fill text-emerald-500 mt-0.5"></i>
+          <div class="animate-in fade-in mb-4 flex items-start gap-2 rounded-lg border border-emerald-900/50 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-400 duration-200">
+            <CheckCircle2 class="mt-0.5 h-4 w-4 text-emerald-500" />
             <span>{loaderSig.value.successMsg}</span>
           </div>
         )}
 
         {loaderSig.value.errorMsg && (
-          <div class="mb-4 bg-red-950/40 border border-red-900/50 text-red-400 text-sm px-4 py-3 rounded-lg flex items-start gap-2 animate-in fade-in duration-200">
-            <i class="bi bi-exclamation-triangle-fill text-red-500 mt-0.5"></i>
+          <div class="animate-in fade-in mb-4 flex items-start gap-2 rounded-lg border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400 duration-200">
+            <AlertTriangle class="mt-0.5 h-4 w-4 text-red-500" />
             <span>{loaderSig.value.errorMsg}</span>
           </div>
         )}
@@ -74,13 +89,14 @@ export default component$(() => {
           <button
             type="submit"
             disabled={signInSig.isRunning}
-            class="w-full bg-[#5865F2] hover:bg-[#4752C4] disabled:bg-[#3b429f] text-white font-semibold py-2.5 rounded-lg transition-all shadow-md focus:outline-none flex justify-center items-center gap-2 cursor-pointer"
+            class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#5865F2] py-2.5 font-semibold text-white shadow-md transition-all hover:bg-[#4752C4] focus:outline-none disabled:bg-[#3b429f]"
           >
-            {signInSig.isRunning && signInSig.formData?.get("providerId") === "discord" ? (
+            {signInSig.isRunning &&
+            signInSig.formData?.get('providerId') === 'discord' ? (
               <span>Connecting to Discord...</span>
             ) : (
               <>
-                <i class="bi bi-discord"></i>
+                <SiDiscord class="h-4 w-4" />
                 <span>Sign in with Discord</span>
               </>
             )}

@@ -1,17 +1,17 @@
-import { type RequestHandler } from "@builder.io/qwik-city";
-import { sql, eq, or } from "drizzle-orm";
-import { getDB, users } from "~/util/db";
+import { type RequestHandler } from '@qwik.dev/router';
+import { sql, eq, or } from 'drizzle-orm';
+import { getDB, users } from '~/util/db';
 
 const DEFAULT_COSMETICS = {
-  postIgnitePortal: "NOTHING",
-  postUsePortal: "NOTHING",
-  postDestroyPortal: "NOTHING",
-  onPortalTick: "NOTHING",
+  postIgnitePortal: 'NOTHING',
+  postUsePortal: 'NOTHING',
+  postDestroyPortal: 'NOTHING',
+  onPortalTick: 'NOTHING',
 };
 
 export const onGet: RequestHandler = async (requestEvent) => {
-  const rawUuid = requestEvent.url.searchParams.get("ingameCosmetics") || "";
-  const uuid = rawUuid.replace(/-/g, "").toLowerCase();
+  const rawUuid = requestEvent.url.searchParams.get('ingameCosmetics') || '';
+  const uuid = rawUuid.replace(/-/g, '').toLowerCase();
 
   const db = getDB(requestEvent);
 
@@ -35,11 +35,11 @@ export const onGet: RequestHandler = async (requestEvent) => {
         ...DEFAULT_COSMETICS,
         ...JSON.parse(userRow.ingameCosmetics),
       };
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
 
-  requestEvent.headers.set("Content-Type", "application/json");
+  requestEvent.headers.set('Content-Type', 'application/json');
   requestEvent.send(200, JSON.stringify(cosmetics));
 };

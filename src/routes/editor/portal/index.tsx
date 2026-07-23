@@ -1,15 +1,41 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
-import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
-import { eq } from "drizzle-orm";
-import { getDB, userPortals } from "~/util/db";
-import { getSessionUserId, getSessionUser } from "~/util/auth";
-import textureManifest from "~/lib/texture-manifest.json";
+import { component$, useVisibleTask$ } from '@qwik.dev/core';
+import { routeLoader$, type RequestHandler } from '@qwik.dev/router';
+import { eq } from 'drizzle-orm';
+import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
+import RotateCcw from 'lucide-icons-qwik/icons/RotateCcw';
+import RotateCw from 'lucide-icons-qwik/icons/RotateCw';
+import CloudUpload from 'lucide-icons-qwik/icons/CloudUpload';
+import Lock from 'lucide-icons-qwik/icons/Lock';
+import Download from 'lucide-icons-qwik/icons/Download';
+import Clipboard from 'lucide-icons-qwik/icons/Clipboard';
+import Eye from 'lucide-icons-qwik/icons/Eye';
+import Trash2 from 'lucide-icons-qwik/icons/Trash2';
+import BookOpen from 'lucide-icons-qwik/icons/BookOpen';
+import Palette from 'lucide-icons-qwik/icons/Palette';
+import Sliders from 'lucide-icons-qwik/icons/Sliders';
+import Puzzle from 'lucide-icons-qwik/icons/Puzzle';
+import Boxes from 'lucide-icons-qwik/icons/Boxes';
+import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
+import Box from 'lucide-icons-qwik/icons/Box';
+import Flame from 'lucide-icons-qwik/icons/Flame';
+import Maximize2 from 'lucide-icons-qwik/icons/Maximize2';
+import Sparkles from 'lucide-icons-qwik/icons/Sparkles';
+import Settings from 'lucide-icons-qwik/icons/Settings';
+import Globe from 'lucide-icons-qwik/icons/Globe';
+import DoorOpen from 'lucide-icons-qwik/icons/DoorOpen';
+import Bug from 'lucide-icons-qwik/icons/Bug';
+import Home from 'lucide-icons-qwik/icons/Home';
+import AlertTriangle from 'lucide-icons-qwik/icons/AlertTriangle';
+import X from 'lucide-icons-qwik/icons/X';
+import { getDB, userPortals } from '~/util/db';
+import { getSessionUserId, getSessionUser } from '~/util/auth';
+import textureManifest from '~/lib/texture-manifest.json';
 
 /**
  * Loader to fetch details needed by the portal editor.
  */
 export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
-  const portalIdParam = requestEvent.url.searchParams.get("portal");
+  const portalIdParam = requestEvent.url.searchParams.get('portal');
   const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
   const db = getDB(requestEvent);
@@ -22,7 +48,7 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
     let options = {};
     try {
       options = JSON.parse(a.portalOptions);
-    } catch (e) {
+    } catch {
       // ignore
     }
     return {
@@ -40,15 +66,15 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
     });
   }
 
-  const isLoggedIn = userId !== 0;
+  const isLoggedIn = !!userId;
   const isOwner =
     portalId > 0 && portalRow && isLoggedIn && userId === portalRow.maker;
 
   if (portalId > 0 && portalRow) {
-    const isAdmin = user && user.id === 1; // User ID 1 is administrator
+    const isAdmin = user && user.id === '1'; // User ID 1 is administrator
     // Access control: if not public and not owner and not admin
     if (portalRow.public === 0 && !isOwner && !isAdmin) {
-      throw requestEvent.redirect(302, "/editor/portal/");
+      throw requestEvent.redirect(302, '/editor/portal/');
     }
   }
 
@@ -60,7 +86,7 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
     portalId,
     portalData: portalRow ? portalRow.data : null,
     portalPublic: portalRow ? portalRow.public : 0,
-    saveLabel: portalId > 0 ? (isOwner ? "Update" : "Copy") : "Save",
+    saveLabel: portalId > 0 ? (isOwner ? 'Update' : 'Copy') : 'Save',
   };
 });
 
@@ -69,8 +95,8 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
  */
 export const onPost: RequestHandler = async (requestEvent) => {
   const userId = getSessionUserId(requestEvent);
-  if (userId === 0) {
-    requestEvent.send(401, "Unauthorized");
+  if (!userId) {
+    requestEvent.send(401, 'Unauthorized');
     return;
   }
 
@@ -78,12 +104,12 @@ export const onPost: RequestHandler = async (requestEvent) => {
   const formData = await requestEvent.request.formData();
 
   // 1. Handle Save Portal
-  if (formData.has("savePortal")) {
-    const data = formData.get("savePortal") as string;
-    const portalID = formData.get("portalID") as string;
-    const portalIMG = formData.get("portalIMG") as string;
+  if (formData.has('savePortal')) {
+    const data = formData.get('savePortal') as string;
+    const portalID = formData.get('portalID') as string;
+    const portalIMG = formData.get('portalIMG') as string;
 
-    const portalIdParam = requestEvent.url.searchParams.get("portal");
+    const portalIdParam = requestEvent.url.searchParams.get('portal');
     const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
     let portalRow: any = undefined;
@@ -124,8 +150,8 @@ export const onPost: RequestHandler = async (requestEvent) => {
   }
 
   // 2. Handle Toggle Public
-  if (formData.has("togglePrive")) {
-    const portalIdParam = requestEvent.url.searchParams.get("portal");
+  if (formData.has('togglePrive')) {
+    const portalIdParam = requestEvent.url.searchParams.get('portal');
     const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
     if (portalId > 0) {
@@ -144,13 +170,13 @@ export const onPost: RequestHandler = async (requestEvent) => {
         return;
       }
     }
-    requestEvent.send(400, "Bad Request");
+    requestEvent.send(400, 'Bad Request');
     return;
   }
 
   // 3. Handle Delete Portal
-  if (formData.has("deletePortal")) {
-    const portalIdParam = requestEvent.url.searchParams.get("portal");
+  if (formData.has('deletePortal')) {
+    const portalIdParam = requestEvent.url.searchParams.get('portal');
     const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
     if (portalId > 0) {
@@ -164,7 +190,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
           .update(userPortals)
           .set({
             public: 0,
-            maker: -1,
+            maker: '-1',
           })
           .where(eq(userPortals.id, portalId));
 
@@ -172,19 +198,19 @@ export const onPost: RequestHandler = async (requestEvent) => {
         return;
       }
     }
-    requestEvent.send(400, "Bad Request");
+    requestEvent.send(400, 'Bad Request');
     return;
   }
 
-  requestEvent.send(400, "Bad Request");
+  requestEvent.send(400, 'Bad Request');
 };
 
 export default component$(() => {
   const loaderSig = usePortalEditorLoader();
 
   // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
-    import("./portal-editor");
+  useVisibleTask$(async () => {
+    await import('./portal-editor');
   });
 
   return (
@@ -648,111 +674,171 @@ export default component$(() => {
         </div>
       </div>
 
-      <div class="w-full flex flex-col gap-6" id="app">
+      <div class="flex w-full flex-col gap-6" id="app">
         {/* Editor Control Bar (Toolbar Overhauled) */}
-        <header class="bg-gray-900/50 backdrop-blur border border-gray-800/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+        <header class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-800/80 bg-gray-900/50 p-4 shadow-lg backdrop-blur">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/50 flex items-center justify-center text-gray-300">
-              <i class="bi bi-grid-3x3-gap-fill text-sm"></i>
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700/50 bg-gray-800/80 text-gray-300">
+              <Grid3x3 class="h-4 w-4" />
             </div>
             <div>
-              <h1 class="text-sm font-black text-gray-100 tracking-wider uppercase leading-none">Portal Editor</h1>
-              <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 block">Dimensions Config</span>
+              <h1 class="text-sm leading-none font-black tracking-wider text-gray-100 uppercase">
+                Portal Editor
+              </h1>
+              <span class="mt-1 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                Dimensions Config
+              </span>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 bg-black/40 border border-gray-800/80 rounded-xl px-3 py-2">
-              <label for="portalID" class="text-[10px] text-gray-500 font-bold uppercase tracking-wider select-none">Portal ID</label>
+            <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
+              <label
+                for="portalID"
+                class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
+              >
+                Portal ID
+              </label>
               <input
                 type="text"
                 id="portalID"
-                class="bg-transparent border-none text-gray-200 text-xs font-semibold focus:outline-none w-28 placeholder-gray-700"
+                class="w-28 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
                 value="testPortal"
                 spellcheck={false}
               />
             </div>
           </div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <button id="btnUndo" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer" title="Undo (Ctrl+Z)" disabled>
-              <i class="bi bi-arrow-counterclockwise text-sm"></i>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              id="btnUndo"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              title="Undo (Ctrl+Z)"
+              disabled
+            >
+              <RotateCcw class="h-4 w-4" />
             </button>
-            <button id="btnRedo" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer" title="Redo (Ctrl+Y)" disabled>
-              <i class="bi bi-arrow-clockwise text-sm"></i>
+            <button
+              id="btnRedo"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              title="Redo (Ctrl+Y)"
+              disabled
+            >
+              <RotateCw class="h-4 w-4" />
             </button>
-            <div class="h-6 w-px bg-gray-800 mx-1"></div>
+            <div class="mx-1 h-6 w-px bg-gray-800"></div>
             {loaderSig.value.isLoggedIn ? (
-              <button id="btnSave" class="px-4 h-9 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-                <i class="bi bi-cloud-upload-fill text-sm"></i>
+              <button
+                id="btnSave"
+                class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-gray-600 to-gray-500 px-4 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all hover:from-gray-500 hover:to-gray-400"
+              >
+                <CloudUpload class="h-4 w-4" />
                 <span>{loaderSig.value.saveLabel}</span>
               </button>
             ) : (
-              <button class="px-4 h-9 bg-gray-900 border border-gray-800/80 text-gray-500 font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-not-allowed uppercase tracking-wider" disabled title="Log in to save">
-                <i class="bi bi-lock-fill text-sm"></i>
+              <button
+                class="flex h-9 cursor-not-allowed items-center gap-1.5 rounded-xl border border-gray-800/80 bg-gray-900 px-4 text-xs font-bold tracking-wider text-gray-500 uppercase"
+                disabled
+                title="Log in to save"
+              >
+                <Lock class="h-4 w-4" />
                 <span>Save</span>
               </button>
             )}
-            <button id="btnDownload" class="px-4 h-9 bg-gray-950 border border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-              <i class="bi bi-download text-sm"></i>
+            <button
+              id="btnDownload"
+              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+            >
+              <Download class="h-4 w-4" />
               <span>Download</span>
             </button>
-            <button id="btnCopy" class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl transition-all cursor-pointer" title="Copy YAML">
-              <i class="bi bi-clipboard text-sm"></i>
+            <button
+              id="btnCopy"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+              title="Copy YAML"
+            >
+              <Clipboard class="h-4 w-4" />
             </button>
             {loaderSig.value.isOwner && (
               <>
-                <div class="h-6 w-px bg-gray-800 mx-1"></div>
-                <button id="btnPublic" class="px-4 h-9 bg-gray-950 border border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-                  <i class="bi bi-eye-fill text-sm"></i>
-                  <span>{loaderSig.value.portalPublic ? "Private" : "Public"}</span>
+                <div class="mx-1 h-6 w-px bg-gray-800"></div>
+                <button
+                  id="btnPublic"
+                  class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+                >
+                  <Eye class="h-4 w-4" />
+                  <span>
+                    {loaderSig.value.portalPublic ? 'Private' : 'Public'}
+                  </span>
                 </button>
-                <button id="btnDelete" class="px-4 h-9 bg-red-950/40 border border-red-900/40 hover:bg-red-900/20 hover:border-red-850 text-red-400 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider">
-                  <i class="bi bi-trash-fill text-sm"></i>
+                <button
+                  id="btnDelete"
+                  class="hover:border-red-850 flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-red-900/40 bg-red-950/40 px-4 text-xs font-bold tracking-wider text-red-400 uppercase transition-all hover:bg-red-900/20"
+                >
+                  <Trash2 class="h-4 w-4" />
                   <span>Delete</span>
                 </button>
               </>
             )}
-            <div class="h-6 w-px bg-gray-800 mx-1"></div>
+            <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <a
-              class="w-9 h-9 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-xl transition-all"
+              class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               href="https://astaspastagam.gitbook.io/first-steps/configuring-dimensions/addons"
               target="_blank"
               title="Wiki"
               rel="noreferrer"
             >
-              <i class="bi bi-book text-sm"></i>
+              <BookOpen class="h-4 w-4" />
             </a>
           </div>
         </header>
 
         {/* Workspace Grid */}
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL: Design, Settings, Addons */}
-          <aside class="lg:col-span-4 bg-gray-900/40 backdrop-blur border border-gray-800/80 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[600px] lg:h-[700px]" id="panelLeft">
+          <aside
+            class="flex h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[700px]"
+            id="panelLeft"
+          >
             {/* Tabs */}
             <div class="flex border-b border-gray-800/80 bg-black/20">
-              <button class="panel-tab flex-1 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-all active cursor-pointer" data-tab="design">
-                <i class="bi bi-palette me-1"></i>Design
+              <button
+                class="panel-tab active flex-1 cursor-pointer border-b-2 border-transparent py-3 text-xs font-bold tracking-wider text-gray-400 uppercase transition-all hover:text-gray-200"
+                data-tab="design"
+              >
+                <Palette class="me-1 inline-block h-3.5 w-3.5" />
+                Design
               </button>
-              <button class="panel-tab flex-1 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-all cursor-pointer" data-tab="settings">
-                <i class="bi bi-sliders me-1"></i>Settings
+              <button
+                class="panel-tab flex-1 cursor-pointer border-b-2 border-transparent py-3 text-xs font-bold tracking-wider text-gray-400 uppercase transition-all hover:text-gray-200"
+                data-tab="settings"
+              >
+                <Sliders class="me-1 inline-block h-3.5 w-3.5" />
+                Settings
               </button>
-              <button class="panel-tab flex-1 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-all cursor-pointer" data-tab="addons">
-                <i class="bi bi-puzzle me-1"></i>Addons
+              <button
+                class="panel-tab flex-1 cursor-pointer border-b-2 border-transparent py-3 text-xs font-bold tracking-wider text-gray-400 uppercase transition-all hover:text-gray-200"
+                data-tab="addons"
+              >
+                <Puzzle class="me-1 inline-block h-3.5 w-3.5" />
+                Addons
               </button>
             </div>
 
             {/* Panel Body */}
-            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="flex-1 space-y-4 overflow-y-auto p-4">
               {/* Design Tab */}
               <div class="tab-content active" id="tabDesign" data-tab="design">
                 <div class="space-y-4">
                   {/* Frame Block */}
                   <div class="design-section">
-                    <div class="design-section-head" data-collapse="frameSection">
+                    <div
+                      class="design-section-head"
+                      data-collapse="frameSection"
+                    >
                       <h4>
-                        <i class="bi bi-bricks text-gray-400"></i> Frame Block
+                        <Boxes class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Frame Block
                       </h4>
-                      <i class="bi bi-chevron-down design-chevron"></i>
+                      <ChevronDown class="design-chevron h-4 w-4" />
                     </div>
                     <div class="design-section-body" id="frameSection">
                       <div class="block-search-row">
@@ -776,11 +862,15 @@ export default component$(() => {
 
                   {/* Inside Block */}
                   <div class="design-section">
-                    <div class="design-section-head" data-collapse="insideSection">
+                    <div
+                      class="design-section-head"
+                      data-collapse="insideSection"
+                    >
                       <h4>
-                        <i class="bi bi-box text-gray-400"></i> Inside Block
+                        <Box class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Inside Block
                       </h4>
-                      <i class="bi bi-chevron-down design-chevron"></i>
+                      <ChevronDown class="design-chevron h-4 w-4" />
                     </div>
                     <div class="design-section-body" id="insideSection">
                       <div class="block-search-row">
@@ -804,11 +894,15 @@ export default component$(() => {
 
                   {/* Lighter Material */}
                   <div class="design-section">
-                    <div class="design-section-head" data-collapse="lighterSection">
+                    <div
+                      class="design-section-head"
+                      data-collapse="lighterSection"
+                    >
                       <h4>
-                        <i class="bi bi-fire text-gray-400"></i> Lighter
+                        <Flame class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Lighter
                       </h4>
-                      <i class="bi bi-chevron-down design-chevron"></i>
+                      <ChevronDown class="design-chevron h-4 w-4" />
                     </div>
                     <div class="design-section-body" id="lighterSection">
                       <div class="block-search-row">
@@ -834,23 +928,44 @@ export default component$(() => {
                   <div class="design-section">
                     <div class="design-section-head">
                       <h4>
-                        <i class="bi bi-arrows-fullscreen text-gray-400"></i> Size & Face
+                        <Maximize2 class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Size & Face
                       </h4>
                     </div>
                     <div class="design-section-body">
                       <div class="face-selector">
                         <span class="field-label">Face Direction</span>
                         <div class="face-buttons" id="faceButtons">
-                          <button class="face-btn active" data-face="all">all</button>
-                          <button class="face-btn" data-face="up">up</button>
-                          <button class="face-btn" data-face="down">down</button>
-                          <button class="face-btn" data-face="east">east</button>
-                          <button class="face-btn" data-face="west">west</button>
-                          <button class="face-btn" data-face="north">north</button>
-                          <button class="face-btn" data-face="south">south</button>
-                          <button class="face-btn" data-face="x">x</button>
-                          <button class="face-btn" data-face="y">y</button>
-                          <button class="face-btn" data-face="z">z</button>
+                          <button class="face-btn active" data-face="all">
+                            all
+                          </button>
+                          <button class="face-btn" data-face="up">
+                            up
+                          </button>
+                          <button class="face-btn" data-face="down">
+                            down
+                          </button>
+                          <button class="face-btn" data-face="east">
+                            east
+                          </button>
+                          <button class="face-btn" data-face="west">
+                            west
+                          </button>
+                          <button class="face-btn" data-face="north">
+                            north
+                          </button>
+                          <button class="face-btn" data-face="south">
+                            south
+                          </button>
+                          <button class="face-btn" data-face="x">
+                            x
+                          </button>
+                          <button class="face-btn" data-face="y">
+                            y
+                          </button>
+                          <button class="face-btn" data-face="z">
+                            z
+                          </button>
                         </div>
                       </div>
                       <div class="size-grid">
@@ -906,7 +1021,8 @@ export default component$(() => {
                   <div class="design-section">
                     <div class="design-section-head">
                       <h4>
-                        <i class="bi bi-stars text-gray-400"></i> Particles
+                        <Sparkles class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Particles
                       </h4>
                     </div>
                     <div class="design-section-body">
@@ -921,9 +1037,16 @@ export default component$(() => {
                         <span class="field-label">Color</span>
                         <div class="color-pick-row">
                           <div class="color-swatch-sm">
-                            <input type="color" id="particlesColor" value="#ffffff" />
+                            <input
+                              type="color"
+                              id="particlesColor"
+                              value="#ffffff"
+                            />
                           </div>
-                          <span class="color-preview-text" id="particlesColorText">
+                          <span
+                            class="color-preview-text"
+                            id="particlesColorText"
+                          >
                             255;255;255
                           </span>
                         </div>
@@ -939,7 +1062,8 @@ export default component$(() => {
                   <div class="design-section">
                     <div class="design-section-head">
                       <h4>
-                        <i class="bi bi-gear text-gray-400"></i> General
+                        <Settings class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        General
                       </h4>
                     </div>
                     <div class="design-section-body">
@@ -978,7 +1102,8 @@ export default component$(() => {
                   <div class="design-section">
                     <div class="design-section-head">
                       <h4>
-                        <i class="bi bi-globe text-gray-400"></i> World & Teleport
+                        <Globe class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        World & Teleport
                       </h4>
                     </div>
                     <div class="design-section-body">
@@ -1020,7 +1145,8 @@ export default component$(() => {
                   <div class="design-section">
                     <div class="design-section-head">
                       <h4>
-                        <i class="bi bi-door-open text-gray-400"></i> Exit Portal
+                        <DoorOpen class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Exit Portal
                       </h4>
                     </div>
                     <div class="design-section-body">
@@ -1059,14 +1185,23 @@ export default component$(() => {
                   </div>
 
                   <div class="design-section">
-                    <div class="design-section-head" data-collapse="entitiesSection">
+                    <div
+                      class="design-section-head"
+                      data-collapse="entitiesSection"
+                    >
                       <h4>
-                        <i class="bi bi-bug text-gray-400"></i> Entities{" "}
-                        <span class="px-1.5 py-0.5 bg-gray-800 text-[9px] font-bold text-gray-400 uppercase rounded tracking-wider">Advanced</span>
+                        <Bug class="inline-block h-4 w-4 text-gray-400" />{' '}
+                        Entities{' '}
+                        <span class="rounded bg-gray-800 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-gray-400 uppercase">
+                          Advanced
+                        </span>
                       </h4>
-                      <i class="bi bi-chevron-down design-chevron"></i>
+                      <ChevronDown class="design-chevron h-4 w-4" />
                     </div>
-                    <div class="design-section-body collapsed" id="entitiesSection">
+                    <div
+                      class="design-section-body collapsed"
+                      id="entitiesSection"
+                    >
                       <div class="field-col">
                         <span class="field-label">Transformation Rules</span>
                         <textarea
@@ -1090,7 +1225,9 @@ export default component$(() => {
                           value="60000-120000"
                           placeholder="60000-120000"
                         />
-                        <span class="field-help">Min-Max delay in milliseconds</span>
+                        <span class="field-help">
+                          Min-Max delay in milliseconds
+                        </span>
                       </div>
                       <div class="field-col">
                         <span class="field-label">Spawn List</span>
@@ -1100,7 +1237,7 @@ export default component$(() => {
                           rows={3}
                           placeholder="ZOMBIE;30&#10;SKELETON;30"
                         >
-                          {"ZOMBIE;30\nSKELETON;30"}
+                          {'ZOMBIE;30\nSKELETON;30'}
                         </textarea>
                         <span class="field-help">
                           Format: ENTITY;CHANCE (one per line)
@@ -1115,8 +1252,8 @@ export default component$(() => {
               <div class="tab-content" id="tabAddons" data-tab="addons">
                 <div class="space-y-4">
                   <div class="addons-list" id="addonsList"></div>
-                  <div class="text-[11px] text-gray-500 italic text-center p-2">
-                    Not all addons shown. Check the{" "}
+                  <div class="p-2 text-center text-[11px] text-gray-500 italic">
+                    Not all addons shown. Check the{' '}
                     <a
                       href="https://astaspastagam.gitbook.io/first-steps/configuring-dimensions/addons"
                       target="_blank"
@@ -1124,10 +1261,13 @@ export default component$(() => {
                       rel="noreferrer"
                     >
                       wiki
-                    </a>{" "}
+                    </a>{' '}
                     for more.
                   </div>
-                  <div class="addon-options mt-4 space-y-4" id="addonOptions"></div>
+                  <div
+                    class="addon-options mt-4 space-y-4"
+                    id="addonOptions"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1138,30 +1278,54 @@ export default component$(() => {
           <div class="hidden" id="resizeRight"></div>
 
           {/* CENTER PANEL: 3D Viewport */}
-          <div class="lg:col-span-5 flex flex-col gap-4">
-            <div class="relative bg-gray-950 border border-gray-800/80 rounded-2xl overflow-hidden shadow-2xl h-[450px] lg:h-[700px] w-full flex flex-col justify-between" id="viewportWrap">
-              <canvas id="viewport" class="flex-1 w-full h-full block bg-black"></canvas>
+          <div class="flex flex-col gap-4 lg:col-span-5">
+            <div
+              class="relative flex h-[450px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[700px]"
+              id="viewportWrap"
+            >
+              <canvas
+                id="viewport"
+                class="block h-full w-full flex-1 bg-black"
+              ></canvas>
               <div class="absolute top-4 left-4 z-10">
-                <span class="px-2.5 py-1 bg-black/60 border border-gray-800 text-[10px] font-bold tracking-wider uppercase rounded-lg text-gray-300">3D Viewport</span>
+                <span class="rounded-lg border border-gray-800 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-300 uppercase">
+                  3D Viewport
+                </span>
               </div>
-              <div class="absolute bottom-4 right-4 z-10">
-                <button class="w-9 h-9 flex items-center justify-center bg-black/60 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg transition-all cursor-pointer" id="btnResetCam" title="Reset camera">
-                  <i class="bi bi-house"></i>
+              <div class="absolute right-4 bottom-4 z-10">
+                <button
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-black/60 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+                  id="btnResetCam"
+                  title="Reset camera"
+                >
+                  <Home class="h-4 w-4" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* RIGHT PANEL: YAML Preview */}
-          <aside class="lg:col-span-3 bg-gray-900/40 backdrop-blur border border-gray-800/80 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[450px] lg:h-[700px]" id="panelRight">
-            <div class="px-4 py-3 border-b border-gray-800/80 bg-black/20 flex justify-between items-center">
-              <span class="text-xs font-bold uppercase tracking-wider text-gray-400">YAML Output</span>
-              <button class="w-7 h-7 flex items-center justify-center bg-gray-950 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-md transition-all cursor-pointer" id="btnCopyYaml" title="Copy YAML">
-                <i class="bi bi-clipboard text-xs"></i>
+          <aside
+            class="flex h-[450px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-3 lg:h-[700px]"
+            id="panelRight"
+          >
+            <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
+              <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
+                YAML Output
+              </span>
+              <button
+                class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+                id="btnCopyYaml"
+                title="Copy YAML"
+              >
+                <Clipboard class="h-3.5 w-3.5" />
               </button>
             </div>
-            <div class="flex-1 overflow-auto p-4 bg-black/40 font-mono text-xs text-gray-300 leading-relaxed selection:bg-gray-700 selection:text-white">
-              <pre id="yamlPreview" class="whitespace-pre-wrap word-break"></pre>
+            <div class="flex-1 overflow-auto bg-black/40 p-4 font-mono text-xs leading-relaxed text-gray-300 selection:bg-gray-700 selection:text-white">
+              <pre
+                id="yamlPreview"
+                class="word-break whitespace-pre-wrap"
+              ></pre>
             </div>
           </aside>
         </main>
@@ -1172,10 +1336,11 @@ export default component$(() => {
         <div class="modal-card modal-sm">
           <div class="modal-header">
             <h3>
-              <i class="bi bi-exclamation-triangle-fill text-red-500"></i> Delete Portal?
+              <AlertTriangle class="inline-block h-4 w-4 text-red-500" /> Delete
+              Portal?
             </h3>
             <button class="modal-close" id="closeDeleteModal">
-              <i class="bi bi-x-lg"></i>
+              <X class="h-4 w-4" />
             </button>
           </div>
           <div class="modal-body">
@@ -1184,10 +1349,16 @@ export default component$(() => {
               permanently removed.
             </p>
             <div class="modal-actions">
-              <button class="modal-btn modal-btn-danger cursor-pointer" id="confirmDelete">
+              <button
+                class="modal-btn modal-btn-danger cursor-pointer"
+                id="confirmDelete"
+              >
                 Delete
               </button>
-              <button class="modal-btn modal-btn-secondary cursor-pointer" id="cancelDelete">
+              <button
+                class="modal-btn modal-btn-secondary cursor-pointer"
+                id="cancelDelete"
+              >
                 Cancel
               </button>
             </div>
@@ -1201,13 +1372,13 @@ export default component$(() => {
           window.TEXTURE_MANIFEST = ${JSON.stringify(loaderSig.value.textureManifest)};
           window.TEXTURE_BASE = '/editor/portal/Images/';
           window.ADDONS_DATA = ${JSON.stringify(loaderSig.value.addonsList)};
-          window.IS_LOGGED_IN = ${loaderSig.value.isLoggedIn ? "true" : "false"};
-          window.IS_OWNER = ${loaderSig.value.isOwner ? "true" : "false"};
+          window.IS_LOGGED_IN = ${loaderSig.value.isLoggedIn ? 'true' : 'false'};
+          window.IS_OWNER = ${loaderSig.value.isOwner ? 'true' : 'false'};
           window.PORTAL_ID = ${loaderSig.value.portalId};
           ${
             loaderSig.value.portalData
               ? `window.PORTAL_LOAD_DATA = ${JSON.stringify(loaderSig.value.portalData)};`
-              : ""
+              : ''
           }
         `}
       />
