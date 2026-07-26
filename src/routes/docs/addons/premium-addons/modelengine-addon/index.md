@@ -7,21 +7,15 @@ description: Summon entities with custom models inside the portal
 
 # ModelEngine addon (BETA)
 
-{% hint style="warning" %}
 The addon is in BETA stages. Stuff will be added/removed in almost every update
-{% endhint %}
 
 ## What does it do?
 
 This addon allows you to summon entities with custom models inside the portal
 
-{% hint style="info" %}
 Requires [ModelEngine](https://www.spigotmc.org/resources/conxeptworks-model-engine%E2%80%94ultimate-custom-entity-model-manager-1-16-5-1-19-2.79477/) 2.5.3
-{% endhint %}
 
-{% hint style="danger" %}
 **I**f you reload the server and there are spawned models, the models will stay there and won't be removable (unless you use commands to force remove them)
-{% endhint %}
 
 ## How is it configured?
 
@@ -35,13 +29,11 @@ Addon:
     # - 'once;kindletronjr;%centerX%,%centerY%,%centerZ%'
 ```
 
-{% hint style="info" %}
 You can use the keyword 'once' in order to only summon the model once at the specified location.
 
 You can use 'DEBBUGER' to debug the first argument
 
 You can use simple mathematical operations for the spawn location
-{% endhint %}
 
 ```
 Placeholders:

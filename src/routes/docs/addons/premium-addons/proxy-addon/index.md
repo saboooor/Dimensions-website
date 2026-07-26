@@ -27,9 +27,7 @@ Portals:
 #- '<serverFrom>-><portalName>-><serverName>' #Now this will work like the above but if the portal used was in the <serverFrom> it will ALWAYS teleport to <serverName> no matter what
 ```
 
-{% hint style="info" %}
 The portal name is the file name of the portal in every server and must be the same otherwise the plugin is not going to function properly
-{% endhint %}
 
 Now you need to move to your spigot/paper server to complete the setup
 
@@ -53,9 +51,7 @@ Portals: [
 ]
 ```
 
-{% hint style="info" %}
 The portal name is the file name of the portal in every server and must be the same otherwise the plugin is not going to function properly
-{% endhint %}
 
 Now you need to move to your spigot/paper server to complete the setup
 
@@ -65,13 +61,9 @@ Now you need to move to your spigot/paper server to complete the setup
 
 Now we are done with the the proxy, we move to our servers
 
-{% hint style="info" %}
 You have to do this for your every server that you want dimensions to teleport between servers so you can make one and copy paste to the rest.
-{% endhint %}
 
-{% hint style="warning" %}
 Dimensions & BungeeAddon MUST be installed in order for the plugin to work.
-{% endhint %}
 
 For every portal you create, you need to enable the bungee feature from the config like its shown below
 

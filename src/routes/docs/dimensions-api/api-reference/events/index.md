@@ -25,8 +25,6 @@ The event is fired when a portal is being broken
 
 If the event is canceled the portal will not break
 
-{% hint style="warning" %}
 If you use the **Dimensions#getCompletePortalManager()#removePortal()**
 
 Then you may want to revert the block states or the situation that caused the event because the portal will stay lit but the frame might be missing (in case you run the command when blocks break, etc)
-{% endhint %}

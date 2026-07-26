@@ -28,6 +28,4 @@ Addon:
 - PISTON #a piston destroyed the portal
 - BLOCK_PHYSICS #a block changed due to block behavior (dirt becomes grass etc)
 
-{% hint style="info" %}
 This option is a list. You can add more options by adding a new line and then another **- \<input>**
-{% endhint %}

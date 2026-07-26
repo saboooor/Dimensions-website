@@ -9,9 +9,7 @@ description: The addon gives you the ability to set an item or a block with cust
 
 ## What does it do?
 
-{% hint style="info" %}
 Supports [Oraxen](https://www.spigotmc.org/resources/%E2%9C%85-10-%E2%98%84%EF%B8%8F-oraxen-add-items-blocks-armors-hats-food-furnitures-plants-and-gui.72448/), [ItemsAdder ](https://www.spigotmc.org/resources/%E2%9C%A8itemsadder%E2%AD%90emotes-mobs-items-armors-hud-gui-emojis-blocks-wings-hats-liquids.73355/)& [CustomItems](https://www.spigotmc.org/resources/%E2%9B%8F-custom-items-%E2%9C%85-1-19-ready-%E2%9C%85-make-new-items-blocks-with-new-textures-recipes-events-actions.63848/)
-{% endhint %}
 
 The addon gives you the ability to set an item or a block with custom data to be used as a lighter, as a frame block or as an inside portal block (to replace the nether portal)
 

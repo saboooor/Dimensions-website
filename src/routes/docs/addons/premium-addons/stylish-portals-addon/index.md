@@ -31,7 +31,6 @@ Using this in your portal will result in a portal like this
 
 ![very cool yes yes](/files/0fqNjgpe0L2v12K8VtK4)
 
-{% hint style="info" %}
 If you dont care about a specific block what it's going to be built with, then you can use the **dimensions:placeholderblock**
 
 dimensions:placeholderblock = dimensions:placeholderblock\[all,!air,!cave_air]
@@ -39,7 +38,6 @@ dimensions:placeholderblock = dimensions:placeholderblock\[all,!air,!cave_air]
 Usage: dimensions:placeholderblock\[\<material>,\<material>,\<material>]
 
 Usage: dimensions:placeholderblock\[all,!\<material>,!\<material>,!\<material>]
-{% endhint %}
 
 > What is this long spaghetti?
 

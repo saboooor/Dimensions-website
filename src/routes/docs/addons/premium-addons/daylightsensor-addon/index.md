@@ -25,11 +25,7 @@ Addon:
 - \<input2> = any integer
 - \<input3> = any string text you want to be shown to the player if the time is not in range
 
-{% hint style="info" %}
 You can set **StartAllow** to the time you want the portals to start being able to be ignited and you can set **StopAllow** to the time you want the portals to stop being able to be ignited.\
 If you set **StartAllow** to a higher integer than **StopAllow** then the portals will be able to be ignited after X & then before Y the next day.
-{% endhint %}
 
-{% hint style="info" %}
 NOTE: setting the same time to min and max disables the addon
-{% endhint %}

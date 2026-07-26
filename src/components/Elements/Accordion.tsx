@@ -1,6 +1,14 @@
-import { $, component$, PropsOf, QRL, Slot, useContext } from '@qwik.dev/core';
+import {
+  $,
+  component$,
+  createContextId,
+  PropsOf,
+  QRL,
+  Signal,
+  Slot,
+  useContext,
+} from '@qwik.dev/core';
 import { DropdownButton, getClassObject } from '@luminescent/ui-qwik';
-import { openItemsContext } from '~/components/docs/Menuitems';
 
 export const loadOpenItems = $(() => {
   try {
@@ -38,6 +46,7 @@ interface AccordionProps extends PropsOf<'button'> {
   onClick$?: QRL<() => void>;
 }
 
+export const openItemsContext = createContextId<Signal<string[]>>('open-items');
 export default component$(
   ({
     sectionName,

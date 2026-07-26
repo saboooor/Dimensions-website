@@ -7,9 +7,7 @@ description: Gives 3 new world guard flags
 
 # World guard flags addon
 
-{% hint style="info" %}
 Requires [WorldEdit](https://dev.bukkit.org/projects/worldedit) & [WorldGuard](https://dev.bukkit.org/projects/worldguard)
-{% endhint %}
 
 ## What does it do?
 

@@ -15,9 +15,7 @@ If you don't have a world you will need a world generation plugin such as [Multi
 
 ![](/files/6ATAlM7bt4hVSA0j0dgT)
 
-{% hint style="info" %}
 In the **./plugins/Dimensions/config.yml** you can set the following:
-{% endhint %}
 
 ```yaml
 Worlds:
@@ -27,11 +25,9 @@ Worlds:
     Size: <the size of the world as if you were going to change the world border>
 ```
 
-{% hint style="info" %}
 The min/max option is to set the min/max Y that portals will spawn (when building exit portals)
 
 \
 If the size is not set, then it grabs the world border's size and it's used to calculate the world ratio. (more info below)
-{% endhint %}
 
 <figure><img src="/files/DFXPUwafkbx0uPNWNH2I" alt=""><figcaption></figcaption></figure>

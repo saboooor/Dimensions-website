@@ -9,13 +9,9 @@ description: Integrates Dimensions3 with BetterPortals
 
 ## What does it do?
 
-{% hint style="info" %}
 Requires [BetterPortals](https://www.spigotmc.org/resources/betterportals.75409/)
-{% endhint %}
 
-{% hint style="info" %}
 If you want to disable the better portals addon for a specific portal you can type the following in the portal config.
-{% endhint %}
 
 ```yaml
 Addon:

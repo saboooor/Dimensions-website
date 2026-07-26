@@ -11,9 +11,7 @@ description: Gives you the option to make horizontal portals
 
 It gives you the option to make horizontal portals
 
-{% hint style="danger" %}
 Horizontal portals do not work custom blocks as frame. (custom portal inside and lighter works fine)
-{% endhint %}
 
 ## How is it configured?
 

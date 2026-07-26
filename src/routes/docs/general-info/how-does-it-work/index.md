@@ -13,9 +13,7 @@ But wait! How do I use this? Do I need to use any commands or are there any limi
 
 The answer is **maybe**. The only limitations that the plugin has are, the ones you set in the config or by your server and stuff that are not yet possible or have not been added yet.
 
-{% hint style="info" %}
 Do not get scared. That does not mean you cant use Dimensions or that you have to do more stuff. It just means that if you want way more advanced stuff than simply have portals to teleport around, you have to spend **at most** 5 more minutes looking through the wiki.
-{% endhint %}
 
 The way Dimensions works in-game is very simple. So simple, some would say that the process looks kinda familiar.
 

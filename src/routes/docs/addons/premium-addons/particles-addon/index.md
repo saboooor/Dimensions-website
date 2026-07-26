@@ -33,10 +33,8 @@ start:
  - 'exampleVariable = 22'
 ```
 
-{% hint style="warning" %}
 You can only use numbers with or without decimal points for a variable.\
 for example x = 1, x=1.1, x=1.111111111, etc
-{% endhint %}
 
 Now that we have set up some of the variables we will be needing, we will now head to the body of the "pack". The body splits into two sections that each splits into two other sections as well.
 
@@ -59,7 +57,6 @@ portal:
         #(run0 can be anything, make sure it's not a duplicate for each for)
 ```
 
-{% hint style="info" %}
 The for loop is made from 3 parts seperated by ";"
 
 The first part is where we initiate our variable with a value (in the example we do i =0)
@@ -67,19 +64,15 @@ The first part is where we initiate our variable with a value (in the example we
 The middle part is where we tell it how many times to run. The loop will run while the middle part is true. So in the example we run the loop while "i" is below 50.
 
 The last part will be used to change "i". Every time the whole "code" inside of the loop is run, the variable "i" will become i+1 and will run until "i" is < 50
-{% endhint %}
 
 The available commands are:
 
 - debug \<text>
 - play \<particle type> \<x> \<y> \<z> \<count> \<offsetX> \<offsetY> \<offsetZ> \[DustOptions(Color(\<R>,\<G>,\<B>),\<size>)]
 
-{% hint style="info" %}
-
 - The debug command will show variables but will not do any operations. If you want to output the result of an operation, save it in a variable first.
 - You can find the available particle types [here](< https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html>).
 - DustOptions can only apply to redstone dust particles.
-  {% endhint %}
 
 The for loops can have nested for loops inside of them.\
 everything that is a child of for will run and if its a valid for loop everything inside of it will run aswell.
@@ -120,11 +113,9 @@ it will run for every i, aka 3 times
 
 So if you used the command "play", instead of printing text, it would spawn particles instead.
 
-{% hint style="danger" %}
 If the for loop has not been set correctly and becomes an infinite loop, the server will crash.
 
 Be careful when setting up the middle part of the for loop.
-{% endhint %}
 
 After you have created your pack, you can add it to a portal in its config like that:
 
@@ -144,15 +135,11 @@ These are the variables you can use that are being given by Dimensions.
 - portalHeight - the height of the portal
 - portalWidth - the width of the portal
 
-{% hint style="info" %}
 The location depends on where it's used. If it's under the **tile** section, it will correspond to each portal entity, and if it's under the **portal** tile, it will be the center of the portal.
-{% endhint %}
 
 ## Example
 
-{% hint style="info" %}
 In this example, we will be making a particle pack that will create a circle around the portal.
-{% endhint %}
 
 First, we have the **start** block and we instantiate any variable we want to use.
 
@@ -187,13 +174,9 @@ and it would result into this:
 
 # Particles Editor
 
-{% hint style="warning" %}
 The portal inside the editor cannot be rotate **yet** and all particles will seem like they are in the same Z axis. Don't worry, they are not.
-{% endhint %}
 
-{% hint style="info" %}
 The particles editor is a tool that simulates the particles spawning. It's supposed to make creating particle packs easier
-{% endhint %}
 
 ![Example of the editor](/files/sUuTSUNCD0IO9jqJ4qyV)
 

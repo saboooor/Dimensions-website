@@ -25,15 +25,12 @@ Addon:
 
 For example `tell %entity% you used a zAxis portal and its name is samplePortal or your name is astaspasta and you came from world6`
 
-{% hint style="info" %}
 If you plan to override the teleport of Dimensions (for example for a random location command) then It's recommended that you add the following to your portal config. (This addon option is provided by the CommandsOnUse addon)
 
 ```yaml
 Addon:
   DisableTeleport: true
 ```
-
-{% endhint %}
 
 ```
 Placeholders:

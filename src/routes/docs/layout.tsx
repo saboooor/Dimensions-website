@@ -17,7 +17,7 @@ export type MarkdownItems = Record<string, MDX>;
 export const menuItemPriority: {
   [key: string]: number;
 } = {
-  Overview: 1,
+  'Get Started': 1,
 };
 
 export const getMarkdownItems = async () => {

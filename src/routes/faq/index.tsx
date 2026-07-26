@@ -1,7 +1,7 @@
-import { component$, useSignal } from '@qwik.dev/core';
+import { component$, useContextProvider, useSignal } from '@qwik.dev/core';
 import type { DocumentHead } from '@qwik.dev/router';
-import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
 import SiDiscord from 'simple-icons-qwik/icons/SiDiscord';
+import Accordion, { openItemsContext } from '~/components/Elements/Accordion';
 
 export default component$(() => {
   const faqs = [
@@ -37,7 +37,8 @@ export default component$(() => {
     },
   ];
 
-  const activeIdx = useSignal<number | null>(0);
+  const openItems = useSignal<string[]>([]);
+  useContextProvider(openItemsContext, openItems);
 
   return (
     <section
@@ -50,7 +51,7 @@ export default component$(() => {
         <div class="space-y-2 text-center">
           <h1 class="text-3xl font-extrabold tracking-tight text-gray-100">
             Frequently Asked{' '}
-            <span class="bg-gradient-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
+            <span class="bg-linear-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
               Questions
             </span>
           </h1>
@@ -62,28 +63,28 @@ export default component$(() => {
 
         <div class="space-y-4">
           {faqs.map((faq, idx) => {
-            const isOpen = activeIdx.value === idx;
+            const isOpen = openItems.value.includes(idx.toString());
             return (
               <div
                 key={idx}
                 class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30 transition-all duration-200"
               >
-                <button
-                  onClick$={() => (activeIdx.value = isOpen ? null : idx)}
-                  class="flex w-full items-center justify-between px-6 py-4 text-left font-semibold text-gray-200 transition-colors hover:bg-gray-900/40 hover:text-white focus:outline-none"
+                <Accordion
+                  sectionName={faq.question || `faq-item-${idx}`}
+                  class={{
+                    'lum-bg-transparent w-full': true,
+                    'lum-btn-p-1! rounded-lum-1 text-sm': true,
+                    'text-lum-accent': isOpen,
+                  }}
                 >
-                  <span>{faq.question}</span>
-                  <ChevronDown
-                    class={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-gray-500' : 'rotate-0'
-                    }`}
-                  />
-                </button>
-
+                  {faq.question}
+                </Accordion>
                 <div
-                  class={`overflow-hidden transition-all duration-350 ease-in-out ${
-                    isOpen ? 'max-h-48 border-t border-gray-900/50' : 'max-h-0'
-                  }`}
+                  class={{
+                    'overflow-hidden transition-all duration-350 ease-in-out': true,
+                    'max-h-48 border-t border-gray-900/50': isOpen,
+                    'max-h-0': !isOpen,
+                  }}
                 >
                   <div class="bg-gray-950/20 p-6 text-sm leading-relaxed text-gray-400">
                     {faq.answer}

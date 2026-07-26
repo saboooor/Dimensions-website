@@ -1,13 +1,7 @@
-import {
-  component$,
-  QRL,
-  useSignal,
-  createContextId,
-  Signal,
-} from '@qwik.dev/core';
+import { component$, QRL, useSignal, useContextProvider } from '@qwik.dev/core';
 import { ContentMenu, Link } from '@qwik.dev/router';
 import { MarkdownItems } from '~/routes/docs/layout';
-import Accordion from '../Elements/Accordion';
+import Accordion, { openItemsContext } from '../Elements/Accordion';
 
 const DAYS = 24 * 60 * 60 * 1000;
 
@@ -40,7 +34,7 @@ const renderUpdated = (itemHref: string, markdownItems: MarkdownItems) => {
 
   return null;
 };
-export const openItemsContext = createContextId<Signal<string[]>>('open-items');
+
 export const MenuItems = component$(
   (props: {
     items?: ContentMenu[];
@@ -53,6 +47,7 @@ export const MenuItems = component$(
     const level = props.level || 0;
 
     const openItems = useSignal<string[]>([]);
+    useContextProvider(openItemsContext, openItems);
 
     const isActiveOrParent = (item: ContentMenu): boolean => {
       if (item.href === pathname) return true;

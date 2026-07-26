@@ -7,9 +7,7 @@ description: Getting started with Dimensions
 
 # Get Started
 
-{% hint style="success" %}
 This wiki has been updated for the Dimensions 3 update.
-{% endhint %}
 
 ## Installing Dimensions
 

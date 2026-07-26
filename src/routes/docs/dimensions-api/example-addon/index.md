@@ -7,9 +7,7 @@ description: Example addon for Dimensions
 
 # Example Addon
 
-{% hint style="info" %}
 The source code for the example addon can be found [here](https://github.com/xXastaspastaXx/Dimensions3/blob/main/DimensionsExampleAddon/src/main/java/me/xxastaspastaxx/dimensions/addons/exampleaddon/DimensionsExampleAddonMain.java)
-{% endhint %}
 
 ## Creating the project
 
@@ -96,9 +94,7 @@ _for example in this case it would be_
 me.xxastaspastaxx.dimensions.addons.exampleaddon.DimensionsExampleAddonMain
 ```
 
-{% hint style="info" %}
 This last part is required by [ServiceLoader](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) in order to load the addons properly
-{% endhint %}
 
 ## Done
 

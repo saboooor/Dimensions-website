@@ -13,19 +13,15 @@ Addons are a way to manage the extra Dimensions feature easier for the developer
 
 In order to install addons, you need to get the **addon.jar** and drag and drop it in the **./plugins/Dimensions/Addons/** folder.
 
-{% hint style="info" %}
 You can download the free addons pack [here](https://www.spigotmc.org/resources/dimensionsfreeaddons.97040/)
 
 You can download the paid addons pack [here](https://www.spigotmc.org/resources/dimensionsaddons-spice-up-your-portals.83982/)
-{% endhint %}
 
 ## Publishing and sharing
 
 You can create your own Dimensions addon and share a link to download it on the discord server
 
-{% hint style="info" %}
 Dimensions [javadocs](https://astaspasta.alwaysdata.net/javadocs/)\
 Dimensions [source code](https://github.com/saboooor/Dimensions)
-{% endhint %}
 
 [Dimensions API](/docs/api)

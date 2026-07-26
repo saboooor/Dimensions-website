@@ -7,17 +7,13 @@ description: PortalGeometry reference
 
 # PortalGeometry
 
-{% hint style="warning" %}
 PortalGeometry will change in a future update
-{% endhint %}
 
 ## Why would I make a PortalGeometry
 
 If you want portals with weird patterns or weird orientation, etc then you need to override the Dimensions PortalGeometry
 
-{% hint style="info" %}
 For example HorizontalPortalsAddon uses its own PortalGeometry
-{% endhint %}
 
 ## How do I make a custom PortalGeometry
 

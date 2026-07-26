@@ -7,9 +7,7 @@ description: Addons made by other developers
 
 # IgniteByEvent addon (BETA)
 
-{% hint style="warning" %}
 This wiki is for IgniteByEvent addon v3.0.1-BETA
-{% endhint %}
 
 ## What does it do?
 
