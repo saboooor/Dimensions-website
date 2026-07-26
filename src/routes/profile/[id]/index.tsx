@@ -469,7 +469,7 @@ export default component$(() => {
           {/* LINKED ACCOUNTS TAB */}
           {activeTab.value === 'links' && isSelf && (
             <div class="animate-in fade-in space-y-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
-              <h2 class="text-sm font-bold tracking-wider text-gray-200 text-gray-500 uppercase">
+              <h2 class="text-sm font-bold tracking-wider text-gray-200 uppercase">
                 Integrations
               </h2>
 
@@ -477,7 +477,7 @@ export default component$(() => {
                 {/* Discord — linked via Auth.js, cannot be unlinked */}
                 <div class="flex items-center justify-between rounded-xl border border-gray-900 bg-gray-950/30 p-4">
                   <div class="flex items-center gap-3">
-                    <SiDiscord class="h-6 w-6 text-[#5865F2]" />
+                    <SiDiscord class="h-6 w-6 fill-[#5865F2]" />
                     <div>
                       <p class="text-sm font-bold text-gray-200">
                         Discord Account
@@ -530,7 +530,7 @@ export default component$(() => {
                 {pUser.verifiedPaypal === '' && (
                   <div class="flex items-center justify-between rounded-xl border border-gray-900 bg-gray-950/30 p-4">
                     <div class="flex items-center gap-3">
-                      <SiPaypal class="h-6 w-6 text-[#003087]" />
+                      <SiPaypal class="h-6 w-6 fill-[#003087]" />
                       <div>
                         <p class="text-sm font-bold text-gray-200">
                           PayPal Purchase

@@ -70,11 +70,9 @@ export default component$(() => {
                 class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30 transition-all duration-200"
               >
                 <Accordion
-                  sectionName={faq.question || `faq-item-${idx}`}
+                  sectionName={idx.toString()}
                   class={{
                     'lum-bg-transparent w-full': true,
-                    'lum-btn-p-1! rounded-lum-1 text-sm': true,
-                    'text-lum-accent': isOpen,
                   }}
                 >
                   {faq.question}
@@ -82,7 +80,7 @@ export default component$(() => {
                 <div
                   class={{
                     'overflow-hidden transition-all duration-350 ease-in-out': true,
-                    'max-h-48 border-t border-gray-900/50': isOpen,
+                    'max-h-48': isOpen,
                     'max-h-0': !isOpen,
                   }}
                 >
@@ -108,9 +106,9 @@ export default component$(() => {
           <a
             href="https://discord.com/invite/eYXf5E8KX6"
             target="_blank"
-            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-indigo-500"
+            class="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-indigo-500"
           >
-            <SiDiscord class="h-4 w-4" />
+            <SiDiscord class="fill-current" />
             <span>Join our Discord Server</span>
           </a>
         </div>

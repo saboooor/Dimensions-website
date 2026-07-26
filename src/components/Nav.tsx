@@ -8,6 +8,8 @@ import LogOut from 'lucide-icons-qwik/icons/LogOut';
 import type { User } from '~/util/db';
 import { useSession, useSignIn, useSignOut } from '~/routes/plugin@auth';
 import UserIcon from 'lucide-icons-qwik/icons/User';
+import Sparkle from 'lucide-icons-qwik/icons/Sparkle';
+import RectangleVertical from 'lucide-icons-qwik/icons/RectangleVertical';
 
 export interface NavProps {
   user?: User | null;
@@ -20,7 +22,7 @@ export const Nav = component$<NavProps>(({ user }) => {
   const session = useSession();
 
   return (
-    <LuminescentNav fixed floating colorClass="lum-grad-bg-nav-bg">
+    <LuminescentNav fixed floating colorClass="lum-grad-bg-nav-bg" nohamburger>
       {/* start slot: branding */}
       <Link
         q:slot="start"
@@ -45,6 +47,7 @@ export const Nav = component$<NavProps>(({ user }) => {
         href="/portals"
         class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
+        <Grid3x3 class="h-4 w-4" />
         Portals
       </Link>
       <Link
@@ -52,6 +55,7 @@ export const Nav = component$<NavProps>(({ user }) => {
         href="/editor/portal"
         class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
+        <RectangleVertical class="h-4 w-4" />
         Portal Editor
       </Link>
       <Link
@@ -59,40 +63,23 @@ export const Nav = component$<NavProps>(({ user }) => {
         href="/editor/particle"
         class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
+        <Sparkle class="h-4 w-4" />
         Particle Editor
-      </Link>
-      <Link
-        q:slot="center"
-        href="/points"
-        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
-      >
-        Points
       </Link>
       <Link
         q:slot="center"
         href="/faq"
         class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
+        <CircleHelp class="h-4 w-4" />
         F.A.Q
       </Link>
-
-      {/* end slot: user points indicator (desktop) */}
-      {user && (
-        <Link
-          q:slot="end"
-          href="/points"
-          class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
-        >
-          <Gem class="h-4 w-4" />
-          <span>{Number(user.points).toLocaleString()}</span>
-        </Link>
-      )}
 
       {session.value && session.value.user && (
         <Dropdown
           align="right"
           q:slot="end"
-          class="lum-bg-transparent hover:lum-bg-nav-bg gap-1 p-2"
+          class="lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2"
           id="profile"
           panelProps={{
             class: 'lum-grad-bg-nav-bg',
@@ -116,6 +103,15 @@ export const Nav = component$<NavProps>(({ user }) => {
           >
             <UserIcon size={20} /> Profile
           </Link>
+          <Link
+            href="/points"
+            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1"
+          >
+            <Gem class="h-4 w-4" />
+            <span>
+              Points {user && `(${Number(user.points).toLocaleString()})`}
+            </span>
+          </Link>
           <Form action={signOut}>
             <input type="hidden" name="providerId" value="discord" />
             <input
@@ -137,50 +133,11 @@ export const Nav = component$<NavProps>(({ user }) => {
             name="options.redirectTo"
             value={loc.url.pathname + loc.url.search}
           />
-          <button class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg p-2">
+          <button class="lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2">
             Login
           </button>
         </Form>
       )}
-
-      <Link
-        q:slot="mobile"
-        href="/portals"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-          loc.url.pathname.startsWith('/portals')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
-      >
-        <Grid3x3 class="h-4 w-4" />
-        <span>Portals</span>
-      </Link>
-      <Link
-        q:slot="mobile"
-        href="/points"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-          loc.url.pathname.startsWith('/points')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
-      >
-        <Gem class="h-4 w-4" />
-        <span>
-          Points {user && `(${Number(user.points).toLocaleString()})`}
-        </span>
-      </Link>
-      <Link
-        q:slot="mobile"
-        href="/faq"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-          loc.url.pathname.startsWith('/faq')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
-      >
-        <CircleHelp class="h-4 w-4" />
-        <span>F.A.Q</span>
-      </Link>
     </LuminescentNav>
   );
 });

@@ -203,7 +203,7 @@ export default component$(() => {
         <div class="pointer-events-none absolute -right-24 -bottom-24 h-48 w-48 rounded-full bg-sky-500/10 blur-3xl"></div>
 
         <div class="mb-8 text-center">
-          <SiPaypal class="mb-3 inline-block h-12 w-12 text-sky-500 drop-shadow-[0_0_15px_rgba(14,165,233,0.3)]" />
+          <SiPaypal class="mb-3 inline-block h-12 w-12 fill-sky-500 drop-shadow-[0_0_15px_rgba(14,165,233,0.3)]" />
           <h1 class="text-2xl font-black tracking-tight text-gray-100">
             Verify PayPal Purchase
           </h1>

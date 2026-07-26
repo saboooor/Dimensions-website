@@ -3,7 +3,7 @@ import { menuItemPriority, type MarkdownItems } from '~/routes/docs/layout';
 
 function capitalizeWords(string: string) {
   return string
-    .split('_')
+    .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
