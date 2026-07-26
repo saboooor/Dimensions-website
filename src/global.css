@@ -11,8 +11,20 @@
 @source "../node_modules/@luminescent/ui-qwik";
 
 @theme {
-  --lum-border-radius: 0.625rem;
+  --lum-border-radius: 1rem;
   --color-lum-gradient: var(--color-gray-950);
+  /* Lighter parts: luminous yellow/cream */
+  --color-gray-50: var(--color-zinc-50);
+  --color-gray-100: var(--color-zinc-100);
+  --color-gray-200: var(--color-zinc-200);
+  --color-gray-300: var(--color-zinc-300);
+  --color-gray-400: var(--color-zinc-400);
+  --color-gray-500: var(--color-zinc-500);
+  --color-gray-600: var(--color-zinc-600);
+  --color-gray-700: var(--color-zinc-700);
+  --color-gray-800: var(--color-zinc-800);
+  --color-gray-900: var(--color-zinc-900);
+  --color-gray-950: var(--color-zinc-950);
   --color-gray-850: color-mix(
     in oklab,
     var(--color-gray-900),
@@ -30,7 +42,7 @@
   --color-lime: var(--color-lime-900);
   --color-teal: var(--color-teal-900);
   --color-lum-border: #dfdfdfaa;
-  --color-nav-bg: --alpha(var(--color-gray-900) / 70%);
+  --color-nav-bg: --alpha(var(--color-yellow-100) / 10%);
   --color-bg: var(--color-gray-900);
   --color-lum-card-bg: var(--color-gray-850);
   --color-lum-accent: var(--color-blue-500);

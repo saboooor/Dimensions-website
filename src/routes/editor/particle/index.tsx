@@ -206,7 +206,7 @@ export default component$(() => {
             <Sparkles class="h-4 w-4" />
           </div>
 
-          <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
+          <div class="flex items-center gap-2 bg-black/40 px-3 py-2">
             <label
               for="packName"
               class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
@@ -227,7 +227,7 @@ export default component$(() => {
 
           <div class="flex flex-wrap items-center gap-2">
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Undo (Ctrl+Z)"
               disabled={store.historyIndex <= 0}
               onClick$={handleUndo}
@@ -235,7 +235,7 @@ export default component$(() => {
               <RotateCcw class="h-4 w-4" />
             </button>
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Redo (Ctrl+Y)"
               disabled={store.historyIndex >= store.history.length - 1}
               onClick$={handleRedo}
@@ -244,7 +244,7 @@ export default component$(() => {
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
-              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+              class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
               onClick$={() => (store.showPresetsModal = true)}
             >
               <Library class="h-4 w-4" />
@@ -269,7 +269,7 @@ export default component$(() => {
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
-              class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
+              class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
               onClick$={() => {
                 const yaml = store.layers
                   .map((l) => JSON.stringify(l))
@@ -286,7 +286,7 @@ export default component$(() => {
               <span>Download</span>
             </button>
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               title="Copy YAML"
               onClick$={() => {
                 const yaml = store.layers
@@ -452,7 +452,7 @@ export default component$(() => {
               ) : (
                 <div class="space-y-4">
                   {/* Layer Name & Shape */}
-                  <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                  <div class="space-y-3 bg-gray-900/30 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       Layer Info
                     </div>
@@ -475,7 +475,7 @@ export default component$(() => {
                   </div>
 
                   {/* Particle Color & Size */}
-                  <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                  <div class="space-y-3 bg-gray-900/30 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       Particle Appearance
                     </div>
@@ -521,7 +521,7 @@ export default component$(() => {
 
                   {/* Shape Parameters */}
                   {selectedLayer.shape?.params && (
-                    <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                    <div class="space-y-3 bg-gray-900/30 p-4">
                       <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                         {Utils.capitalize(selectedLayer.shape.type)} Parameters
                       </div>
@@ -592,11 +592,11 @@ export default component$(() => {
                   return (
                     <div
                       key={presetName}
-                      class="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-gray-800/80 bg-gray-900/40 p-4 text-center backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg"
+                      class="group flex cursor-pointer flex-col items-center justify-center gap-2 bg-gray-900/40 p-4 text-center backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg"
                       onClick$={() => void applyPreset(presetName)}
                     >
                       <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-transform group-hover:scale-110"
+                        class="flex h-10 w-10 items-center justify-center bg-gray-950 text-gray-300 transition-transform group-hover:scale-110"
                         style={{ color: preset.accentColor }}
                       >
                         <IconComp class="h-5 w-5" />
@@ -647,7 +647,7 @@ export default component$(() => {
                   return (
                     <div
                       key={type}
-                      class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-800/80 bg-gray-900/40 p-3.5 text-xs font-semibold text-gray-300 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white"
+                      class="flex cursor-pointer items-center gap-3 bg-gray-900/40 p-3.5 text-xs font-semibold text-gray-300 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white"
                       onClick$={() => void addLayer(type)}
                     >
                       <ShapeComp class="h-4 w-4 text-gray-400" />

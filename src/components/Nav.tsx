@@ -1,7 +1,6 @@
 import { component$ } from '@qwik.dev/core';
 import { Link, useLocation } from '@qwik.dev/router';
 import { Dropdown, Nav as LuminescentNav } from '@luminescent/ui-qwik';
-import Home from 'lucide-icons-qwik/icons/Home';
 import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
 import Gem from 'lucide-icons-qwik/icons/Gem';
 import CircleHelp from 'lucide-icons-qwik/icons/CircleHelp';
@@ -20,91 +19,58 @@ export const Nav = component$<NavProps>(({ user }) => {
   const isAdmin = user && user.id === '1';
 
   return (
-    <LuminescentNav
-      fixed
-      colorClass="lum-grad-bg-nav-bg border-b border-lum-border/10 shadow-lg font-bold text-sm tracking-wide"
-    >
+    <LuminescentNav fixed floating colorClass="lum-grad-bg-nav-bg">
       {/* start slot: branding */}
       <Link
         q:slot="start"
         href="/"
-        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg flex items-center gap-2 p-2"
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 font-bold tracking-tighter"
       >
         {/* eslint-disable-next-line qwik/jsx-img-tag */}
         <img
-          src="/assets/img/logo.png"
-          alt="Logo"
+          src="/icon.png"
+          alt="icon"
           width={24}
           height={24}
           class="h-6 w-6 object-contain"
         />
-        <span class="bg-linear-to-r from-gray-500 to-gray-300 bg-clip-text font-black tracking-tight text-transparent">
-          DIMENSIONS
+        <span class="bg-linear-to-br from-orange-100 to-amber-200 bg-clip-text! text-transparent">
+          Dimensions
         </span>
       </Link>
 
-      {/* end slot: navigation links */}
       <Link
-        q:slot="end"
-        href="/"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname === '/' ? 'text-gray-500' : 'text-gray-400'
-        }`}
-      >
-        Home
-      </Link>
-      <Link
-        q:slot="end"
+        q:slot="center"
         href="/portals"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname.startsWith('/portals')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         Portals
       </Link>
       <Link
-        q:slot="end"
+        q:slot="center"
         href="/editor/portal"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname.startsWith('/editor/portal')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         Portal Editor
       </Link>
       <Link
-        q:slot="end"
+        q:slot="center"
         href="/editor/particle"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname.startsWith('/editor/particle')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         Particle Editor
       </Link>
       <Link
-        q:slot="end"
+        q:slot="center"
         href="/points"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname.startsWith('/points')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         Points
       </Link>
       <Link
-        q:slot="end"
+        q:slot="center"
         href="/faq"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg hidden sm:flex ${
-          loc.url.pathname.startsWith('/faq')
-            ? 'text-gray-500'
-            : 'text-gray-400'
-        }`}
+        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         F.A.Q
       </Link>
@@ -114,7 +80,7 @@ export const Nav = component$<NavProps>(({ user }) => {
         <Link
           q:slot="end"
           href="/points"
-          class="mr-2 ml-4 hidden items-center gap-1.5 rounded-xl border border-gray-500/25 bg-gray-500/10 px-3 py-1 text-xs font-bold text-gray-400 transition-all hover:bg-gray-500/15 sm:flex"
+          class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
         >
           <Gem class="h-4 w-4" />
           <span>{Number(user.points).toLocaleString()}</span>
@@ -126,16 +92,13 @@ export const Nav = component$<NavProps>(({ user }) => {
         <Dropdown
           align="right"
           q:slot="end"
-          class={{
-            'lum-bg-transparent hover:lum-bg-nav-bg hidden gap-1 p-2 sm:flex': true,
-          }}
+          class="lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
           id="profile-dropdown"
         >
           <div
             q:slot="dropdown"
             class="text-lum-text flex items-center gap-2 font-bold"
           >
-            {/* eslint-disable-next-line qwik/jsx-img-tag */}
             <img
               src={user.profileImage || '/assets/img/guest.png'}
               alt="Profile"
@@ -173,23 +136,12 @@ export const Nav = component$<NavProps>(({ user }) => {
         <Link
           q:slot="end"
           href="/login"
-          class="lum-btn lum-grad-bg-lum-accent ml-4 hidden rounded-xl px-4 py-1.5 text-xs font-bold text-white shadow-lg transition-all hover:shadow-gray-500/20 sm:flex"
+          class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
         >
           Login
         </Link>
       )}
 
-      {/* mobile slot: collapsible menu items */}
-      <Link
-        q:slot="mobile"
-        href="/"
-        class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-          loc.url.pathname === '/' ? 'text-gray-500' : 'text-gray-400'
-        }`}
-      >
-        <Home class="h-4 w-4" />
-        <span>Home</span>
-      </Link>
       <Link
         q:slot="mobile"
         href="/portals"

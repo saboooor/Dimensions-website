@@ -238,7 +238,7 @@ export default component$(() => {
             <Grid3x3 class="h-4 w-4" />
           </div>
 
-          <div class="flex items-center gap-2 rounded-xl border border-gray-800/80 bg-black/40 px-3 py-2">
+          <div class="flex items-center gap-2 bg-black/40 px-3 py-2">
             <label
               for="portalID"
               class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
@@ -259,14 +259,14 @@ export default component$(() => {
 
           <div class="flex flex-wrap items-center gap-2">
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Undo"
               disabled
             >
               <RotateCcw class="h-4 w-4" />
             </button>
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Redo"
               disabled
             >
@@ -281,7 +281,7 @@ export default component$(() => {
               </button>
             ) : (
               <button
-                class="flex h-9 cursor-not-allowed items-center gap-1.5 rounded-xl border border-gray-800/80 bg-gray-900 px-4 text-xs font-bold tracking-wider text-gray-500 uppercase"
+                class="flex h-9 cursor-not-allowed items-center gap-1.5 bg-gray-900 px-4 text-xs font-bold tracking-wider text-gray-500 uppercase"
                 disabled
                 title="Log in to save"
               >
@@ -290,12 +290,12 @@ export default component$(() => {
               </button>
             )}
 
-            <button class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
+            <button class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
               <Download class="h-4 w-4" />
               <span>Download</span>
             </button>
             <button
-              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               title="Copy YAML"
             >
               <Clipboard class="h-4 w-4" />
@@ -304,7 +304,7 @@ export default component$(() => {
             {loaderSig.value.isOwner && (
               <>
                 <div class="mx-1 h-6 w-px bg-gray-800"></div>
-                <button class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
+                <button class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
                   <Eye class="h-4 w-4" />
                   <span>
                     {loaderSig.value.portalPublic ? 'Private' : 'Public'}
@@ -318,8 +318,8 @@ export default component$(() => {
             )}
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <a
-              class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
-              href="https://astaspastagam.gitbook.io/first-steps/configuring-dimensions/addons"
+              class="flex h-9 w-9 items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
+              href="https://astaspastagam.gitbook.io/docs/configuring-dimensions/addons"
               target="_blank"
               title="Wiki"
               rel="noreferrer"
@@ -379,7 +379,7 @@ export default component$(() => {
               {store.activeTab === 'design' && (
                 <div class="space-y-4">
                   {/* Frame Block Section */}
-                  <div class="overflow-hidden rounded-xl border border-gray-800/80 bg-gray-900/30">
+                  <div class="overflow-hidden bg-gray-900/30">
                     <div
                       class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
                       onClick$={() =>
@@ -439,7 +439,7 @@ export default component$(() => {
                   </div>
 
                   {/* Portal Block Section */}
-                  <div class="overflow-hidden rounded-xl border border-gray-800/80 bg-gray-900/30">
+                  <div class="overflow-hidden bg-gray-900/30">
                     <div
                       class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
                       onClick$={() =>
@@ -499,7 +499,7 @@ export default component$(() => {
                   </div>
 
                   {/* Dimensions Section */}
-                  <div class="overflow-hidden rounded-xl border border-gray-800/80 bg-gray-900/30">
+                  <div class="overflow-hidden bg-gray-900/30">
                     <div
                       class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
                       onClick$={() =>
@@ -566,7 +566,7 @@ export default component$(() => {
               {/* Settings Tab */}
               {store.activeTab === 'settings' && (
                 <div class="space-y-4">
-                  <div class="space-y-3 rounded-xl border border-gray-800/80 bg-gray-900/30 p-4">
+                  <div class="space-y-3 bg-gray-900/30 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       General Settings
                     </div>

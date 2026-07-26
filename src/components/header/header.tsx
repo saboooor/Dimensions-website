@@ -78,7 +78,7 @@ export default component$<HeaderProps>(({ user, sidebarOpen }) => {
 
               {/* Dropdown Menu */}
               {dropdownOpen.value && (
-                <div class="animate-in fade-in slide-in-from-top-2 absolute right-0 z-50 mt-2 w-48 rounded-xl border border-gray-800 bg-gray-900 py-1 shadow-xl duration-150">
+                <div class="animate-in fade-in slide-in-from-top-2 absolute right-0 z-50 mt-2 w-48 bg-gray-900 py-1 shadow-xl duration-150">
                   <div class="border-b border-gray-800 px-4 py-2">
                     <p class="text-xs text-gray-500">Logged in as</p>
                     <p class="truncate text-sm font-semibold text-gray-200">

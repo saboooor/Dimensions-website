@@ -964,11 +964,11 @@ const Presets = {
       const preset = this.definitions[name];
       const card = document.createElement('div');
       card.className =
-        'group flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-800/80 bg-gray-900/40 p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg backdrop-blur-sm';
+        'group flex flex-col items-center justify-center gap-2 bg-gray-900/40 p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:shadow-lg backdrop-blur-sm';
 
       const iconDiv = document.createElement('div');
       iconDiv.className =
-        'flex h-10 w-10 items-center justify-center rounded-xl border border-gray-800 bg-gray-950 text-gray-300 transition-transform group-hover:scale-110';
+        'flex h-10 w-10 items-center justify-center bg-gray-950 text-gray-300 transition-transform group-hover:scale-110';
       iconDiv.style.color = preset.accentColor;
       const IconComp = PresetIconComponents[preset.icon] || Circle;
       void render(iconDiv, <IconComp size={24} />);
@@ -1697,8 +1697,7 @@ class App {
 
   _createFieldGroup(titleText: string): HTMLElement {
     const group = document.createElement('div');
-    group.className =
-      'rounded-xl border border-gray-800/80 bg-gray-900/30 p-4 space-y-3';
+    group.className = 'bg-gray-900/30 p-4 space-y-3';
     const head = document.createElement('div');
     head.className =
       'text-[11px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b border-gray-800/60';
@@ -1841,7 +1840,7 @@ class App {
       shapeTypes.forEach((type) => {
         const card = document.createElement('div');
         card.className =
-          'flex items-center gap-3 rounded-xl border border-gray-800/80 bg-gray-900/40 p-3.5 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white text-xs font-semibold text-gray-300 backdrop-blur-sm';
+          'flex items-center gap-3 bg-gray-900/40 p-3.5 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-800/40 hover:text-white text-xs font-semibold text-gray-300 backdrop-blur-sm';
         const ShapeComp = ShapeIconComponents[type] || Circle;
         const iconWrap = document.createElement('span');
         void render(iconWrap, <ShapeComp size={18} />);

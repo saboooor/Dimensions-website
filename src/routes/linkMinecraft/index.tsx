@@ -153,7 +153,7 @@ export default component$(() => {
                 required
                 placeholder="e.g. Saboooor"
                 bind:value={usernameVal}
-                class="w-full rounded-xl border border-gray-800 bg-gray-950/50 py-3 pr-4 pl-10 text-sm text-gray-200 placeholder-gray-600 transition-all duration-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 focus:outline-none"
+                class="w-full bg-gray-950/50 py-3 pr-4 pl-10 text-sm text-gray-200 placeholder-gray-600 transition-all duration-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 focus:outline-none"
               />
             </div>
             <p class="mt-2 text-[10px] text-gray-500">
