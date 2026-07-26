@@ -34,7 +34,7 @@ The portal name is the file name of the portal in every server and must be the s
 Now you need to move to your spigot/paper server to complete the setup
 
 {% content-ref url="/pages/6zAjDlGPQ6lsckib9ND3" %}
-[Spigot/Paper setup](/docs/configuring-dimensions/addons/premium-addons/bungee-addon/spigot-paper-setup.md)
+[Spigot/Paper setup](#spigotpaper-setup)
 {% endcontent-ref %}
 
 # Velocity setup
@@ -62,7 +62,7 @@ The portal name is the file name of the portal in every server and must be the s
 Now you need to move to your spigot/paper server to complete the setup
 
 {% content-ref url="/pages/6zAjDlGPQ6lsckib9ND3" %}
-[Spigot/Paper setup](/docs/configuring-dimensions/addons/premium-addons/bungee-addon/spigot-paper-setup.md)
+[Spigot/Paper setup](#spigotpaper-setup)
 {% endcontent-ref %}
 
 # Spigot/Paper setup

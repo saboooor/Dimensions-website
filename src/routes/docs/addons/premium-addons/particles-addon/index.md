@@ -197,7 +197,7 @@ The particles editor is a tool that simulates the particles spawning. It's suppo
 
 ![Example of the editor](/files/sUuTSUNCD0IO9jqJ4qyV)
 
-We are going to create the same example from [here](/docs/configuring-dimensions/addons/premium-addons/particles-addon.md#example), but this time using the particle editor.
+We are going to create the same example from [here](#example), but this time using the particle editor.
 
 First, we have the **start** block and we instantiate any variable we want to use, which are:
 

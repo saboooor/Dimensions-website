@@ -319,7 +319,7 @@ export default component$(() => {
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <a
               class="flex h-9 w-9 items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
-              href="https://astaspastagam.gitbook.io/docs/configuring-dimensions/addons"
+              href="https://astaspastagam.gitbook.io/docs/addons"
               target="_blank"
               title="Wiki"
               rel="noreferrer"
