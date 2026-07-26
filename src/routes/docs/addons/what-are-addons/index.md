@@ -28,6 +28,4 @@ Dimensions [javadocs](https://astaspasta.alwaysdata.net/javadocs/)\
 Dimensions [source code](https://github.com/saboooor/Dimensions)
 {% endhint %}
 
-{% content-ref url="/spaces/etyI2bT53ToZJMEFHlJA" %}
 [Dimensions API](/docs/api)
-{% endcontent-ref %}
