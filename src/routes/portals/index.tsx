@@ -214,141 +214,148 @@ export default component$(() => {
   });
 
   return (
-    <div class="space-y-8">
-      {/* Page Header */}
-      <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 class="text-3xl font-black tracking-tight text-gray-100">
-            Community Portals
-          </h1>
-          <p class="mt-1 text-sm text-gray-400">
-            Browse, search, and download portal configurations created by the
-            community
-          </p>
-        </div>
+    <section
+      class="relative flex min-h-svh flex-col overflow-hidden p-6 pt-20"
+      style={{
+        '--lum-border-radius': '1.5rem',
+      }}
+    >
+      <div class="mx-auto w-full max-w-6xl space-y-8">
+        {/* Page Header */}
+        <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <h1 class="text-3xl font-black tracking-tight text-gray-100">
+              Community Portals
+            </h1>
+            <p class="mt-1 text-sm text-gray-400">
+              Browse, search, and download portal configurations created by the
+              community
+            </p>
+          </div>
 
-        <div class="flex items-center gap-4">
-          {initialData.value.isAdmin && (
-            <label class="border-gray-850 flex cursor-pointer items-center gap-2 rounded-xl border bg-gray-900 px-3.5 py-2 text-xs font-semibold text-gray-300">
-              <input
-                type="checkbox"
-                onChange$={handleToggleShowAll}
-                class="rounded border-gray-700 bg-gray-950 text-gray-400 focus:ring-0"
-              />
-              <span>Show All (Admin)</span>
-            </label>
-          )}
-
-          <a
-            href="/editor/portal"
-            class="flex items-center gap-2 rounded-xl bg-gray-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-gray-500"
-          >
-            <Plus class="h-4 w-4" />
-            <span>Create Portal</span>
-          </a>
-        </div>
-      </div>
-
-      {/* Portals Grid */}
-      {state.portals.length === 0 ? (
-        <div class="rounded-2xl border border-gray-900 bg-gray-950/40 p-12 text-center text-gray-500">
-          <Grid3x3 class="mx-auto mb-3 h-10 w-10" />
-          <p class="text-sm font-semibold">No portals found.</p>
-        </div>
-      ) : (
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {state.portals.map((portal) => (
-            <div
-              key={portal.id}
-              class="group flex flex-col justify-between rounded-2xl border border-gray-900 bg-gray-900/30 p-4 shadow-md transition-all hover:border-gray-800"
-            >
-              <div class="space-y-3">
-                {/* Image preview */}
-                {portal.img ? (
-                  <div class="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border border-gray-900 bg-gray-950">
-                    <img
-                      src={portal.img}
-                      alt="Portal Preview"
-                      class="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                      width="256"
-                      height="160"
-                    />
-                    {portal.public === 0 && (
-                      <span class="absolute top-2 right-2 rounded border border-gray-800 bg-gray-950/90 px-2 py-0.5 text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
-                        Private
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <div class="flex h-40 w-full items-center justify-center rounded-xl border border-gray-900 bg-gray-950 text-gray-700">
-                    <ImageIcon class="h-10 w-10" />
-                  </div>
-                )}
-
-                {/* Portal metadata */}
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 class="font-bold text-gray-200 transition-colors group-hover:text-white">
-                      {portal.portalID}
-                    </h3>
-                    <p class="mt-0.5 text-[10px] text-gray-500">
-                      by{' '}
-                      <a
-                        href={`/profile/${portal.maker}`}
-                        class="font-semibold underline hover:text-gray-300"
-                      >
-                        {portal.creator}
-                      </a>
-                    </p>
-                  </div>
-                  <button
-                    onClick$={() => handleLike(portal.id)}
-                    disabled={!initialData.value.isLoggedIn}
-                    class={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-all ${
-                      portal.isLiked
-                        ? 'border-red-900/30 bg-red-950/20 text-red-500'
-                        : 'border-gray-900 bg-gray-950/40 text-gray-500 hover:text-gray-300'
-                    }`}
-                  >
-                    <Heart
-                      class={`h-3.5 w-3.5 ${portal.isLiked ? 'fill-current' : ''}`}
-                    />
-                    <span>{portal.likesCount}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Open button */}
-              <a
-                href={`/editor/portal/?portal=${portal.id}`}
-                class="border-gray-850 mt-4 w-full rounded-lg border bg-gray-900 py-2 text-center text-xs font-semibold text-gray-300 transition-all hover:bg-gray-800"
-              >
-                Open in Editor
-              </a>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Load More Button */}
-      {state.hasMore && (
-        <div class="flex justify-center pt-4">
-          <button
-            onClick$={loadMore}
-            disabled={state.loading}
-            class="disabled:bg-gray-850 disabled:text-gray-650 flex items-center gap-2 rounded-xl bg-gray-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gray-500"
-          >
-            {state.loading ? (
-              <span>Loading...</span>
-            ) : (
-              <>
-                <span>Load More Portals</span>
-                <ChevronDown class="h-4 w-4" />
-              </>
+          <div class="flex items-center gap-4">
+            {initialData.value.isAdmin && (
+              <label class="border-gray-850 flex cursor-pointer items-center gap-2 rounded-xl border bg-gray-900 px-3.5 py-2 text-xs font-semibold text-gray-300">
+                <input
+                  type="checkbox"
+                  onChange$={handleToggleShowAll}
+                  class="rounded border-gray-700 bg-gray-950 text-gray-400 focus:ring-0"
+                />
+                <span>Show All (Admin)</span>
+              </label>
             )}
-          </button>
+
+            <a
+              href="/editor/portal"
+              class="flex items-center gap-2 rounded-xl bg-gray-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-gray-500"
+            >
+              <Plus class="h-4 w-4" />
+              <span>Create Portal</span>
+            </a>
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* Portals Grid */}
+        {state.portals.length === 0 ? (
+          <div class="rounded-2xl border border-gray-900 bg-gray-950/40 p-12 text-center text-gray-500">
+            <Grid3x3 class="mx-auto mb-3 h-10 w-10" />
+            <p class="text-sm font-semibold">No portals found.</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {state.portals.map((portal) => (
+              <div
+                key={portal.id}
+                class="group flex flex-col justify-between rounded-2xl border border-gray-900 bg-gray-900/30 p-4 shadow-md transition-all hover:border-gray-800"
+              >
+                <div class="space-y-3">
+                  {/* Image preview */}
+                  {portal.img ? (
+                    <div class="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border border-gray-900 bg-gray-950">
+                      <img
+                        src={portal.img}
+                        alt="Portal Preview"
+                        class="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                        width="256"
+                        height="160"
+                      />
+                      {portal.public === 0 && (
+                        <span class="absolute top-2 right-2 rounded border border-gray-800 bg-gray-950/90 px-2 py-0.5 text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
+                          Private
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div class="flex h-40 w-full items-center justify-center rounded-xl border border-gray-900 bg-gray-950 text-gray-700">
+                      <ImageIcon class="h-10 w-10" />
+                    </div>
+                  )}
+
+                  {/* Portal metadata */}
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 class="font-bold text-gray-200 transition-colors group-hover:text-white">
+                        {portal.portalID}
+                      </h3>
+                      <p class="mt-0.5 text-[10px] text-gray-500">
+                        by{' '}
+                        <a
+                          href={`/profile/${portal.maker}`}
+                          class="font-semibold underline hover:text-gray-300"
+                        >
+                          {portal.creator}
+                        </a>
+                      </p>
+                    </div>
+                    <button
+                      onClick$={() => handleLike(portal.id)}
+                      disabled={!initialData.value.isLoggedIn}
+                      class={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-all ${
+                        portal.isLiked
+                          ? 'border-red-900/30 bg-red-950/20 text-red-500'
+                          : 'border-gray-900 bg-gray-950/40 text-gray-500 hover:text-gray-300'
+                      }`}
+                    >
+                      <Heart
+                        class={`h-3.5 w-3.5 ${portal.isLiked ? 'fill-current' : ''}`}
+                      />
+                      <span>{portal.likesCount}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Open button */}
+                <a
+                  href={`/editor/portal/?portal=${portal.id}`}
+                  class="border-gray-850 mt-4 w-full rounded-lg border bg-gray-900 py-2 text-center text-xs font-semibold text-gray-300 transition-all hover:bg-gray-800"
+                >
+                  Open in Editor
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {state.hasMore && (
+          <div class="flex justify-center pt-4">
+            <button
+              onClick$={loadMore}
+              disabled={state.loading}
+              class="disabled:bg-gray-850 disabled:text-gray-650 flex items-center gap-2 rounded-xl bg-gray-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gray-500"
+            >
+              {state.loading ? (
+                <span>Loading...</span>
+              ) : (
+                <>
+                  <span>Load More Portals</span>
+                  <ChevronDown class="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
   );
 });

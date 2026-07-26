@@ -346,273 +346,280 @@ export default component$(() => {
   const hasClaimedToday = user.lastAdClaim === todayStr;
 
   return (
-    <div class="mx-auto max-w-5xl space-y-8">
-      {/* Page Title */}
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="flex items-center gap-2 text-2xl font-bold text-gray-100">
-            <Coins class="h-6 w-6 text-gray-300" />
-            <span>Points Dashboard</span>
-          </h1>
-          <p class="text-xs text-gray-500">
-            Redeem codes, view rewarded ads, and spend your points on perks
-          </p>
-        </div>
-        <div class="rounded-2xl border border-gray-800 bg-gray-900 px-5 py-2.5 text-right">
-          <p class="text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-            Your Balance
-          </p>
-          <p class="text-2xl font-black text-gray-300">
-            {Number(user.points).toLocaleString()}{' '}
-            <span class="text-xs font-semibold">pts</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Redeem Code */}
-        <div class="h-fit space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-1">
-          <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
-            <Ticket class="h-5 w-5 text-gray-500" />
-            <span>Redeem Code</span>
-          </h2>
-
-          {redeemSig.value && (
-            <div
-              class={`rounded-lg border p-3 text-xs ${
-                redeemSig.value.success
-                  ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
-                  : 'border-red-900/50 bg-red-950/40 text-red-400'
-              }`}
-            >
-              {redeemSig.value.message}
-            </div>
-          )}
-
-          <Form action={redeemSig} class="space-y-3">
-            <input
-              type="text"
-              name="code"
-              required
-              placeholder="Enter promo code..."
-              class="block w-full rounded-lg border border-gray-800 bg-gray-950 px-3.5 py-2 text-sm text-gray-200 placeholder-gray-700 transition-all focus:border-gray-500 focus:ring-2 focus:ring-gray-500/25 focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={redeemSig.isRunning}
-              class="w-full rounded-lg bg-gray-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-500 disabled:bg-gray-800"
-            >
-              {redeemSig.isRunning ? 'Claiming...' : 'Claim Points'}
-            </button>
-          </Form>
+    <section
+      class="relative flex min-h-svh flex-col overflow-hidden p-6 pt-20"
+      style={{
+        '--lum-border-radius': '1.5rem',
+      }}
+    >
+      <div class="mx-auto w-full max-w-5xl space-y-8">
+        {/* Page Title */}
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="flex items-center gap-2 text-2xl font-bold text-gray-100">
+              <Coins class="h-6 w-6 text-gray-300" />
+              <span>Points Dashboard</span>
+            </h1>
+            <p class="text-xs text-gray-500">
+              Redeem codes, view rewarded ads, and spend your points on perks
+            </p>
+          </div>
+          <div class="rounded-2xl border border-gray-800 bg-gray-900 px-5 py-2.5 text-right">
+            <p class="text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
+              Your Balance
+            </p>
+            <p class="text-2xl font-black text-gray-300">
+              {Number(user.points).toLocaleString()}{' '}
+              <span class="text-xs font-semibold">pts</span>
+            </p>
+          </div>
         </div>
 
-        {/* Earn Points / Daily Ads */}
-        <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-2">
-          <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
-            <Gift class="h-5 w-5 text-emerald-500" />
-            <span>Earn Points</span>
-          </h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {/* Redeem Code */}
+          <div class="h-fit space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-1">
+            <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
+              <Ticket class="h-5 w-5 text-gray-500" />
+              <span>Redeem Code</span>
+            </h2>
 
-          {(toggleAdsSig.value || claimAdsSig.value) && (
-            <div
-              class={`rounded-lg border p-3 text-xs ${
-                toggleAdsSig.value?.success || claimAdsSig.value?.success
-                  ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
-                  : 'border-red-900/50 bg-red-950/40 text-red-400'
-              }`}
-            >
-              {toggleAdsSig.value?.message || claimAdsSig.value?.message}
-            </div>
-          )}
+            {redeemSig.value && (
+              <div
+                class={`rounded-lg border p-3 text-xs ${
+                  redeemSig.value.success
+                    ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
+                    : 'border-red-900/50 bg-red-950/40 text-red-400'
+                }`}
+              >
+                {redeemSig.value.message}
+              </div>
+            )}
 
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
-              <div>
-                <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
-                  <Tv class="h-4 w-4 text-gray-500" />
-                  <span>Rewarded Ads</span>
-                </h3>
-                <p class="mt-1 text-[10px] leading-relaxed text-gray-500">
-                  Support the community by enabling ads while browsing. In
-                  exchange, claim 50 points every 24 hours.
-                </p>
+            <Form action={redeemSig} class="space-y-3">
+              <input
+                type="text"
+                name="code"
+                required
+                placeholder="Enter promo code..."
+                class="block w-full rounded-lg border border-gray-800 bg-gray-950 px-3.5 py-2 text-sm text-gray-200 placeholder-gray-700 transition-all focus:border-gray-500 focus:ring-2 focus:ring-gray-500/25 focus:outline-none"
+              />
+              <button
+                type="submit"
+                disabled={redeemSig.isRunning}
+                class="w-full rounded-lg bg-gray-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-500 disabled:bg-gray-800"
+              >
+                {redeemSig.isRunning ? 'Claiming...' : 'Claim Points'}
+              </button>
+            </Form>
+          </div>
+
+          {/* Earn Points / Daily Ads */}
+          <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-2">
+            <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
+              <Gift class="h-5 w-5 text-emerald-500" />
+              <span>Earn Points</span>
+            </h2>
+
+            {(toggleAdsSig.value || claimAdsSig.value) && (
+              <div
+                class={`rounded-lg border p-3 text-xs ${
+                  toggleAdsSig.value?.success || claimAdsSig.value?.success
+                    ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
+                    : 'border-red-900/50 bg-red-950/40 text-red-400'
+                }`}
+              >
+                {toggleAdsSig.value?.message || claimAdsSig.value?.message}
+              </div>
+            )}
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
+                <div>
+                  <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+                    <Tv class="h-4 w-4 text-gray-500" />
+                    <span>Rewarded Ads</span>
+                  </h3>
+                  <p class="mt-1 text-[10px] leading-relaxed text-gray-500">
+                    Support the community by enabling ads while browsing. In
+                    exchange, claim 50 points every 24 hours.
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between pt-3">
+                  <span class="text-xs font-medium text-gray-400">
+                    Ads status:{' '}
+                    <span
+                      class={
+                        user.enabledAds === 1
+                          ? 'text-emerald-400'
+                          : 'text-red-400'
+                      }
+                    >
+                      {user.enabledAds === 1 ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </span>
+                  <Form action={toggleAdsSig}>
+                    <button
+                      type="submit"
+                      class="border-gray-850 rounded-md border bg-gray-900 px-3 py-1.5 text-[10px] font-bold text-gray-300 transition-all hover:bg-gray-800"
+                    >
+                      {user.enabledAds === 1 ? 'Disable Ads' : 'Enable Ads'}
+                    </button>
+                  </Form>
+                </div>
               </div>
 
-              <div class="flex items-center justify-between pt-3">
-                <span class="text-xs font-medium text-gray-400">
-                  Ads status:{' '}
-                  <span
-                    class={
-                      user.enabledAds === 1
-                        ? 'text-emerald-400'
-                        : 'text-red-400'
-                    }
-                  >
-                    {user.enabledAds === 1 ? 'Enabled' : 'Disabled'}
-                  </span>
-                </span>
-                <Form action={toggleAdsSig}>
+              <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
+                <div>
+                  <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+                    <CalendarCheck class="h-4 w-4 text-emerald-500" />
+                    <span>Daily Ad Claim</span>
+                  </h3>
+                  <p class="mt-1 text-[10px] leading-relaxed text-gray-500">
+                    Claim your free daily points. Make sure ads are enabled to
+                    activate this reward.
+                  </p>
+                </div>
+
+                <Form action={claimAdsSig} class="pt-3">
                   <button
                     type="submit"
-                    class="border-gray-850 rounded-md border bg-gray-900 px-3 py-1.5 text-[10px] font-bold text-gray-300 transition-all hover:bg-gray-800"
+                    disabled={
+                      user.enabledAds === 0 ||
+                      hasClaimedToday ||
+                      claimAdsSig.isRunning
+                    }
+                    class="w-full rounded-lg bg-emerald-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-500 disabled:bg-gray-800 disabled:text-gray-500"
                   >
-                    {user.enabledAds === 1 ? 'Disable Ads' : 'Enable Ads'}
+                    {hasClaimedToday
+                      ? 'Already Claimed Today'
+                      : 'Claim 50 Points'}
                   </button>
                 </Form>
               </div>
             </div>
-
-            <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
-              <div>
-                <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
-                  <CalendarCheck class="h-4 w-4 text-emerald-500" />
-                  <span>Daily Ad Claim</span>
-                </h3>
-                <p class="mt-1 text-[10px] leading-relaxed text-gray-500">
-                  Claim your free daily points. Make sure ads are enabled to
-                  activate this reward.
-                </p>
-              </div>
-
-              <Form action={claimAdsSig} class="pt-3">
-                <button
-                  type="submit"
-                  disabled={
-                    user.enabledAds === 0 ||
-                    hasClaimedToday ||
-                    claimAdsSig.isRunning
-                  }
-                  class="w-full rounded-lg bg-emerald-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-500 disabled:bg-gray-800 disabled:text-gray-500"
-                >
-                  {hasClaimedToday
-                    ? 'Already Claimed Today'
-                    : 'Claim 50 Points'}
-                </button>
-              </Form>
-            </div>
           </div>
         </div>
-      </div>
 
-      {/* Rewards Catalog */}
-      <section class="space-y-4">
-        <h2 class="flex items-center gap-2 border-b border-gray-900 pb-2.5 text-lg font-bold text-gray-200">
-          <ShoppingBag class="h-5 w-5 text-gray-300" />
-          <span>Use Points / Claim Rewards</span>
-        </h2>
-
-        {claimRewardSig.value && (
-          <div
-            class={`rounded-lg border p-4 text-sm ${
-              claimRewardSig.value.success
-                ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
-                : 'border-red-900/50 bg-red-950/40 text-red-400'
-            }`}
-          >
-            {claimRewardSig.value.message}
-          </div>
-        )}
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {rewards.map((reward, idx) => (
-            <div
-              key={idx}
-              class="flex flex-col justify-between space-y-4 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 shadow-md"
-            >
-              <div class="space-y-1">
-                <div class="flex items-start justify-between">
-                  <h3 class="font-bold text-gray-100">{reward.name}</h3>
-                  <span class="border-gray-850 rounded-full border bg-gray-950 px-2.5 py-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                    {reward.type}
-                  </span>
-                </div>
-                <p class="text-sm font-semibold text-gray-300">
-                  {reward.price.toLocaleString()} points
-                </p>
-                <p class="pt-1.5 text-xs leading-relaxed text-gray-500">
-                  {reward.requiresReview === 0
-                    ? 'Generates an automatic promo code instantly upon purchase.'
-                    : 'Requires administrative review before completion.'}
-                </p>
-              </div>
-
-              <Form action={claimRewardSig} class="space-y-3">
-                <input type="hidden" name="rewardCode" value={reward.code} />
-
-                {reward.inputPrompt && (
-                  <input
-                    type="text"
-                    name="input"
-                    required
-                    placeholder={reward.inputPrompt}
-                    class="block w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 placeholder-gray-600 transition-all focus:border-gray-500 focus:ring-2 focus:ring-gray-500/25 focus:outline-none"
-                  />
-                )}
-
-                <button
-                  type="submit"
-                  disabled={
-                    user.points < reward.price || claimRewardSig.isRunning
-                  }
-                  class="w-full rounded-lg bg-gray-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-500 disabled:bg-gray-800 disabled:text-gray-500"
-                >
-                  Claim Reward
-                </button>
-              </Form>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* History */}
-      {history.length > 0 && (
+        {/* Rewards Catalog */}
         <section class="space-y-4">
           <h2 class="flex items-center gap-2 border-b border-gray-900 pb-2.5 text-lg font-bold text-gray-200">
-            <History class="h-5 w-5 text-gray-400" />
-            <span>Your Claim History</span>
+            <ShoppingBag class="h-5 w-5 text-gray-300" />
+            <span>Use Points / Claim Rewards</span>
           </h2>
 
-          <div class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30">
-            <div class="overflow-x-auto">
-              <table class="w-full border-collapse text-left">
-                <thead>
-                  <tr class="border-b border-gray-900 bg-gray-950/40 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                    <th class="px-6 py-3">Reward Type</th>
-                    <th class="px-6 py-3">Input Info</th>
-                    <th class="px-6 py-3">Status / Code</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-900 text-sm text-gray-300">
-                  {history.map((req, idx) => (
-                    <tr
-                      key={idx}
-                      class="transition-colors hover:bg-gray-900/10"
-                    >
-                      <td class="px-6 py-4 font-semibold">{req.type}</td>
-                      <td class="max-w-xs truncate px-6 py-4 font-mono text-xs text-gray-500">
-                        {req.input || '-'}
-                      </td>
-                      <td class="px-6 py-4">
-                        <span
-                          class={`inline-block rounded-lg px-3 py-1 text-xs font-medium ${
-                            req.status.startsWith('Coupon:')
-                              ? 'border border-emerald-900/40 bg-emerald-950/30 font-mono text-emerald-400 select-all'
-                              : 'border border-gray-900/40 bg-gray-950/30 text-gray-200'
-                          }`}
-                        >
-                          {req.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {claimRewardSig.value && (
+            <div
+              class={`rounded-lg border p-4 text-sm ${
+                claimRewardSig.value.success
+                  ? 'border-emerald-900/50 bg-emerald-950/40 text-emerald-400'
+                  : 'border-red-900/50 bg-red-950/40 text-red-400'
+              }`}
+            >
+              {claimRewardSig.value.message}
             </div>
+          )}
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {rewards.map((reward, idx) => (
+              <div
+                key={idx}
+                class="flex flex-col justify-between space-y-4 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 shadow-md"
+              >
+                <div class="space-y-1">
+                  <div class="flex items-start justify-between">
+                    <h3 class="font-bold text-gray-100">{reward.name}</h3>
+                    <span class="border-gray-850 rounded-full border bg-gray-950 px-2.5 py-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                      {reward.type}
+                    </span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-300">
+                    {reward.price.toLocaleString()} points
+                  </p>
+                  <p class="pt-1.5 text-xs leading-relaxed text-gray-500">
+                    {reward.requiresReview === 0
+                      ? 'Generates an automatic promo code instantly upon purchase.'
+                      : 'Requires administrative review before completion.'}
+                  </p>
+                </div>
+
+                <Form action={claimRewardSig} class="space-y-3">
+                  <input type="hidden" name="rewardCode" value={reward.code} />
+
+                  {reward.inputPrompt && (
+                    <input
+                      type="text"
+                      name="input"
+                      required
+                      placeholder={reward.inputPrompt}
+                      class="block w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 placeholder-gray-600 transition-all focus:border-gray-500 focus:ring-2 focus:ring-gray-500/25 focus:outline-none"
+                    />
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={
+                      user.points < reward.price || claimRewardSig.isRunning
+                    }
+                    class="w-full rounded-lg bg-gray-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-500 disabled:bg-gray-800 disabled:text-gray-500"
+                  >
+                    Claim Reward
+                  </button>
+                </Form>
+              </div>
+            ))}
           </div>
         </section>
-      )}
-    </div>
+
+        {/* History */}
+        {history.length > 0 && (
+          <section class="space-y-4">
+            <h2 class="flex items-center gap-2 border-b border-gray-900 pb-2.5 text-lg font-bold text-gray-200">
+              <History class="h-5 w-5 text-gray-400" />
+              <span>Your Claim History</span>
+            </h2>
+
+            <div class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30">
+              <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left">
+                  <thead>
+                    <tr class="border-b border-gray-900 bg-gray-950/40 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                      <th class="px-6 py-3">Reward Type</th>
+                      <th class="px-6 py-3">Input Info</th>
+                      <th class="px-6 py-3">Status / Code</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-900 text-sm text-gray-300">
+                    {history.map((req, idx) => (
+                      <tr
+                        key={idx}
+                        class="transition-colors hover:bg-gray-900/10"
+                      >
+                        <td class="px-6 py-4 font-semibold">{req.type}</td>
+                        <td class="max-w-xs truncate px-6 py-4 font-mono text-xs text-gray-500">
+                          {req.input || '-'}
+                        </td>
+                        <td class="px-6 py-4">
+                          <span
+                            class={`inline-block rounded-lg px-3 py-1 text-xs font-medium ${
+                              req.status.startsWith('Coupon:')
+                                ? 'border border-emerald-900/40 bg-emerald-950/30 font-mono text-emerald-400 select-all'
+                                : 'border border-gray-900/40 bg-gray-950/30 text-gray-200'
+                            }`}
+                          >
+                            {req.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
+    </section>
   );
 });
 

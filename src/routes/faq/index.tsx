@@ -40,74 +40,81 @@ export default component$(() => {
   const activeIdx = useSignal<number | null>(0);
 
   return (
-    <div class="mx-auto max-w-4xl space-y-8">
-      <div class="space-y-2 text-center">
-        <h1 class="text-3xl font-extrabold tracking-tight text-gray-100">
-          Frequently Asked{' '}
-          <span class="bg-gradient-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
-            Questions
-          </span>
-        </h1>
-        <p class="text-sm text-gray-400">
-          Everything you need to know about the Dimensions plugin, custom portal
-          creation, and account integrations.
-        </p>
-      </div>
+    <section
+      class="relative flex min-h-svh flex-col items-center justify-center overflow-hidden p-4 pt-20"
+      style={{
+        '--lum-border-radius': '1.5rem',
+      }}
+    >
+      <div class="mx-auto w-full max-w-4xl space-y-8">
+        <div class="space-y-2 text-center">
+          <h1 class="text-3xl font-extrabold tracking-tight text-gray-100">
+            Frequently Asked{' '}
+            <span class="bg-gradient-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
+              Questions
+            </span>
+          </h1>
+          <p class="text-sm text-gray-400">
+            Everything you need to know about the Dimensions plugin, custom
+            portal creation, and account integrations.
+          </p>
+        </div>
 
-      <div class="space-y-4">
-        {faqs.map((faq, idx) => {
-          const isOpen = activeIdx.value === idx;
-          return (
-            <div
-              key={idx}
-              class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30 transition-all duration-200"
-            >
-              <button
-                onClick$={() => (activeIdx.value = isOpen ? null : idx)}
-                class="flex w-full items-center justify-between px-6 py-4 text-left font-semibold text-gray-200 transition-colors hover:bg-gray-900/40 hover:text-white focus:outline-none"
-              >
-                <span>{faq.question}</span>
-                <ChevronDown
-                  class={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
-                    isOpen ? 'rotate-180 text-gray-500' : 'rotate-0'
-                  }`}
-                />
-              </button>
-
+        <div class="space-y-4">
+          {faqs.map((faq, idx) => {
+            const isOpen = activeIdx.value === idx;
+            return (
               <div
-                class={`overflow-hidden transition-all duration-350 ease-in-out ${
-                  isOpen ? 'max-h-48 border-t border-gray-900/50' : 'max-h-0'
-                }`}
+                key={idx}
+                class="overflow-hidden rounded-2xl border border-gray-900 bg-gray-900/30 transition-all duration-200"
               >
-                <div class="bg-gray-950/20 p-6 text-sm leading-relaxed text-gray-400">
-                  {faq.answer}
+                <button
+                  onClick$={() => (activeIdx.value = isOpen ? null : idx)}
+                  class="flex w-full items-center justify-between px-6 py-4 text-left font-semibold text-gray-200 transition-colors hover:bg-gray-900/40 hover:text-white focus:outline-none"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown
+                    class={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 text-gray-500' : 'rotate-0'
+                    }`}
+                  />
+                </button>
+
+                <div
+                  class={`overflow-hidden transition-all duration-350 ease-in-out ${
+                    isOpen ? 'max-h-48 border-t border-gray-900/50' : 'max-h-0'
+                  }`}
+                >
+                  <div class="bg-gray-950/20 p-6 text-sm leading-relaxed text-gray-400">
+                    {faq.answer}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      {/* Discord Help CTA */}
-      <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 text-center">
-        <h3 class="font-bold text-gray-200">
-          Still need help or have a custom feature request?
-        </h3>
-        <p class="mx-auto max-w-lg text-xs leading-relaxed text-gray-400">
-          Join our active Discord community! Our support channels are open 24/7,
-          and you can chat directly with developers, share portal designs, or
-          get help.
-        </p>
-        <a
-          href="https://discord.com/invite/eYXf5E8KX6"
-          target="_blank"
-          class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-indigo-500"
-        >
-          <SiDiscord class="h-4 w-4" />
-          <span>Join our Discord Server</span>
-        </a>
+        {/* Discord Help CTA */}
+        <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 text-center">
+          <h3 class="font-bold text-gray-200">
+            Still need help or have a custom feature request?
+          </h3>
+          <p class="mx-auto max-w-lg text-xs leading-relaxed text-gray-400">
+            Join our active Discord community! Our support channels are open
+            24/7, and you can chat directly with developers, share portal
+            designs, or get help.
+          </p>
+          <a
+            href="https://discord.com/invite/eYXf5E8KX6"
+            target="_blank"
+            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg transition-all hover:from-blue-500 hover:to-indigo-500"
+          >
+            <SiDiscord class="h-4 w-4" />
+            <span>Join our Discord Server</span>
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
   );
 });
 

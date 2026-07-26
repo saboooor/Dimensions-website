@@ -1,14 +1,13 @@
 import { component$ } from '@qwik.dev/core';
-import { Link, useLocation } from '@qwik.dev/router';
+import { Form, Link, useLocation } from '@qwik.dev/router';
 import { Dropdown, Nav as LuminescentNav } from '@luminescent/ui-qwik';
 import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
 import Gem from 'lucide-icons-qwik/icons/Gem';
 import CircleHelp from 'lucide-icons-qwik/icons/CircleHelp';
-import UserIcon from 'lucide-icons-qwik/icons/User';
-import Sliders from 'lucide-icons-qwik/icons/Sliders';
 import LogOut from 'lucide-icons-qwik/icons/LogOut';
-import LogIn from 'lucide-icons-qwik/icons/LogIn';
 import type { User } from '~/util/db';
+import { useSession, useSignIn, useSignOut } from '~/routes/plugin@auth';
+import UserIcon from 'lucide-icons-qwik/icons/User';
 
 export interface NavProps {
   user?: User | null;
@@ -16,7 +15,9 @@ export interface NavProps {
 
 export const Nav = component$<NavProps>(({ user }) => {
   const loc = useLocation();
-  const isAdmin = user && user.id === '1';
+  const signIn = useSignIn();
+  const signOut = useSignOut();
+  const session = useSession();
 
   return (
     <LuminescentNav fixed floating colorClass="lum-grad-bg-nav-bg">
@@ -87,59 +88,59 @@ export const Nav = component$<NavProps>(({ user }) => {
         </Link>
       )}
 
-      {/* end slot: profile dropdown or login button (desktop) */}
-      {user ? (
+      {session.value && session.value.user && (
         <Dropdown
           align="right"
           q:slot="end"
-          class="lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
-          id="profile-dropdown"
+          class="lum-bg-transparent hover:lum-bg-nav-bg gap-1 p-2"
+          id="profile"
+          panelProps={{
+            class: 'lum-grad-bg-nav-bg',
+          }}
         >
-          <div
-            q:slot="dropdown"
-            class="text-lum-text flex items-center gap-2 font-bold"
+          <span q:slot="dropdown" class="text-lum-text flex items-center gap-2">
+            {session.value.user.image && (
+              <img
+                alt={session.value.user.name || 'User'}
+                src={session.value.user.image}
+                width={20}
+                height={20}
+                class="h-5 min-w-5 rounded-full!"
+              />
+            )}
+            {session.value.user?.name || 'User'}
+          </span>
+          <Link
+            href="/profile"
+            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1"
           >
-            <img
-              src={user.profileImage || '/assets/img/guest.png'}
-              alt="Profile"
-              width={20}
-              height={20}
-              class="h-5 w-5 rounded-full border border-gray-800 object-cover"
+            <UserIcon size={20} /> Profile
+          </Link>
+          <Form action={signOut}>
+            <input type="hidden" name="providerId" value="discord" />
+            <input
+              type="hidden"
+              name="options.redirectTo"
+              value={loc.url.pathname + loc.url.search}
             />
-            <span>{user.username}</span>
-          </div>
-          <Link
-            href={`/profile/${user.id}`}
-            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1 justify-start gap-2 text-gray-300"
-          >
-            <UserIcon class="text-sm" />
-            <span>Profile</span>
-          </Link>
-          {isAdmin && (
-            <Link
-              href="/admin-tools"
-              class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1 justify-start gap-2 text-gray-300"
-            >
-              <Sliders class="text-sm" />
-              <span>Admin Tools</span>
-            </Link>
-          )}
-          <Link
-            href="/logout"
-            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1 justify-start gap-2 text-red-400"
-          >
-            <LogOut class="text-sm" />
-            <span>Logout</span>
-          </Link>
+            <button class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-1">
+              <LogOut size={20} /> Logout
+            </button>
+          </Form>
         </Dropdown>
-      ) : (
-        <Link
-          q:slot="end"
-          href="/login"
-          class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
-        >
-          Login
-        </Link>
+      )}
+      {!session.value && (
+        <Form action={signIn} q:slot="end">
+          <input type="hidden" name="providerId" value="discord" />
+          <input
+            type="hidden"
+            name="options.redirectTo"
+            value={loc.url.pathname + loc.url.search}
+          />
+          <button class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg p-2">
+            Login
+          </button>
+        </Form>
       )}
 
       <Link
@@ -180,58 +181,6 @@ export const Nav = component$<NavProps>(({ user }) => {
         <CircleHelp class="h-4 w-4" />
         <span>F.A.Q</span>
       </Link>
-
-      {user ? (
-        <>
-          <div q:slot="mobile" class="mx-2 my-1 h-px bg-gray-800/60" />
-          <Link
-            q:slot="mobile"
-            href={`/profile/${user.id}`}
-            class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-              loc.url.pathname.startsWith('/profile')
-                ? 'text-gray-500'
-                : 'text-gray-400'
-            }`}
-          >
-            <UserIcon class="h-4 w-4" />
-            <span>Profile ({user.username})</span>
-          </Link>
-          {isAdmin && (
-            <Link
-              q:slot="mobile"
-              href="/admin-tools"
-              class={`lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 ${
-                loc.url.pathname.startsWith('/admin-tools')
-                  ? 'text-gray-500'
-                  : 'text-gray-400'
-              }`}
-            >
-              <Sliders class="h-4 w-4" />
-              <span>Admin Tools</span>
-            </Link>
-          )}
-          <Link
-            q:slot="mobile"
-            href="/logout"
-            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 text-red-400"
-          >
-            <LogOut class="h-4 w-4" />
-            <span>Logout</span>
-          </Link>
-        </>
-      ) : (
-        <>
-          <div q:slot="mobile" class="mx-2 my-1 h-px bg-gray-800/60" />
-          <Link
-            q:slot="mobile"
-            href="/login"
-            class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg justify-start gap-2 text-gray-300"
-          >
-            <LogIn class="h-4 w-4" />
-            <span>Login</span>
-          </Link>
-        </>
-      )}
     </LuminescentNav>
   );
 });

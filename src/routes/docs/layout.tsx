@@ -18,11 +18,6 @@ export const menuItemPriority: {
   [key: string]: number;
 } = {
   Overview: 1,
-  Panel: 2,
-  Games: 3,
-  'Non Profit': 4,
-  'Open Source': 5,
-  Rgbirdflop: 6,
 };
 
 export const getMarkdownItems = async () => {
