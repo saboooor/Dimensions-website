@@ -22,9 +22,9 @@ export const useAdminLoader = routeLoader$(async (requestEvent) => {
  * Action to handle coupon generation.
  */
 export const useGenerateCouponAction = routeAction$(
-  async (formData, requestEvent) => {
+  async (formData, _requestEvent) => {
     const { prefix, isSubscription, reward, maxUses, expireDate } = formData;
-    const db = getDB(requestEvent);
+    const db = getDB();
 
     // Generate a secure unique coupon code (matches the core original algorithm base-36 format)
     const randomPart = Math.random()

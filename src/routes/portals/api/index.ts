@@ -1,12 +1,13 @@
 import type { RequestHandler } from '@qwik.dev/router';
 import { eq, or, desc } from 'drizzle-orm';
 import { getDB, userPortals, users } from '../../../util/db';
-import { getSessionUserId, getSessionUser, isAdmin } from '../../../util/auth';
+import { getSessionUser, isAdmin } from '../../../util/auth';
+import { Session } from '@auth/qwik';
 
 export const onGet: RequestHandler = async (requestEvent) => {
-  const db = getDB(requestEvent);
-  const loggedInId = getSessionUserId(requestEvent);
-  const user = await getSessionUser(requestEvent);
+  const db = getDB();
+  const session = requestEvent.sharedMap.get('session') as Session;
+  const user = await getSessionUser(session.user?.id);
 
   // Read query parameters
   const page = parseInt(requestEvent.url.searchParams.get('page') || '1', 10);
@@ -21,7 +22,10 @@ export const onGet: RequestHandler = async (requestEvent) => {
   const queryWhere =
     isAdminUser && showAll
       ? undefined
-      : or(eq(userPortals.public, 1), eq(userPortals.maker, loggedInId || ''));
+      : or(
+          eq(userPortals.public, 1),
+          eq(userPortals.maker, session.user?.id || '')
+        );
 
   try {
     // Fetch portals
@@ -60,8 +64,8 @@ export const onGet: RequestHandler = async (requestEvent) => {
         img: p.img,
         public: p.public,
         likesCount: likesList.length,
-        isLiked: loggedInId
-          ? likesList.map(String).includes(loggedInId)
+        isLiked: session.user?.id
+          ? likesList.map(String).includes(session.user.id)
           : false,
       };
     });

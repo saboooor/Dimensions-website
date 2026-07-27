@@ -1,7 +1,9 @@
-import type { RequestEventCommon } from '@qwik.dev/router';
 import { getDB } from './db';
 import { users } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
+
+import type { RequestEventCommon } from '@qwik.dev/router';
+import type { Session } from '@auth/qwik';
 
 export interface UserSession {
   user?: {
@@ -12,17 +14,23 @@ export interface UserSession {
   };
 }
 
-export function getSessionUserId(
-  requestEvent: RequestEventCommon
-): string | null {
-  const session = requestEvent.sharedMap.get('session') as
-    | UserSession
-    | undefined;
-  return session?.user?.id ?? null;
-}
+export async function getSessionUser(
+  input?: string | RequestEventCommon | Session | null
+) {
+  if (!input) return null;
+  let userId: string | undefined;
 
-export async function getSessionUser(requestEvent: RequestEventCommon) {
-  const userId = getSessionUserId(requestEvent);
+  if (typeof input === 'string') {
+    userId = input;
+  } else if (typeof input === 'object') {
+    if ('sharedMap' in input && typeof input.sharedMap?.get === 'function') {
+      const session = input.sharedMap.get('session') as Session | null;
+      userId = session?.user?.id;
+    } else if ('user' in input) {
+      userId = input.user?.id;
+    }
+  }
+
   if (!userId) return null;
   const db = getDB();
   const user = await db.query.users.findFirst({
@@ -37,9 +45,4 @@ export function isAdmin(
   if (!user) return false;
   const rank = user.rank?.toLowerCase() ?? '';
   return rank === 'admin' || rank === 'owner';
-}
-
-export function logoutUser(requestEvent: RequestEventCommon): void {
-  requestEvent.cookie.delete('authjs.session-token', { path: '/' });
-  requestEvent.cookie.delete('__Secure-authjs.session-token', { path: '/' });
 }

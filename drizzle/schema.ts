@@ -4,6 +4,8 @@ import {
   text,
   primaryKey,
 } from 'drizzle-orm/sqlite-core';
+import type { AdapterAccountType } from '@auth/qwik/adapters';
+import { sql } from 'drizzle-orm';
 
 // ─── Auth.js Adapter Tables ──────────────────────────────────────────────────
 
@@ -11,18 +13,26 @@ import {
  * Core user table — aligned with Auth.js adapter expectations.
  * Domain-specific fields are appended after the Auth.js standard columns.
  */
-export const users = sqliteTable('users', {
+export const users = sqliteTable('user', {
   // Auth.js standard fields
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text('name'),
+  username: text('username').unique(),
   email: text('email').unique(),
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
 
+  // Timestamps
+  createdAt: integer('createdAt', { mode: 'timestamp_ms' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: integer('updatedAt', { mode: 'timestamp_ms' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+
   // Domain-specific fields
-  username: text('username').unique(),
   rank: text('rank').default('').notNull(),
   badges: text('badges').default('[]').notNull(), // JSON array of badge IDs
   points: integer('points').default(0).notNull(),
@@ -41,16 +51,16 @@ export const users = sqliteTable('users', {
 });
 
 /**
- * OAuth accounts — stores provider tokens (e.g. Discord).
+ * Account table — stores provider tokens (e.g. Discord).
  * Required by the Auth.js Drizzle adapter.
  */
 export const accounts = sqliteTable(
-  'accounts',
+  'account',
   {
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').notNull(),
+    type: text('type').$type<AdapterAccountType>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),
@@ -61,15 +71,17 @@ export const accounts = sqliteTable(
     id_token: text('id_token'),
     session_state: text('session_state'),
   },
-  (account) => [
-    primaryKey({ columns: [account.provider, account.providerAccountId] }),
-  ]
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
 );
 
 /**
- * Sessions — required by Auth.js Drizzle adapter (database strategy).
+ * Session table — required by Auth.js Drizzle adapter (database strategy).
  */
-export const sessions = sqliteTable('sessions', {
+export const sessions = sqliteTable('session', {
   sessionToken: text('sessionToken').primaryKey(),
   userId: text('userId')
     .notNull()
@@ -78,16 +90,20 @@ export const sessions = sqliteTable('sessions', {
 });
 
 /**
- * Verification tokens — used for email sign-in magic links (not currently used with Discord-only flow, but required by the adapter).
+ * VerificationToken table — required by Auth.js Drizzle adapter.
  */
 export const verificationTokens = sqliteTable(
-  'verificationTokens',
+  'verificationToken',
   {
     identifier: text('identifier').notNull(),
     token: text('token').notNull(),
     expires: integer('expires', { mode: 'timestamp_ms' }).notNull(),
   },
-  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })]
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
 );
 
 // ─── Domain Tables ────────────────────────────────────────────────────────────

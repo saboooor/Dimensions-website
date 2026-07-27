@@ -25,7 +25,8 @@ import Box from 'lucide-icons-qwik/icons/Box';
 import Maximize2 from 'lucide-icons-qwik/icons/Maximize2';
 
 import { getDB, userPortals } from '~/util/db';
-import { getSessionUserId, getSessionUser } from '~/util/auth';
+import { getSessionUser, isAdmin } from '~/util/auth';
+import { Session } from '@auth/qwik';
 import textureManifest from '~/lib/texture-manifest.json';
 import { Nav } from '~/components/Nav';
 import { ViewportCanvas } from './portal-editor';
@@ -37,9 +38,8 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
   const portalIdParam = requestEvent.url.searchParams.get('portal');
   const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
-  const db = getDB(requestEvent);
-  const userId = getSessionUserId(requestEvent);
-  const user = await getSessionUser(requestEvent);
+  const db = getDB();
+  const session = requestEvent.sharedMap.get('session') as Session;
 
   // Load registered addons
   const addons = await db.query.registeredAddons.findMany();
@@ -65,13 +65,14 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
     });
   }
 
+  const userId = session?.user?.id;
   const isLoggedIn = !!userId;
   const isOwner =
     portalId > 0 && portalRow && isLoggedIn && userId === portalRow.maker;
 
-  if (portalId > 0 && portalRow) {
-    const isAdmin = user && user.id === '1';
-    if (portalRow.public === 0 && !isOwner && !isAdmin) {
+  if (portalId > 0 && portalRow && portalRow.public === 0 && !isOwner) {
+    const user = await getSessionUser(session.user?.id);
+    if (!isAdmin(user)) {
       throw requestEvent.redirect(302, '/editor/portal/');
     }
   }
@@ -92,13 +93,13 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
  * Handler for portal editor POST requests (save, toggle public, delete).
  */
 export const onPost: RequestHandler = async (requestEvent) => {
-  const userId = getSessionUserId(requestEvent);
-  if (!userId) {
+  const session = requestEvent.sharedMap.get('session') as Session;
+  if (!session.user?.id) {
     requestEvent.send(401, 'Unauthorized');
     return;
   }
 
-  const db = getDB(requestEvent);
+  const db = getDB();
   const formData = await requestEvent.request.formData();
 
   if (formData.has('savePortal')) {
@@ -113,7 +114,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === userId) {
+      if (existing && existing.maker === session.user?.id) {
         await db
           .update(userPortals)
           .set({ data, portalID, img })
@@ -125,7 +126,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
             data,
             portalID,
             img,
-            maker: userId,
+            maker: session.user?.id,
             public: 0,
           })
           .returning({ id: userPortals.id });
@@ -138,7 +139,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
           data,
           portalID,
           img,
-          maker: userId,
+          maker: session.user?.id,
           public: 0,
         })
         .returning({ id: userPortals.id });
@@ -155,7 +156,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === userId) {
+      if (existing && existing.maker === session.user?.id) {
         const newPublic = existing.public === 1 ? 0 : 1;
         await db
           .update(userPortals)
@@ -173,7 +174,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === userId) {
+      if (existing && existing.maker === session.user?.id) {
         await db.delete(userPortals).where(eq(userPortals.id, portalId));
       }
     }

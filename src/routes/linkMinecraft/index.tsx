@@ -6,19 +6,20 @@ import UserIcon from 'lucide-icons-qwik/icons/User';
 import AlertCircle from 'lucide-icons-qwik/icons/AlertCircle';
 import CheckCircle2 from 'lucide-icons-qwik/icons/CheckCircle2';
 import { getDB, users } from '~/util/db';
-import { getSessionUserId } from '~/util/auth';
+import { Session } from '@auth/qwik';
 
 /**
  * Handle unlinking Minecraft account or check if already linked.
  */
 export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
-  const userId = getSessionUserId(requestEvent);
+  const session = requestEvent.sharedMap.get('session') as Session;
+  const userId = session?.user?.id;
   if (!userId) {
     throw requestEvent.redirect(302, '/login?error=auth_required');
   }
 
   const unlink = requestEvent.url.searchParams.get('unlink') === 'true';
-  const db = getDB(requestEvent);
+  const db = getDB();
 
   if (unlink) {
     // Clear minecraftAccount in the database
@@ -26,10 +27,7 @@ export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
       .update(users)
       .set({ minecraftAccount: '' })
       .where(eq(users.id, userId));
-    throw requestEvent.redirect(
-      302,
-      `/profile/${userId}?success=minecraft_unlinked`
-    );
+    throw requestEvent.redirect(302, '/profile?success=minecraft_unlinked');
   }
 
   const userRow = await db.query.users.findFirst({
@@ -47,13 +45,14 @@ export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
  */
 export const useLinkMinecraftAction = routeAction$(
   async (formData, requestEvent) => {
-    const userId = getSessionUserId(requestEvent);
+    const session = requestEvent.sharedMap.get('session') as Session;
+    const userId = session?.user?.id;
     if (!userId) {
       return { success: false, message: 'Authentication required.' };
     }
 
     const { username } = formData;
-    const db = getDB(requestEvent);
+    const db = getDB();
 
     try {
       // 1. Fetch UUID from Mojang API
@@ -87,7 +86,7 @@ export const useLinkMinecraftAction = routeAction$(
       return {
         success: true,
         message: `Successfully linked Minecraft account: ${profile.name}`,
-        redirectUrl: `/profile/${userId}?success=minecraft_linked`,
+        redirectUrl: '/profile?success=minecraft_linked',
       };
     } catch (err) {
       console.error('Minecraft linking failed', err);
@@ -107,14 +106,9 @@ export const useLinkMinecraftAction = routeAction$(
 );
 
 export default component$(() => {
-  const loaderSig = useLinkMinecraftLoader();
+  const _loaderSig = useLinkMinecraftLoader();
   const actionSig = useLinkMinecraftAction();
   const usernameVal = useSignal('');
-
-  // Handle redirect if success is returned in action
-  if (actionSig.value?.success && actionSig.value?.redirectUrl) {
-    // Server-side action redirect or client-side navigation
-  }
 
   return (
     <div class="flex min-h-[calc(100vh-8rem)] items-center justify-center p-4">
@@ -181,7 +175,7 @@ export default component$(() => {
 
           <div class="flex items-center gap-3">
             <a
-              href={`/profile/${loaderSig.value.userId}`}
+              href="/profile"
               class="border-gray-850 hover:bg-gray-850 w-1/3 rounded-xl border bg-gray-900 py-3 text-center text-xs font-bold text-gray-400 transition-all duration-200"
             >
               Cancel

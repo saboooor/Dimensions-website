@@ -1,26 +1,25 @@
 import { type RequestHandler } from '@qwik.dev/router';
 import { eq } from 'drizzle-orm';
 import { getDB, users } from '~/util/db';
-import { getSessionUserId } from '~/util/auth';
+import { Session } from '@auth/qwik';
 
 export const onGet: RequestHandler = async (requestEvent) => {
-  const code = requestEvent.url.searchParams.get('code');
-  const userId = getSessionUserId(requestEvent);
+  const { url, redirect, env, sharedMap } = requestEvent;
+  const code = url.searchParams.get('code');
+  const session = sharedMap.get('session') as Session;
+  const userId = session?.user?.id;
 
   if (!userId) {
-    throw requestEvent.redirect(302, '/login?error=auth_required');
+    throw redirect(302, '/login?error=auth_required');
   }
 
   if (!code) {
-    throw requestEvent.redirect(
-      302,
-      `/profile/${userId}?error=discord_no_code`
-    );
+    throw redirect(302, '/profile?error=discord_no_code');
   }
 
-  const clientId = requestEvent.env.get('DISCORD_CLIENT_ID') || '';
-  const clientSecret = requestEvent.env.get('DISCORD_CLIENT_SECRET') || '';
-  const redirectUri = requestEvent.env.get('DISCORD_REDIRECT_URI') || '';
+  const clientId = env.get('DISCORD_CLIENT_ID') || '';
+  const clientSecret = env.get('DISCORD_CLIENT_SECRET') || '';
+  const redirectUri = env.get('DISCORD_REDIRECT_URI') || '';
 
   try {
     // 1. Exchange code for token
@@ -63,7 +62,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
     const discordId = discordUser.id;
 
     // 3. Update user's discord account in database
-    const db = getDB(requestEvent);
+    const db = getDB();
     await db
       .update(users)
       .set({
@@ -71,15 +70,9 @@ export const onGet: RequestHandler = async (requestEvent) => {
       })
       .where(eq(users.id, userId));
 
-    throw requestEvent.redirect(
-      302,
-      `/profile/${userId}?success=discord_linked`
-    );
+    throw redirect(302, '/profile?success=discord_linked');
   } catch (err) {
     console.error('Discord OAuth failed', err);
-    throw requestEvent.redirect(
-      302,
-      `/profile/${userId}?error=discord_link_failed`
-    );
+    throw redirect(302, '/profile?error=discord_link_failed');
   }
 };

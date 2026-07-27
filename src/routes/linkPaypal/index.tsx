@@ -6,10 +6,11 @@ import Receipt from 'lucide-icons-qwik/icons/Receipt';
 import AlertCircle from 'lucide-icons-qwik/icons/AlertCircle';
 import CheckCircle2 from 'lucide-icons-qwik/icons/CheckCircle2';
 import { getDB, users } from '~/util/db';
-import { getSessionUserId } from '~/util/auth';
+import { Session } from '@auth/qwik';
 
 export const useLinkPaypalLoader = routeLoader$(async (requestEvent) => {
-  const userId = getSessionUserId(requestEvent);
+  const session = requestEvent.sharedMap.get('session') as Session;
+  const userId = session?.user?.id;
   if (!userId) {
     throw requestEvent.redirect(302, '/login?error=auth_required');
   }
@@ -22,7 +23,7 @@ export const useLinkPaypalLoader = routeLoader$(async (requestEvent) => {
 });
 
 async function dbQueryUser(requestEvent: any, userId: string) {
-  const db = getDB(requestEvent);
+  const db = getDB();
   return await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
@@ -30,13 +31,14 @@ async function dbQueryUser(requestEvent: any, userId: string) {
 
 export const useLinkPaypalAction = routeAction$(
   async (formData, requestEvent) => {
-    const userId = getSessionUserId(requestEvent);
+    const session = requestEvent.sharedMap.get('session') as Session;
+    const userId = session?.user?.id;
     if (!userId) {
       return { success: false, message: 'Authentication required.' };
     }
 
     const { transactionId } = formData;
-    const db = getDB(requestEvent);
+    const db = getDB();
 
     // 1. Check if this transaction ID has already been verified by another user
     const existingUser = await db.query.users.findFirst({
@@ -65,7 +67,7 @@ export const useLinkPaypalAction = routeAction$(
         success: true,
         message:
           'Successfully verified purchase (Bypassed: Credentials not set).',
-        redirectUrl: `/profile/${userId}?success=paypal_linked`,
+        redirectUrl: '/profile?success=paypal_linked',
       };
     }
 
@@ -147,7 +149,7 @@ export const useLinkPaypalAction = routeAction$(
         success: true,
         message:
           'Successfully verified your plugin purchase! Thank you for your support.',
-        redirectUrl: `/profile/${userId}?success=paypal_linked`,
+        redirectUrl: '/profile?success=paypal_linked',
       };
     } catch (err) {
       console.error('PayPal verification failed', err);
@@ -191,7 +193,7 @@ async function upgradeUserToSupporter(
 }
 
 export default component$(() => {
-  const loaderSig = useLinkPaypalLoader();
+  const _loaderSig = useLinkPaypalLoader();
   const actionSig = useLinkPaypalAction();
   const txIdVal = useSignal('');
 
@@ -261,7 +263,7 @@ export default component$(() => {
 
           <div class="flex items-center gap-3">
             <a
-              href={`/profile/${loaderSig.value.userId}`}
+              href="/profile"
               class="border-gray-850 hover:bg-gray-850 w-1/3 rounded-xl border bg-gray-900 py-3 text-center text-xs font-bold text-gray-400 transition-all duration-200"
             >
               Cancel

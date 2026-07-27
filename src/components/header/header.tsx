@@ -98,7 +98,7 @@ export default component$<HeaderProps>(({ user, sidebarOpen }) => {
                   )}
 
                   <a
-                    href={`/profile/${user.id}`}
+                    href="/profile"
                     onClick$={() => (dropdownOpen.value = false)}
                     class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
                   >

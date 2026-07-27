@@ -15,7 +15,7 @@ import { eq } from 'drizzle-orm';
 const tempsecret = Math.random().toString(36).slice(2);
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
-  (event) => {
+  (event: any) => {
     let secret = event?.platform?.env?.AUTH_SECRET || process.env.AUTH_SECRET;
     if (!secret) {
       console.error('AUTH_SECRET is not set, using a temporary secret');
@@ -26,23 +26,26 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
     return {
       providers: [
         Discord({
-          profile(profile) {
-            if (profile.avatar === null) {
+          profile(profile: Record<string, any>) {
+            let imageUrl: string;
+            if (!profile.avatar) {
               const defaultAvatarNumber =
                 profile.discriminator === '0'
-                  ? Number(BigInt(profile.id) >> BigInt(22)) % 6
-                  : parseInt(profile.discriminator) % 5;
-              profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
+                  ? Number(BigInt(String(profile.id)) >> BigInt(22)) % 6
+                  : parseInt(String(profile.discriminator || '0'), 10) % 5;
+              imageUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
             } else {
-              const format = profile.avatar.startsWith('a_') ? 'gif' : 'png';
-              profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
+              const format = String(profile.avatar).startsWith('a_')
+                ? 'gif'
+                : 'png';
+              imageUrl = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
             }
             return {
-              id: profile.id,
-              name: profile.global_name ?? profile.username,
-              username: profile.username,
-              email: profile.email,
-              image: profile.image_url,
+              id: String(profile.id),
+              name: String(profile.global_name ?? profile.username ?? ''),
+              username: String(profile.username ?? ''),
+              email: String(profile.email ?? ''),
+              image: imageUrl,
             };
           },
         }),
@@ -60,10 +63,11 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
         async signIn({ user, account, profile }) {
           if (account?.provider === 'discord' && profile) {
             try {
-              if (profile.avatar && user.id) {
-                const avatarHash = (profile as any).avatar;
-                const format = avatarHash?.startsWith('a_') ? 'gif' : 'png';
-                const newImageUrl = `https://cdn.discordapp.com/avatars/${(profile as any).id}/${avatarHash}.${format}`;
+              const p = profile as Record<string, any>;
+              if (p.avatar && user.id) {
+                const avatarHash = String(p.avatar);
+                const format = avatarHash.startsWith('a_') ? 'gif' : 'png';
+                const newImageUrl = `https://cdn.discordapp.com/avatars/${p.id}/${avatarHash}.${format}`;
                 user.image = newImageUrl;
 
                 await db

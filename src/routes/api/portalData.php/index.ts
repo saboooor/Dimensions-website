@@ -34,7 +34,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
   const rawUuid = requestEvent.url.searchParams.get('all') || '';
   const uuid = rawUuid.replace(/-/g, '').toLowerCase();
 
-  const db = getDB(requestEvent);
+  const db = getDB();
 
   // 1. Find user by Minecraft UUID (with or without dashes)
   let userRow = null;
