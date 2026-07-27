@@ -17,8 +17,8 @@ export const onGet: RequestHandler = async (requestEvent) => {
     throw redirect(302, '/profile?error=discord_no_code');
   }
 
-  const clientId = env.get('DISCORD_CLIENT_ID') || '';
-  const clientSecret = env.get('DISCORD_CLIENT_SECRET') || '';
+  const clientId = env.get('AUTH_DISCORD_ID') || '';
+  const clientSecret = env.get('AUTH_DISCORD_SECRET') || '';
   const redirectUri = env.get('DISCORD_REDIRECT_URI') || '';
 
   try {
