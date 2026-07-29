@@ -85,7 +85,7 @@ export class Viewport {
       if (!this.isDragging) return;
       const dx = e.clientX - this.lastMouseX;
       const dy = e.clientY - this.lastMouseY;
-      this.cameraAngleY += dx * 0.008;
+      this.cameraAngleY -= dx * 0.008;
       this.cameraAngleX = Utils.clamp(
         this.cameraAngleX + dy * 0.008,
         -1.3,
@@ -275,6 +275,7 @@ export class Viewport {
       map: frameTex,
       roughness: 0.6,
       metalness: 0.1,
+      side: THREE.FrontSide,
     });
 
     const insideMaterial = new THREE.MeshStandardMaterial({
@@ -282,15 +283,52 @@ export class Viewport {
       roughness: 0.2,
       transparent: true,
       opacity: 0.85,
+      side: THREE.FrontSide,
+      depthWrite: false,
+      alphaTest: 0.05,
     });
+
+    const invisibleMaterial = new THREE.MeshBasicMaterial({
+      visible: false,
+    });
+
+    const isFrameBlock = (x: number, y: number) =>
+      x === 0 || x === pw - 1 || y === 0 || y === ph - 1;
 
     for (let x = 0; x < pw; x++) {
       for (let y = 0; y < ph; y++) {
-        const isFrame = x === 0 || x === pw - 1 || y === 0 || y === ph - 1;
-        const mesh = new THREE.Mesh(
-          boxGeo,
-          isFrame ? frameMaterial : insideMaterial
-        );
+        const isFrame = isFrameBlock(x, y);
+
+        let materials: THREE.Material[];
+
+        if (isFrame) {
+          // Cull internal faces between adjacent frame blocks
+          const hasFrameRight = x + 1 < pw && isFrameBlock(x + 1, y);
+          const hasFrameLeft = x - 1 >= 0 && isFrameBlock(x - 1, y);
+          const hasFrameTop = y + 1 < ph && isFrameBlock(x, y + 1);
+          const hasFrameBottom = y - 1 >= 0 && isFrameBlock(x, y - 1);
+
+          materials = [
+            hasFrameRight ? invisibleMaterial : frameMaterial, // +X
+            hasFrameLeft ? invisibleMaterial : frameMaterial, // -X
+            hasFrameTop ? invisibleMaterial : frameMaterial, // +Y
+            hasFrameBottom ? invisibleMaterial : frameMaterial, // -Y
+            frameMaterial, // +Z (Front)
+            frameMaterial, // -Z (Back)
+          ];
+        } else {
+          // Inside portal block: cull all 4 internal side faces, only render Front (+Z) & Back (-Z)
+          materials = [
+            invisibleMaterial, // +X
+            invisibleMaterial, // -X
+            invisibleMaterial, // +Y
+            invisibleMaterial, // -Y
+            insideMaterial, // +Z (Front)
+            insideMaterial, // -Z (Back)
+          ];
+        }
+
+        const mesh = new THREE.Mesh(boxGeo, materials);
         mesh.position.set(x - pw / 2 + 0.5, y - ph / 2 + 0.5, 0);
         this.portalGroup.add(mesh);
       }

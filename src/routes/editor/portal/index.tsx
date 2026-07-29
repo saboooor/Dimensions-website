@@ -6,6 +6,7 @@ import {
   useVisibleTask$,
 } from '@qwik.dev/core';
 import Accordion, { openItemsContext } from '~/components/Elements/Accordion';
+import { ButtonContainer } from '~/components/Elements/ButtonContainer';
 import { routeLoader$, type RequestHandler } from '@qwik.dev/router';
 import { eq } from 'drizzle-orm';
 import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
@@ -237,7 +238,7 @@ export default component$(() => {
         {/* Editor Control Bar via Nav.tsx component */}
         <Nav>
           <div q:slot="icon">
-            <Grid3x3 class="h-4 w-4" />
+            <Grid3x3 size={16} />
           </div>
 
           <Label for="portalID" label="Portal ID">
@@ -259,20 +260,20 @@ export default component$(() => {
               title="Undo"
               disabled
             >
-              <RotateCcw class="h-4 w-4" />
+              <RotateCcw size={16} />
             </button>
             <button
               class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
               title="Redo"
               disabled
             >
-              <RotateCw class="h-4 w-4" />
+              <RotateCw size={16} />
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
 
             {loaderSig.value.isLoggedIn ? (
               <button class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-gray-600 to-gray-500 px-4 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all hover:from-gray-500 hover:to-gray-400">
-                <CloudUpload class="h-4 w-4" />
+                <CloudUpload size={16} />
                 <span>{loaderSig.value.saveLabel}</span>
               </button>
             ) : (
@@ -281,33 +282,33 @@ export default component$(() => {
                 disabled
                 title="Log in to save"
               >
-                <Lock class="h-4 w-4" />
+                <Lock size={16} />
                 <span>Save</span>
               </button>
             )}
 
             <button class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
-              <Download class="h-4 w-4" />
+              <Download size={16} />
               <span>Download</span>
             </button>
             <button
               class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               title="Copy YAML"
             >
-              <Clipboard class="h-4 w-4" />
+              <Clipboard size={16} />
             </button>
 
             {loaderSig.value.isOwner && (
               <>
                 <div class="mx-1 h-6 w-px bg-gray-800"></div>
                 <button class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900">
-                  <Eye class="h-4 w-4" />
+                  <Eye size={16} />
                   <span>
                     {loaderSig.value.portalPublic ? 'Private' : 'Public'}
                   </span>
                 </button>
                 <button class="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-red-900/40 bg-red-950/40 px-4 text-xs font-bold tracking-wider text-red-400 uppercase transition-all hover:border-red-800 hover:bg-red-900/20">
-                  <Trash2 class="h-4 w-4" />
+                  <Trash2 size={16} />
                   <span>Delete</span>
                 </button>
               </>
@@ -320,7 +321,7 @@ export default component$(() => {
               title="Wiki"
               rel="noreferrer"
             >
-              <BookOpen class="h-4 w-4" />
+              <BookOpen size={16} />
             </a>
           </div>
         </Nav>
@@ -328,45 +329,38 @@ export default component$(() => {
         {/* Workspace Grid */}
         <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL */}
-          <aside class="flex h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[700px]">
+          <aside class="lum-card flex h-[600px] flex-col overflow-hidden p-0 lg:col-span-4 lg:h-[700px]">
             {/* Tabs */}
-            <div class="flex border-b border-gray-800/80 bg-black/20">
-              <button
-                class={
-                  'flex-1 cursor-pointer border-b-2 py-3 text-xs font-bold tracking-wider uppercase transition-all ' +
-                  (store.activeTab === 'design'
-                    ? 'border-gray-400 bg-gray-900/40 text-white'
-                    : 'border-transparent text-gray-400 hover:bg-gray-900/20 hover:text-gray-200')
-                }
-                onClick$={() => (store.activeTab = 'design')}
-              >
-                <Palette class="me-1 inline-block h-3.5 w-3.5" />
-                Design
-              </button>
-              <button
-                class={
-                  'flex-1 cursor-pointer border-b-2 py-3 text-xs font-bold tracking-wider uppercase transition-all ' +
-                  (store.activeTab === 'settings'
-                    ? 'border-gray-400 bg-gray-900/40 text-white'
-                    : 'border-transparent text-gray-400 hover:bg-gray-900/20 hover:text-gray-200')
-                }
-                onClick$={() => (store.activeTab = 'settings')}
-              >
-                <Sliders class="me-1 inline-block h-3.5 w-3.5" />
-                Settings
-              </button>
-              <button
-                class={
-                  'flex-1 cursor-pointer border-b-2 py-3 text-xs font-bold tracking-wider uppercase transition-all ' +
-                  (store.activeTab === 'addons'
-                    ? 'border-gray-400 bg-gray-900/40 text-white'
-                    : 'border-transparent text-gray-400 hover:bg-gray-900/20 hover:text-gray-200')
-                }
-                onClick$={() => (store.activeTab = 'addons')}
-              >
-                <Puzzle class="me-1 inline-block h-3.5 w-3.5" />
-                Addons
-              </button>
+            <div class="p-3">
+              <ButtonContainer class="[&>button]:lum-btn-p-1! [&>button]:justify-center">
+                <button
+                  class={{
+                    'lum-grad-bg-blue!': store.activeTab === 'design',
+                  }}
+                  onClick$={() => (store.activeTab = 'design')}
+                >
+                  <Palette size={14} />
+                  Design
+                </button>
+                <button
+                  class={{
+                    'lum-grad-bg-blue!': store.activeTab === 'settings',
+                  }}
+                  onClick$={() => (store.activeTab = 'settings')}
+                >
+                  <Sliders size={14} />
+                  Settings
+                </button>
+                <button
+                  class={{
+                    'lum-grad-bg-blue!': store.activeTab === 'addons',
+                  }}
+                  onClick$={() => (store.activeTab = 'addons')}
+                >
+                  <Puzzle size={14} />
+                  Addons
+                </button>
+              </ButtonContainer>
             </div>
 
             {/* Panel Body */}
@@ -378,7 +372,7 @@ export default component$(() => {
                   <div class="flex flex-col gap-2">
                     <Accordion sectionName="frame" class="w-full">
                       <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
-                        <Boxes class="h-4 w-4 text-gray-400" />
+                        <Boxes size={16} />
                         Frame Block
                       </span>
                     </Accordion>
@@ -436,7 +430,7 @@ export default component$(() => {
                   <div class="flex flex-col gap-2">
                     <Accordion sectionName="portal" class="w-full">
                       <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
-                        <Box class="h-4 w-4 text-gray-400" />
+                        <Box size={16} />
                         Portal Inner Block
                       </span>
                     </Accordion>
@@ -494,7 +488,7 @@ export default component$(() => {
                   <div class="flex flex-col gap-2">
                     <Accordion sectionName="size" class="w-full">
                       <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
-                        <Maximize2 class="h-4 w-4 text-gray-400" />
+                        <Maximize2 size={16} />
                         Dimensions
                       </span>
                     </Accordion>
@@ -533,7 +527,7 @@ export default component$(() => {
               {/* Settings Tab */}
               {store.activeTab === 'settings' && (
                 <div class="flex flex-col gap-4">
-                  <div class="flex flex-col gap-3 bg-gray-900/30 p-4">
+                  <div class="lum-card flex flex-col gap-3 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       General Settings
                     </div>
@@ -561,10 +555,8 @@ export default component$(() => {
                       <div
                         key={addon.name}
                         class={
-                          'flex flex-col gap-2 rounded-xl border p-4 transition-all duration-150 ' +
-                          (addon.enabled
-                            ? 'border-gray-700 bg-gray-900/60 shadow-sm'
-                            : 'border-gray-800/80 bg-gray-950/40 opacity-75 hover:border-gray-700')
+                          'lum-card flex flex-col gap-2 p-4 transition-all duration-150 ' +
+                          (!addon.enabled ? 'opacity-75' : '')
                         }
                       >
                         <div class="flex items-center justify-between gap-2">
@@ -593,7 +585,7 @@ export default component$(() => {
 
           {/* CENTER PANEL: 2D Canvas Viewport */}
           <div class="flex flex-col gap-4 lg:col-span-8">
-            <div class="relative flex h-[500px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[700px]">
+            <div class="lum-card relative flex h-[500px] w-full flex-col justify-between overflow-hidden p-0 lg:h-[700px]">
               <canvas
                 ref={canvasRef}
                 id="viewport"

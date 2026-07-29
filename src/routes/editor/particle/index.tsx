@@ -217,7 +217,7 @@ export default component$(() => {
         {/* Editor Control Bar via Nav.tsx component */}
         <Nav>
           <div q:slot="icon">
-            <Sparkles class="h-4 w-4" />
+            <Sparkles size={16} />
           </div>
 
           <Label for="packName" label="Pack Name">
@@ -240,7 +240,7 @@ export default component$(() => {
               disabled={store.historyIndex <= 0}
               onClick$={handleUndo}
             >
-              <RotateCcw class="h-4 w-4" />
+              <RotateCcw size={16} />
             </button>
             <button
               class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white disabled:pointer-events-none disabled:opacity-20"
@@ -248,14 +248,14 @@ export default component$(() => {
               disabled={store.historyIndex >= store.history.length - 1}
               onClick$={handleRedo}
             >
-              <RotateCw class="h-4 w-4" />
+              <RotateCw size={16} />
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
             <button
               class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
               onClick$={() => (store.showPresetsModal = true)}
             >
-              <Library class="h-4 w-4" />
+              <Library size={16} />
               <span>Presets</span>
             </button>
             <div class="mx-1 h-6 w-px bg-gray-800"></div>
@@ -265,12 +265,12 @@ export default component$(() => {
             >
               {store.isSimulating ? (
                 <>
-                  <Square class="h-4 w-4 fill-current" />
+                  <Square size={16} />
                   <span>Stop</span>
                 </>
               ) : (
                 <>
-                  <Play class="h-4 w-4 fill-current" />
+                  <Play size={16} />
                   <span>Run</span>
                 </>
               )}
@@ -290,7 +290,7 @@ export default component$(() => {
                 a.click();
               }}
             >
-              <Download class="h-4 w-4" />
+              <Download size={16} />
               <span>Download</span>
             </button>
             <button
@@ -303,7 +303,7 @@ export default component$(() => {
                 void navigator.clipboard.writeText(yaml);
               }}
             >
-              <Clipboard class="h-4 w-4" />
+              <Clipboard size={16} />
             </button>
           </div>
         </Nav>
@@ -311,7 +311,7 @@ export default component$(() => {
         {/* Workspace Grid */}
         <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL: Layers */}
-          <aside class="flex h-[500px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]">
+          <aside class="lum-card flex h-[500px] flex-col overflow-hidden p-0 lg:col-span-4 lg:h-[650px]">
             <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
               <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Layers
@@ -321,13 +321,13 @@ export default component$(() => {
                 title="Add layer"
                 onClick$={() => (store.showAddLayerModal = true)}
               >
-                <Plus class="h-3.5 w-3.5" />
+                <Plus size={14} />
               </button>
             </div>
             <div class="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
               {store.layers.length === 0 ? (
-                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-800/80 bg-gray-950/40 p-8 text-center text-xs text-gray-500">
-                  <Layers class="h-6 w-6 text-gray-600" />
+                <div class="lum-card flex flex-col items-center justify-center gap-2 border-dashed p-8 text-center text-xs text-gray-500">
+                  <Layers size={24} />
                   <p class="text-xs font-semibold text-gray-500">
                     No layers yet. Click "+ Add Layer" to start.
                   </p>
@@ -341,10 +341,8 @@ export default component$(() => {
                     <div
                       key={layer.id}
                       class={[
-                        'group flex cursor-pointer items-center justify-between rounded-xl border p-2.5 transition-all duration-150',
-                        isSelected
-                          ? 'border-gray-700 bg-gray-900/80 text-white shadow-sm'
-                          : 'border-gray-800/60 bg-gray-950/40 text-gray-400 hover:border-gray-700 hover:bg-gray-900/40 hover:text-gray-200',
+                        'lum-card group flex cursor-pointer items-center justify-between p-2.5 transition-all duration-150',
+                        isSelected ? 'border-gray-700 text-white' : '',
                         !layer.enabled ? 'opacity-50' : '',
                       ]}
                       onClick$={() => (store.selectedLayerId = layer.id)}
@@ -359,13 +357,13 @@ export default component$(() => {
                           }}
                         >
                           {layer.enabled ? (
-                            <Eye class="h-3.5 w-3.5" />
+                            <Eye size={14} />
                           ) : (
-                            <EyeOff class="h-3.5 w-3.5" />
+                            <EyeOff size={14} />
                           )}
                         </button>
                         <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-800/60 bg-gray-950/60 text-gray-400">
-                          <ShapeIcon class="h-3.5 w-3.5" />
+                          <ShapeIcon size={14} />
                         </span>
                         <span class="flex-grow truncate text-xs font-semibold text-gray-200">
                           {layer.name}
@@ -380,7 +378,7 @@ export default component$(() => {
                             void deleteLayer(layer.id);
                           }}
                         >
-                          <Trash2 class="h-3.5 w-3.5" />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -411,7 +409,7 @@ export default component$(() => {
 
           {/* CENTER PANEL: 3D Viewport */}
           <div class="flex flex-col gap-4 lg:col-span-4">
-            <div class="relative flex h-[400px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[650px]">
+            <div class="lum-card relative flex h-[400px] w-full flex-col justify-between overflow-hidden p-0 lg:h-[650px]">
               <canvas
                 ref={canvasRef}
                 class="block h-full w-full flex-1 bg-black"
@@ -426,14 +424,14 @@ export default component$(() => {
                   class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-gray-800 bg-black/60 text-gray-300 backdrop-blur-sm transition-all hover:border-gray-700 hover:text-white"
                   title="Reset camera"
                 >
-                  <Home class="h-4 w-4" />
+                  <Home size={16} />
                 </button>
               </div>
             </div>
           </div>
 
           {/* RIGHT PANEL: Inspector */}
-          <aside class="flex h-[450px] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-900/40 shadow-xl backdrop-blur lg:col-span-4 lg:h-[650px]">
+          <aside class="lum-card flex h-[450px] flex-col overflow-hidden p-0 lg:col-span-4 lg:h-[650px]">
             <div class="flex items-center justify-between border-b border-gray-800/80 bg-black/20 px-4 py-3">
               <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Inspector
@@ -557,7 +555,7 @@ export default component$(() => {
                 class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-300"
                 onClick$={() => (store.showPresetsModal = false)}
               >
-                <X class="h-4 w-4" />
+                <X size={16} />
               </button>
             </div>
             <div class="max-h-[350px] overflow-y-auto p-1">
@@ -575,7 +573,7 @@ export default component$(() => {
                         class="flex h-10 w-10 items-center justify-center bg-gray-950 text-gray-300 transition-transform group-hover:scale-110"
                         style={{ color: preset.accentColor }}
                       >
-                        <IconComp class="h-5 w-5" />
+                        <IconComp size={20} />
                       </div>
                       <span class="text-xs font-bold text-gray-200">
                         {presetName}
@@ -604,7 +602,7 @@ export default component$(() => {
                 class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-300"
                 onClick$={() => (store.showAddLayerModal = false)}
               >
-                <X class="h-4 w-4" />
+                <X size={16} />
               </button>
             </div>
             <div class="max-h-[300px] overflow-y-auto p-1">
