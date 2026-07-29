@@ -41,7 +41,7 @@ export const ProfileBanner = component$<ProfileBannerProps>(
           )}
         </div>
 
-        <div class="flex-1 space-y-2 text-center sm:text-left">
+        <div class="flex flex-1 flex-col gap-2 text-center sm:text-left">
           <h1 class="text-2xl font-black text-gray-100">
             {profileUser.username}
           </h1>

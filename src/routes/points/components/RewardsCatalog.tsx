@@ -11,7 +11,7 @@ interface RewardsCatalogProps {
 export const RewardsCatalog = component$<RewardsCatalogProps>(
   ({ rewards, userPoints, claimRewardSig }) => {
     return (
-      <section class="space-y-4">
+      <section class="flex flex-col gap-4">
         <h2 class="flex items-center gap-2 border-b border-gray-900 pb-2.5 text-lg font-bold text-gray-200">
           <ShoppingBag class="h-5 w-5 text-gray-300" />
           <span>Use Points / Claim Rewards</span>
@@ -33,9 +33,9 @@ export const RewardsCatalog = component$<RewardsCatalogProps>(
           {rewards.map((reward, idx) => (
             <div
               key={idx}
-              class="flex flex-col justify-between space-y-4 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 shadow-md"
+              class="flex flex-col justify-between gap-4 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 shadow-md"
             >
-              <div class="space-y-1">
+              <div class="flex flex-col gap-1">
                 <div class="flex items-start justify-between">
                   <h3 class="font-bold text-gray-100">{reward.name}</h3>
                   <span class="border-gray-850 rounded-full border bg-gray-950 px-2.5 py-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
@@ -52,7 +52,7 @@ export const RewardsCatalog = component$<RewardsCatalogProps>(
                 </p>
               </div>
 
-              <Form action={claimRewardSig} class="space-y-3">
+              <Form action={claimRewardSig} class="flex flex-col gap-3">
                 <input type="hidden" name="rewardCode" value={reward.code} />
 
                 {reward.inputPrompt && (

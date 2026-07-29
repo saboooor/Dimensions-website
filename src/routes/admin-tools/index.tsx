@@ -82,7 +82,7 @@ export default component$(() => {
         '--lum-border-radius': '1.5rem',
       }}
     >
-      <div class="mx-auto w-full max-w-2xl space-y-8">
+      <div class="mx-auto flex w-full max-w-2xl flex-col gap-8">
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-500/30 bg-gray-600/15 text-gray-500">
             <ShieldCheck class="h-5 w-5" />
@@ -95,7 +95,7 @@ export default component$(() => {
           </div>
         </div>
 
-        <div class="space-y-6 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-xl md:p-8">
+        <div class="flex flex-col gap-6 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-xl md:p-8">
           <h2 class="flex items-center gap-2 border-b border-gray-800 pb-3 text-lg font-bold text-gray-200">
             <Ticket class="h-5 w-5 text-gray-500" />
             <span>Generate Promo Code</span>
@@ -126,7 +126,7 @@ export default component$(() => {
             </div>
           )}
 
-          <Form action={actionSig} class="space-y-5">
+          <Form action={actionSig} class="flex flex-col gap-5">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label

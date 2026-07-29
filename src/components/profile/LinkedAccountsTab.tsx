@@ -12,7 +12,7 @@ interface LinkedAccountsTabProps {
 export const LinkedAccountsTab = component$<LinkedAccountsTabProps>(
   ({ discordAccount, minecraftAccount, verifiedPaypal }) => {
     return (
-      <div class="animate-in fade-in space-y-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
+      <div class="animate-in fade-in flex flex-col gap-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
         <h2 class="text-sm font-bold tracking-wider text-gray-200 uppercase">
           Integrations
         </h2>

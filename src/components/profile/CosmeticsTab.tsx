@@ -22,7 +22,7 @@ export const CosmeticsTab = component$<CosmeticsTabProps>(
     updateCosmeticsAction,
   }) => {
     return (
-      <div class="animate-in fade-in space-y-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
+      <div class="animate-in fade-in flex flex-col gap-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
         <div>
           <h2 class="text-sm font-bold tracking-wider text-gray-500 uppercase">
             In-game Cosmetics
@@ -49,7 +49,10 @@ export const CosmeticsTab = component$<CosmeticsTabProps>(
               </div>
             )}
 
-            <Form action={updateCosmeticsAction} class="max-w-md space-y-4">
+            <Form
+              action={updateCosmeticsAction}
+              class="flex max-w-md flex-col gap-4"
+            >
               <div>
                 <label class="mb-1.5 block text-xs text-gray-400">
                   On Portal Ignite

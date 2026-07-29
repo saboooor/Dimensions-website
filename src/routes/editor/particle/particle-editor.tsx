@@ -358,7 +358,7 @@ class App {
 
     detailsWrap.innerHTML = '';
     const form = document.createElement('div');
-    form.className = 'space-y-4';
+    form.className = 'flex flex-col gap-4';
 
     const nameGroup = this._createFieldGroup('Layer Name');
     const nameInput = document.createElement('input');
@@ -490,14 +490,14 @@ class App {
 
   _createFieldGroup(titleText: string): HTMLElement {
     const group = document.createElement('div');
-    group.className = 'bg-gray-900/30 p-4 space-y-3';
+    group.className = 'bg-gray-900/30 p-4 flex flex-col gap-3';
     const head = document.createElement('div');
     head.className =
       'text-[11px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b border-gray-800/60';
     head.textContent = titleText;
     group.appendChild(head);
     const body = document.createElement('div');
-    body.className = 'space-y-3 pt-2';
+    body.className = 'flex flex-col gap-3 pt-2';
     group.appendChild(body);
     return body;
   }

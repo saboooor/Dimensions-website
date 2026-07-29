@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { Utils } from './utils';
 
+import blocksRegistry from '~/lib/blocks.json';
+
 interface AnimatedTexture {
   texture: THREE.Texture;
   numFrames: number;
@@ -55,19 +57,18 @@ export class Viewport {
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // 4. Lighting setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    // 4. Lighting setup (matching birdThreeJS / banner generator)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.0);
-    dirLight1.position.set(5, 10, 7);
-    this.scene.add(dirLight1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    directionalLight.position.set(5, 10, 7);
+    this.scene.add(directionalLight);
 
-    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
-    dirLight2.position.set(-5, -5, -5);
-    this.scene.add(dirLight2);
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
+    this.scene.add(hemisphereLight);
 
     // 5. Portal Parent Group
     this.portalGroup = new THREE.Group();
@@ -137,8 +138,24 @@ export class Viewport {
     this.camera.lookAt(0, 0, 0);
   }
 
+  _resolveTextureName(name: string): string {
+    const cleanName = name.toLowerCase().trim().replace(/^minecraft:/, '');
+    const registryMatch = (blocksRegistry as any[]).find(
+      (b) =>
+        b.key.toLowerCase() === cleanName ||
+        b.icon.toLowerCase() === cleanName ||
+        b.id.toLowerCase() === 'minecraft:' + cleanName ||
+        b.id.toLowerCase() === cleanName
+    );
+    if (registryMatch && registryMatch.icon) {
+      return registryMatch.icon;
+    }
+    return cleanName;
+  }
+
   _getTexture(name: string, folder = 'blocks'): THREE.Texture {
-    const key = folder + '/' + name;
+    const resolvedName = this._resolveTextureName(name);
+    const key = folder + '/' + resolvedName;
     if (this.textureCache[key]) {
       const tex = this.textureCache[key];
       this._registerAnimatedTextureIfNeeded(tex);
@@ -147,18 +164,52 @@ export class Viewport {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const base = (window as any).TEXTURE_BASE || '/editor/portal/Images/';
-    const url = base + folder + '/' + name + '.png';
 
-    const texture = this.textureLoader.load(url, (loadedTex) => {
-      this._registerAnimatedTextureIfNeeded(loadedTex);
-      if (this.renderer && this.scene && this.camera) {
-        this.renderer.render(this.scene, this.camera);
-      }
-    });
+    const cleanName = name.toLowerCase().trim().replace(/^minecraft:/, '');
+    const candidates = [
+      resolvedName,
+      cleanName,
+      cleanName + '_side',
+      cleanName + '_top',
+      cleanName + '_front',
+      cleanName + '_block',
+      cleanName + '_0',
+      cleanName + '_stage0',
+    ];
 
+    const uniqueCandidates = [...new Set(candidates)];
+
+    const texture = new THREE.Texture();
     texture.magFilter = THREE.NearestFilter;
     texture.minFilter = THREE.NearestFilter;
     texture.colorSpace = THREE.SRGBColorSpace;
+
+    let candidateIndex = 0;
+
+    const tryNextCandidate = () => {
+      if (candidateIndex >= uniqueCandidates.length) {
+        console.warn(`[Viewport] Could not load texture for block '${name}'`);
+        return;
+      }
+      const candidate = uniqueCandidates[candidateIndex++];
+      const url = base + folder + '/' + candidate + '.png';
+
+      const img = new Image();
+      img.onload = () => {
+        texture.image = img;
+        texture.needsUpdate = true;
+        this._registerAnimatedTextureIfNeeded(texture);
+        if (this.renderer && this.scene && this.camera) {
+          this.renderer.render(this.scene, this.camera);
+        }
+      };
+      img.onerror = () => {
+        tryNextCandidate();
+      };
+      img.src = url;
+    };
+
+    tryNextCandidate();
 
     this.textureCache[key] = texture;
     return texture;

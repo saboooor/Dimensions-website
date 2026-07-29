@@ -13,7 +13,7 @@ export const PortalCard = component$<PortalCardProps>(
   ({ portal, isLoggedIn, onLike$ }) => {
     return (
       <div class="group flex flex-col justify-between rounded-2xl border border-gray-900 bg-gray-900/30 p-4 shadow-md transition-all hover:border-gray-800">
-        <div class="space-y-3">
+        <div class="flex flex-col gap-3">
           {/* Image preview */}
           {portal.img ? (
             <div class="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border border-gray-900 bg-gray-950">

@@ -31,6 +31,12 @@ import Code from 'lucide-icons-qwik/icons/Code';
 import CirclePlus from 'lucide-icons-qwik/icons/CirclePlus';
 import Layers from 'lucide-icons-qwik/icons/Layers';
 
+import {
+  ColorPicker,
+  Label,
+  NumberInput,
+  RangeInput,
+} from '@luminescent/ui-qwik';
 import { Nav } from '~/components/Nav';
 import {
   Utils,
@@ -214,24 +220,18 @@ export default component$(() => {
             <Sparkles class="h-4 w-4" />
           </div>
 
-          <div class="flex items-center gap-2 bg-black/40 px-3 py-2">
-            <label
-              for="packName"
-              class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
-            >
-              Pack Name
-            </label>
+          <Label for="packName" label="Pack Name">
             <input
               type="text"
               id="packName"
-              class="w-36 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
+              class="lum-input w-36"
               value={store.packName}
               onInput$={(e) => {
                 store.packName = (e.target as HTMLInputElement).value;
               }}
               spellcheck={false}
             />
-          </div>
+          </Label>
 
           <div class="flex flex-wrap items-center gap-2">
             <button
@@ -324,7 +324,7 @@ export default component$(() => {
                 <Plus class="h-3.5 w-3.5" />
               </button>
             </div>
-            <div class="flex-1 space-y-2 overflow-y-auto p-4">
+            <div class="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
               {store.layers.length === 0 ? (
                 <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-800/80 bg-gray-950/40 p-8 text-center text-xs text-gray-500">
                   <Layers class="h-6 w-6 text-gray-600" />
@@ -389,33 +389,23 @@ export default component$(() => {
               )}
             </div>
             <div class="border-t border-gray-800/80 bg-black/10 p-4">
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between">
-                  <label
-                    for="freqSlider"
-                    class="text-[11px] font-bold tracking-wider text-gray-400 uppercase"
-                  >
-                    Simulation Speed
-                  </label>
-                  <span class="font-mono text-xs font-bold text-gray-400">
-                    {store.freq}
-                  </span>
-                </div>
-                <input
-                  type="range"
+              <Label for="freqSlider" label="Simulation Speed">
+                <span
+                  q:slot="after-label"
+                  class="font-mono text-xs font-bold text-gray-400"
+                >
+                  {store.freq}
+                </span>
+                <RangeInput
                   id="freqSlider"
-                  min="1"
-                  max="40"
+                  min={1}
+                  max={40}
                   value={store.freq}
-                  onInput$={(e) => {
-                    store.freq = parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10
-                    );
+                  onInput$={(e, el) => {
+                    store.freq = parseInt(el.value, 10) || 20;
                   }}
-                  class="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gray-400"
                 />
-              </div>
+              </Label>
             </div>
           </aside>
 
@@ -449,7 +439,7 @@ export default component$(() => {
                 Inspector
               </span>
             </div>
-            <div class="flex-1 space-y-4 overflow-y-auto p-4">
+            <div class="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
               {!selectedLayer ? (
                 <div class="flex h-full flex-col items-center justify-center p-8 text-center text-gray-600">
                   <MousePointer class="mb-2 block h-6 w-6" />
@@ -458,19 +448,14 @@ export default component$(() => {
                   </p>
                 </div>
               ) : (
-                <div class="space-y-4">
+                <div class="flex flex-col gap-4">
                   {/* Layer Name & Shape */}
-                  <div class="space-y-3 bg-gray-900/30 p-4">
-                    <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
-                      Layer Info
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                      <label class="text-[10px] font-bold text-gray-400 uppercase">
-                        Layer Name
-                      </label>
+                  <div class="flex flex-col gap-3 bg-gray-900/30 p-4">
+                    <Label for="layerName" label="Layer Name">
                       <input
                         type="text"
-                        class="w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-gray-600"
+                        id="layerName"
+                        class="lum-input w-full"
                         value={selectedLayer.name}
                         onInput$={(e) => {
                           selectedLayer.name = (
@@ -479,57 +464,48 @@ export default component$(() => {
                           void pushHistory();
                         }}
                       />
-                    </div>
+                    </Label>
                   </div>
 
                   {/* Particle Color & Size */}
-                  <div class="space-y-3 bg-gray-900/30 p-4">
+                  <div class="flex flex-col gap-3 bg-gray-900/30 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       Particle Appearance
                     </div>
-                    <div class="flex items-center justify-between gap-3">
-                      <label class="text-xs font-medium text-gray-300">
-                        Color
-                      </label>
-                      <input
-                        type="color"
-                        class="h-8 w-14 cursor-pointer rounded-lg border border-gray-800 bg-gray-950 p-0.5"
+                    <Label for="particleColor" label="Color">
+                      <ColorPicker
+                        id="particleColor"
                         value={Utils.rgbToHex(
                           selectedLayer.particle?.color?.r || 255,
                           selectedLayer.particle?.color?.g || 180,
                           selectedLayer.particle?.color?.b || 50
                         )}
-                        onInput$={(e) => {
-                          const hex = (e.target as HTMLInputElement).value;
-                          selectedLayer.particle.color = Utils.hexToRgb(hex);
+                        onInput$={(newHex) => {
+                          selectedLayer.particle.color = Utils.hexToRgb(newHex);
                           void pushHistory();
                         }}
                       />
-                    </div>
-                    <div class="flex items-center justify-between gap-3">
-                      <label class="text-xs font-medium text-gray-300">
-                        Size
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0.1"
-                        max="5.0"
-                        class="w-24 rounded-lg border border-gray-800 bg-gray-950 px-2.5 py-1 text-xs text-gray-200 outline-none"
+                    </Label>
+                    <Label for="particleSize" label="Particle Size">
+                      <NumberInput
+                        input
+                        id="particleSize"
+                        step={0.1}
+                        min={0.1}
+                        max={5.0}
                         value={selectedLayer.particle?.size || 1.0}
-                        onInput$={(e) => {
+                        onInput$={(e, el) => {
                           selectedLayer.particle.size =
-                            parseFloat((e.target as HTMLInputElement).value) ||
-                            1;
+                            parseFloat(el.value) || 1;
                           void pushHistory();
                         }}
                       />
-                    </div>
+                    </Label>
                   </div>
 
                   {/* Shape Parameters */}
                   {selectedLayer.shape?.params && (
-                    <div class="space-y-3 bg-gray-900/30 p-4">
+                    <div class="flex flex-col gap-3 bg-gray-900/30 p-4">
                       <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                         {Utils.capitalize(selectedLayer.shape.type)} Parameters
                       </div>
@@ -543,29 +519,21 @@ export default component$(() => {
                           step: 0.1,
                         };
                         return (
-                          <div
-                            key={key}
-                            class="flex items-center justify-between gap-3 text-xs text-gray-300"
-                          >
-                            <label class="text-xs font-medium text-gray-300">
-                              {label}
-                            </label>
-                            <input
-                              type="number"
+                          <Label key={key} for={`param-${key}`} label={label}>
+                            <NumberInput
+                              input
+                              id={`param-${key}`}
                               min={range.min}
                               max={range.max}
                               step={range.step}
-                              class="w-24 rounded-lg border border-gray-800 bg-gray-950 px-2.5 py-1 text-xs text-gray-200 outline-none"
                               value={val}
-                              onInput$={(e) => {
+                              onInput$={(e, el) => {
                                 selectedLayer.shape.params[key] =
-                                  parseFloat(
-                                    (e.target as HTMLInputElement).value
-                                  ) || 0;
+                                  parseFloat(el.value) || 0;
                                 void pushHistory();
                               }}
                             />
-                          </div>
+                          </Label>
                         );
                       })}
                     </div>
@@ -580,7 +548,7 @@ export default component$(() => {
       {/* PRESETS MODAL */}
       {store.showPresetsModal && (
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
-          <div class="w-full max-w-lg space-y-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
+          <div class="flex w-full max-w-lg flex-col gap-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
               <h3 class="text-xs font-bold tracking-wider text-gray-200 uppercase">
                 Presets
@@ -627,7 +595,7 @@ export default component$(() => {
       {/* ADD LAYER MODAL */}
       {store.showAddLayerModal && (
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
-          <div class="w-full max-w-md space-y-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
+          <div class="flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
               <h3 class="text-xs font-bold tracking-wider text-gray-200 uppercase">
                 Add Layer

@@ -14,7 +14,7 @@ interface EarnPointsCardProps {
 export const EarnPointsCard = component$<EarnPointsCardProps>(
   ({ enabledAds, hasClaimedToday, toggleAdsSig, claimAdsSig }) => {
     return (
-      <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-2">
+      <div class="flex flex-col gap-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-2">
         <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
           <Gift class="h-5 w-5 text-emerald-500" />
           <span>Earn Points</span>
@@ -33,7 +33,7 @@ export const EarnPointsCard = component$<EarnPointsCardProps>(
         )}
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
+          <div class="flex flex-col justify-between gap-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
             <div>
               <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
                 <Tv class="h-4 w-4 text-gray-500" />
@@ -65,7 +65,7 @@ export const EarnPointsCard = component$<EarnPointsCardProps>(
             </div>
           </div>
 
-          <div class="flex flex-col justify-between space-y-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
+          <div class="flex flex-col justify-between gap-2 rounded-xl border border-gray-900 bg-gray-950/40 p-4">
             <div>
               <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-300">
                 <CalendarCheck class="h-4 w-4 text-emerald-500" />

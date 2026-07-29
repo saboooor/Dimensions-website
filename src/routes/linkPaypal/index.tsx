@@ -215,7 +215,7 @@ export default component$(() => {
           </p>
         </div>
 
-        <Form action={actionSig} class="space-y-6">
+        <Form action={actionSig} class="flex flex-col gap-6">
           <div>
             <label
               for="transactionId"

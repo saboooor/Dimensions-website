@@ -9,7 +9,7 @@ interface RedeemCodeCardProps {
 export const RedeemCodeCard = component$<RedeemCodeCardProps>(
   ({ redeemSig }) => {
     return (
-      <div class="h-fit space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 shadow-lg md:col-span-1">
+      <div class="lum-card flex h-fit flex-col gap-4 p-6 shadow-lg md:col-span-1">
         <h2 class="flex items-center gap-2 border-b border-gray-800/50 pb-2.5 font-bold text-gray-200">
           <Ticket class="h-5 w-5 text-gray-500" />
           <span>Redeem Code</span>
@@ -27,18 +27,18 @@ export const RedeemCodeCard = component$<RedeemCodeCardProps>(
           </div>
         )}
 
-        <Form action={redeemSig} class="space-y-3">
+        <Form action={redeemSig} class="flex flex-col gap-3">
           <input
             type="text"
             name="code"
             required
             placeholder="Enter promo code..."
-            class="block w-full rounded-lg border border-gray-800 bg-gray-950 px-3.5 py-2 text-sm text-gray-200 placeholder-gray-700 transition-all focus:border-gray-500 focus:ring-2 focus:ring-gray-500/25 focus:outline-none"
+            class="lum-input w-full"
           />
           <button
             type="submit"
             disabled={redeemSig.isRunning}
-            class="w-full rounded-lg bg-gray-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-500 disabled:bg-gray-800"
+            class="lum-btn w-full cursor-pointer font-semibold text-white disabled:opacity-50"
           >
             {redeemSig.isRunning ? 'Claiming...' : 'Claim Points'}
           </button>

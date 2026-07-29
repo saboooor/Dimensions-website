@@ -77,7 +77,7 @@ export const ProfileView = component$<ProfileViewProps>(
           '--lum-border-radius': '1.5rem',
         }}
       >
-        <div class="mx-auto w-full max-w-4xl space-y-8">
+        <div class="mx-auto flex w-full max-w-4xl flex-col gap-8">
           <ProfileBanner
             profileUser={profileUser}
             isSelf={isSelf}

@@ -16,7 +16,7 @@ export const ClaimHistoryTable = component$<ClaimHistoryTableProps>(
     if (history.length === 0) return null;
 
     return (
-      <section class="space-y-4">
+      <section class="flex flex-col gap-4">
         <h2 class="flex items-center gap-2 border-b border-gray-900 pb-2.5 text-lg font-bold text-gray-200">
           <History class="h-5 w-5 text-gray-400" />
           <span>Your Claim History</span>

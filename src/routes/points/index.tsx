@@ -354,7 +354,7 @@ export default component$(() => {
         '--lum-border-radius': '1.5rem',
       }}
     >
-      <div class="mx-auto w-full max-w-5xl space-y-8">
+      <div class="mx-auto flex w-full max-w-5xl flex-col gap-8">
         {/* Page Title */}
         <div class="flex items-center justify-between">
           <div>

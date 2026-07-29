@@ -31,7 +31,7 @@ export default component$<SidebarProps>(({ user, sidebarOpen }) => {
     >
       <div class="flex h-full flex-col justify-between overflow-y-auto px-3 py-4">
         {/* Navigation list */}
-        <ul class="space-y-1.5">
+        <ul class="flex flex-col gap-1.5">
           <li>
             <a href="/" class={navItemClass}>
               <LayoutGrid class="h-5 w-5 text-gray-500" />
@@ -57,7 +57,7 @@ export default component$<SidebarProps>(({ user, sidebarOpen }) => {
             </button>
 
             {editorsOpen.value && (
-              <ul class="animate-in fade-in slide-in-from-top-1 mt-1.5 space-y-1 duration-150">
+              <ul class="animate-in fade-in slide-in-from-top-1 mt-1.5 flex flex-col gap-1 duration-150">
                 <li>
                   <a href="/editor/portal" class={subNavItemClass}>
                     <Dot class="h-3 w-3" />
@@ -90,7 +90,7 @@ export default component$<SidebarProps>(({ user, sidebarOpen }) => {
         </ul>
 
         {/* Footer info or Auth Links if not logged in */}
-        <div class="mt-auto space-y-2">
+        <div class="mt-auto flex flex-col gap-2">
           {!user && (
             <div class="rounded-xl border border-gray-900 bg-gray-900/30 p-3 md:hidden">
               <a

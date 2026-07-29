@@ -19,7 +19,7 @@ export const SavedPortalsTab = component$<SavedPortalsTabProps>(
                 key={idx}
                 class="group flex flex-col justify-between rounded-xl border border-gray-900 bg-gray-950/40 p-4 transition-all hover:border-gray-800"
               >
-                <div class="space-y-3">
+                <div class="flex flex-col gap-3">
                   {portal.img ? (
                     <div class="flex h-28 w-full items-center justify-center overflow-hidden rounded-lg border border-gray-900 bg-gray-950">
                       <img

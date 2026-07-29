@@ -1,5 +1,6 @@
 import { component$ } from '@qwik.dev/core';
 import { Form } from '@qwik.dev/router';
+import { Label } from '@luminescent/ui-qwik';
 import IdCard from 'lucide-icons-qwik/icons/IdCard';
 
 interface SettingsTabProps {
@@ -10,8 +11,8 @@ interface SettingsTabProps {
 export const SettingsTab = component$<SettingsTabProps>(
   ({ currentUsername, changeUsernameAction }) => {
     return (
-      <div class="animate-in fade-in space-y-6 duration-200">
-        <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/30 p-6">
+      <div class="animate-in fade-in flex flex-col gap-6 duration-200">
+        <div class="lum-card flex flex-col gap-4 p-6">
           <h3 class="flex items-center gap-2 border-b border-gray-900 pb-2 font-bold text-gray-200">
             <IdCard class="h-4 w-4 text-gray-500" />
             <span>Change Username</span>
@@ -27,25 +28,26 @@ export const SettingsTab = component$<SettingsTabProps>(
               {changeUsernameAction.value.message}
             </div>
           )}
-          <Form action={changeUsernameAction} class="max-w-md space-y-4">
-            <div>
-              <label class="mb-1.5 block text-xs text-gray-400">
-                New Username
-              </label>
+          <Form
+            action={changeUsernameAction}
+            class="flex max-w-md flex-col gap-4"
+          >
+            <Label for="newUsername" label="New Username">
               <input
+                id="newUsername"
                 type="text"
                 name="newUsername"
                 required
                 placeholder={currentUsername || ''}
-                class="border-gray-850 block w-full rounded-lg border bg-gray-950 px-3.5 py-2 text-sm text-gray-200 focus:border-gray-500 focus:outline-none"
+                class="lum-input w-full"
               />
-              <p class="mt-1.5 text-[10px] text-gray-500">
-                3–32 characters, letters, numbers and underscores only.
-              </p>
-            </div>
+            </Label>
+            <p class="text-[10px] text-gray-500">
+              3–32 characters, letters, numbers and underscores only.
+            </p>
             <button
               type="submit"
-              class="rounded-lg bg-gray-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-gray-500"
+              class="lum-btn cursor-pointer font-bold text-white"
             >
               Update Username
             </button>

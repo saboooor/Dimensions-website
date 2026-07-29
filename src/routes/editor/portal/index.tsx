@@ -1,9 +1,11 @@
 import {
   component$,
+  useContextProvider,
   useSignal,
   useStore,
   useVisibleTask$,
 } from '@qwik.dev/core';
+import Accordion, { openItemsContext } from '~/components/Elements/Accordion';
 import { routeLoader$, type RequestHandler } from '@qwik.dev/router';
 import { eq } from 'drizzle-orm';
 import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
@@ -20,11 +22,10 @@ import Palette from 'lucide-icons-qwik/icons/Palette';
 import Sliders from 'lucide-icons-qwik/icons/Sliders';
 import Puzzle from 'lucide-icons-qwik/icons/Puzzle';
 import Boxes from 'lucide-icons-qwik/icons/Boxes';
-import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
 import Box from 'lucide-icons-qwik/icons/Box';
 import Maximize2 from 'lucide-icons-qwik/icons/Maximize2';
 
-import { Toggle } from '@luminescent/ui-qwik';
+import { Label, NumberInput, Toggle } from '@luminescent/ui-qwik';
 import { getDB, userPortals } from '~/util/db';
 import { getSessionUser, isAdmin } from '~/util/auth';
 import { Session } from '@auth/qwik';
@@ -178,6 +179,9 @@ export default component$(() => {
   const loaderSig = usePortalEditorLoader();
   const canvasRef = useSignal<HTMLCanvasElement>();
 
+  const openItems = useSignal<string[]>(['frame', 'portal', 'size']);
+  useContextProvider(openItemsContext, openItems);
+
   const store = useStore({
     portalID: 'testPortal',
     activeTab: 'design' as 'design' | 'settings' | 'addons',
@@ -236,24 +240,18 @@ export default component$(() => {
             <Grid3x3 class="h-4 w-4" />
           </div>
 
-          <div class="flex items-center gap-2 bg-black/40 px-3 py-2">
-            <label
-              for="portalID"
-              class="text-[10px] font-bold tracking-wider text-gray-500 uppercase select-none"
-            >
-              Portal ID
-            </label>
+          <Label for="portalID" label="Portal ID">
             <input
               type="text"
               id="portalID"
-              class="w-28 border-none bg-transparent text-xs font-semibold text-gray-200 placeholder-gray-700 focus:outline-none"
+              class="lum-input w-36"
               value={store.portalID}
               onInput$={(e) => {
                 store.portalID = (e.target as HTMLInputElement).value;
               }}
               spellcheck={false}
             />
-          </div>
+          </Label>
 
           <div class="flex flex-wrap items-center gap-2">
             <button
@@ -372,34 +370,23 @@ export default component$(() => {
             </div>
 
             {/* Panel Body */}
-            <div class="flex-1 space-y-4 overflow-y-auto p-4">
+            <div class="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
               {/* Design Tab */}
               {store.activeTab === 'design' && (
-                <div class="space-y-4">
+                <div class="flex flex-col gap-4">
                   {/* Frame Block Section */}
-                  <div class="overflow-hidden bg-gray-900/30">
-                    <div
-                      class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
-                      onClick$={() =>
-                        (store.frameSectionOpen = !store.frameSectionOpen)
-                      }
-                    >
-                      <h4 class="flex items-center gap-2 text-xs font-bold text-gray-300">
+                  <div class="flex flex-col gap-2">
+                    <Accordion sectionName="frame" class="w-full">
+                      <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
                         <Boxes class="h-4 w-4 text-gray-400" />
                         Frame Block
-                      </h4>
-                      <ChevronDown
-                        class={
-                          'h-4 w-4 text-gray-500 transition-transform duration-200 ' +
-                          (!store.frameSectionOpen ? '-rotate-90' : '')
-                        }
-                      />
-                    </div>
-                    {store.frameSectionOpen && (
-                      <div class="space-y-3 border-t border-gray-800/60 p-3">
+                      </span>
+                    </Accordion>
+                    {openItems.value.includes('frame') && (
+                      <div class="flex flex-col gap-3 p-2">
                         <input
                           type="text"
-                          class="w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-gray-600"
+                          class="lum-input w-full"
                           placeholder="Search blocks..."
                           value={store.frameSearch}
                           onInput$={(e) => {
@@ -446,29 +433,18 @@ export default component$(() => {
                   </div>
 
                   {/* Portal Block Section */}
-                  <div class="overflow-hidden bg-gray-900/30">
-                    <div
-                      class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
-                      onClick$={() =>
-                        (store.portalSectionOpen = !store.portalSectionOpen)
-                      }
-                    >
-                      <h4 class="flex items-center gap-2 text-xs font-bold text-gray-300">
+                  <div class="flex flex-col gap-2">
+                    <Accordion sectionName="portal" class="w-full">
+                      <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
                         <Box class="h-4 w-4 text-gray-400" />
                         Portal Inner Block
-                      </h4>
-                      <ChevronDown
-                        class={
-                          'h-4 w-4 text-gray-500 transition-transform duration-200 ' +
-                          (!store.portalSectionOpen ? '-rotate-90' : '')
-                        }
-                      />
-                    </div>
-                    {store.portalSectionOpen && (
-                      <div class="space-y-3 border-t border-gray-800/60 p-3">
+                      </span>
+                    </Accordion>
+                    {openItems.value.includes('portal') && (
+                      <div class="flex flex-col gap-3 p-2">
                         <input
                           type="text"
-                          class="w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-gray-600"
+                          class="lum-input w-full"
                           placeholder="Search blocks..."
                           value={store.portalSearch}
                           onInput$={(e) => {
@@ -515,64 +491,39 @@ export default component$(() => {
                   </div>
 
                   {/* Dimensions Section */}
-                  <div class="overflow-hidden bg-gray-900/30">
-                    <div
-                      class="flex cursor-pointer items-center justify-between bg-gray-950/40 p-3 select-none"
-                      onClick$={() =>
-                        (store.sizeSectionOpen = !store.sizeSectionOpen)
-                      }
-                    >
-                      <h4 class="flex items-center gap-2 text-xs font-bold text-gray-300">
+                  <div class="flex flex-col gap-2">
+                    <Accordion sectionName="size" class="w-full">
+                      <span class="flex items-center gap-2 text-xs font-bold text-gray-300">
                         <Maximize2 class="h-4 w-4 text-gray-400" />
                         Dimensions
-                      </h4>
-                      <ChevronDown
-                        class={
-                          'h-4 w-4 text-gray-500 transition-transform duration-200 ' +
-                          (!store.sizeSectionOpen ? '-rotate-90' : '')
-                        }
-                      />
-                    </div>
-                    {store.sizeSectionOpen && (
-                      <div class="grid grid-cols-2 gap-4 border-t border-gray-800/60 p-4">
-                        <div class="flex flex-col gap-1.5">
-                          <label class="text-[10px] font-bold text-gray-400 uppercase">
-                            Width
-                          </label>
-                          <input
-                            type="number"
-                            min="2"
-                            max="20"
-                            class="rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none"
+                      </span>
+                    </Accordion>
+                    {openItems.value.includes('size') && (
+                      <div class="grid grid-cols-2 gap-4 p-2">
+                        <Label for="portalWidth" label="Width">
+                          <NumberInput
+                            input
+                            id="portalWidth"
+                            min={2}
+                            max={20}
                             value={store.width}
-                            onInput$={(e) => {
-                              store.width =
-                                parseInt(
-                                  (e.target as HTMLInputElement).value,
-                                  10
-                                ) || 4;
+                            onInput$={(e, el) => {
+                              store.width = parseInt(el.value, 10) || 4;
                             }}
                           />
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                          <label class="text-[10px] font-bold text-gray-400 uppercase">
-                            Height
-                          </label>
-                          <input
-                            type="number"
-                            min="3"
-                            max="20"
-                            class="rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none"
+                        </Label>
+                        <Label for="portalHeight" label="Height">
+                          <NumberInput
+                            input
+                            id="portalHeight"
+                            min={3}
+                            max={20}
                             value={store.height}
-                            onInput$={(e) => {
-                              store.height =
-                                parseInt(
-                                  (e.target as HTMLInputElement).value,
-                                  10
-                                ) || 5;
+                            onInput$={(e, el) => {
+                              store.height = parseInt(el.value, 10) || 5;
                             }}
                           />
-                        </div>
+                        </Label>
                       </div>
                     )}
                   </div>
@@ -581,28 +532,26 @@ export default component$(() => {
 
               {/* Settings Tab */}
               {store.activeTab === 'settings' && (
-                <div class="space-y-4">
-                  <div class="space-y-3 bg-gray-900/30 p-4">
+                <div class="flex flex-col gap-4">
+                  <div class="flex flex-col gap-3 bg-gray-900/30 p-4">
                     <div class="border-b border-gray-800/60 pb-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
                       General Settings
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                      <label class="text-[10px] font-bold text-gray-400 uppercase">
-                        Target Dimension
-                      </label>
+                    <Label for="targetDimension" label="Target Dimension">
                       <input
+                        id="targetDimension"
                         type="text"
-                        class="w-full rounded-lg border border-gray-800 bg-gray-950 px-3 py-1.5 text-xs text-gray-200 outline-none"
+                        class="lum-input w-full"
                         value="world_nether"
                       />
-                    </div>
+                    </Label>
                   </div>
                 </div>
               )}
 
               {/* Addons Tab */}
               {store.activeTab === 'addons' && (
-                <div class="space-y-3">
+                <div class="flex flex-col gap-3">
                   {store.addons.length === 0 ? (
                     <div class="p-8 text-center text-xs text-gray-500">
                       No addons registered.

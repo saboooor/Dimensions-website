@@ -47,8 +47,8 @@ export default component$(() => {
         '--lum-border-radius': '1.5rem',
       }}
     >
-      <div class="mx-auto w-full max-w-4xl space-y-8">
-        <div class="space-y-2 text-center">
+      <div class="mx-auto flex w-full max-w-4xl flex-col gap-8">
+        <div class="flex flex-col gap-2 text-center">
           <h1 class="text-3xl font-extrabold tracking-tight text-gray-100">
             Frequently Asked{' '}
             <span class="bg-linear-to-r from-gray-500 to-gray-300 bg-clip-text text-transparent">
@@ -61,7 +61,7 @@ export default component$(() => {
           </p>
         </div>
 
-        <div class="space-y-4">
+        <div class="flex flex-col gap-4">
           {faqs.map((faq, idx) => {
             const isOpen = openItems.value.includes(idx.toString());
             return (
@@ -94,7 +94,7 @@ export default component$(() => {
         </div>
 
         {/* Discord Help CTA */}
-        <div class="space-y-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 text-center">
+        <div class="flex flex-col gap-4 rounded-2xl border border-gray-900 bg-gray-900/40 p-6 text-center">
           <h3 class="font-bold text-gray-200">
             Still need help or have a custom feature request?
           </h3>

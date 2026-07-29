@@ -13,8 +13,8 @@ interface OverviewTabProps {
 
 export const OverviewTab = component$<OverviewTabProps>(({ earnedBadges }) => {
   return (
-    <div class="animate-in fade-in space-y-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
-      <div class="space-y-2">
+    <div class="animate-in fade-in flex flex-col gap-6 rounded-2xl border border-gray-900 bg-gray-900/30 p-6 duration-200">
+      <div class="flex flex-col gap-2">
         <h3 class="text-sm font-bold tracking-wider text-gray-500 uppercase">
           Badges
         </h3>

@@ -222,7 +222,7 @@ export default component$(() => {
         '--lum-border-radius': '1.5rem',
       }}
     >
-      <div class="mx-auto w-full max-w-6xl space-y-8">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-8">
         {/* Page Header */}
         <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
