@@ -8,6 +8,14 @@
   @import '@luminescent/ui/formatting';
 }
 
+canvas,
+img.pixelated,
+.pixelated,
+[style*='backgroundImage'] {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 @source "../node_modules/@luminescent/ui-qwik";
 
 @theme {

@@ -5,14 +5,22 @@
 
 declare global {
   interface Window {
-    THREE: any;
-    jsyaml: any;
+    THREE: unknown;
+    jsyaml: unknown;
     IS_LOGGED_IN?: boolean;
-    PORTAL_DATA?: any;
-    app?: any;
+    PORTAL_DATA?: unknown;
+    app?: unknown;
   }
-  const THREE: any;
-  const jsyaml: any;
+  const THREE: unknown;
+  const jsyaml: unknown;
+}
+
+declare module 'minecraft-assets' {
+  const mcAssets: (version: string) => {
+    directory: string;
+    [key: string]: any;
+  };
+  export default mcAssets;
 }
 
 export {};

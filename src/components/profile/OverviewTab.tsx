@@ -1,7 +1,14 @@
 import { component$ } from '@qwik.dev/core';
 
+interface BadgeItem {
+  id?: number | string;
+  name?: string;
+  description?: string;
+  icon?: string;
+}
+
 interface OverviewTabProps {
-  earnedBadges: any[];
+  earnedBadges: BadgeItem[];
 }
 
 export const OverviewTab = component$<OverviewTabProps>(({ earnedBadges }) => {
@@ -13,7 +20,7 @@ export const OverviewTab = component$<OverviewTabProps>(({ earnedBadges }) => {
         </h3>
         <div class="flex flex-wrap gap-3">
           {earnedBadges.length > 0 ? (
-            earnedBadges.map((badge: any, idx: number) => (
+            earnedBadges.map((badge: BadgeItem, idx: number) => (
               <div
                 key={idx}
                 class="flex items-center gap-2 rounded-xl border border-gray-900 bg-gray-950 px-4 py-2 text-gray-300 shadow-sm transition-all hover:border-gray-800"

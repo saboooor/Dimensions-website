@@ -7,6 +7,7 @@ import { Session } from '@auth/qwik';
 import Plus from 'lucide-icons-qwik/icons/Plus';
 import Grid3x3 from 'lucide-icons-qwik/icons/Grid';
 import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
+import { Toggle } from '@luminescent/ui-qwik';
 import { PortalCard } from './components/PortalCard';
 
 export interface PortalCardData {
@@ -236,14 +237,13 @@ export default component$(() => {
 
           <div class="flex items-center gap-4">
             {initialData.value.isAdmin && (
-              <label class="border-gray-850 flex cursor-pointer items-center gap-2 rounded-xl border bg-gray-900 px-3.5 py-2 text-xs font-semibold text-gray-300">
-                <input
-                  type="checkbox"
-                  onChange$={handleToggleShowAll}
-                  class="rounded border-gray-700 bg-gray-950 text-gray-400 focus:ring-0"
-                />
-                <span>Show All (Admin)</span>
-              </label>
+              <Toggle
+                checked={state.showAll}
+                onChange$={handleToggleShowAll}
+                class="text-xs font-semibold text-gray-300"
+              >
+                Show All (Admin)
+              </Toggle>
             )}
 
             <a

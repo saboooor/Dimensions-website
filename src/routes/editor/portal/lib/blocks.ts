@@ -13,7 +13,7 @@ export const BlockSelector = {
     gridId: string,
     searchId: string,
     manualId: string,
-    textureList: string[],
+    textureList: Array<string | { id: string; key: string; name: string; icon: string }>,
     folder: string,
     onSelect: (id: string) => void
   ): BlockSelectorInstance {
@@ -25,26 +25,39 @@ export const BlockSelector = {
     const renderGrid = (filter: string) => {
       if (!grid) return;
       grid.innerHTML = "";
-      const filterLower = (filter || "").toLowerCase().replace(/\s+/g, "_");
+      const filterLower = (filter || "").toLowerCase().trim();
       let shown = 0;
-      const base = window.TEXTURE_BASE || "/editor/portal/Images/";
+      const base = (window as any).TEXTURE_BASE || "/editor/portal/Images/";
 
-      textureList.forEach((id) => {
-        if (filterLower && id.toLowerCase().indexOf(filterLower) === -1) return;
+      textureList.forEach((item) => {
+        const isObj = typeof item === "object";
+        const key = isObj ? item.key : item;
+        const icon = isObj ? item.icon : item;
+        const name = isObj ? item.name : item.replace(/_/g, " ");
+        const fullId = isObj ? item.id : key;
+
+        if (filterLower) {
+          const matchKey = key.toLowerCase().includes(filterLower);
+          const matchName = name.toLowerCase().includes(filterLower);
+          const matchFull = fullId.toLowerCase().includes(filterLower);
+          if (!matchKey && !matchName && !matchFull) return;
+        }
+
         const tile = document.createElement("div");
         tile.className =
           "aspect-square rounded-lg border bg-cover bg-center cursor-pointer transition-all duration-150 hover:scale-105 shadow-sm " +
-          (selected === id
+          (selected === key || selected === icon
             ? "border-gray-400 ring-2 ring-gray-400/40 shadow-lg"
             : "border-gray-800/80 hover:border-gray-600");
         tile.style.backgroundImage =
-          "url('" + base + folder + "/" + id + ".png')";
-        tile.title = id.replace(/_/g, " ");
+          "url('" + base + folder + "/" + icon + ".png')";
+        tile.style.imageRendering = "pixelated";
+        tile.title = name + " (" + fullId + ")";
         tile.addEventListener("click", () => {
-          selected = id;
-          if (manual) manual.value = id.toUpperCase();
-          onSelect(id);
-          this._addRecent(id);
+          selected = key;
+          if (manual) manual.value = key.toUpperCase();
+          onSelect(key);
+          this._addRecent(key);
           renderGrid(search ? search.value : "");
         });
         grid.appendChild(tile);

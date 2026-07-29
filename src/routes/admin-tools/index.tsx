@@ -4,6 +4,7 @@ import ShieldCheck from 'lucide-icons-qwik/icons/ShieldCheck';
 import Ticket from 'lucide-icons-qwik/icons/Ticket';
 import CheckCircle2 from 'lucide-icons-qwik/icons/CheckCircle2';
 import AlertTriangle from 'lucide-icons-qwik/icons/AlertTriangle';
+import { Toggle } from '@luminescent/ui-qwik';
 import { getDB, subscriptionCoupons } from '../../util/db';
 import { getSessionUser, isAdmin } from '../../util/auth';
 
@@ -172,19 +173,14 @@ export default component$(() => {
               </div>
             </div>
 
-            <div class="flex items-center gap-2 py-1">
-              <input
-                type="checkbox"
+            <div class="py-1">
+              <Toggle
                 name="isSubscription"
                 id="isSubscription"
-                class="h-4 w-4 rounded border-gray-800 bg-gray-950 text-gray-600 focus:ring-gray-500/30"
-              />
-              <label
-                for="isSubscription"
                 class="text-sm font-medium text-gray-300"
               >
                 Is Subscription / Trial Extension Coupon
-              </label>
+              </Toggle>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

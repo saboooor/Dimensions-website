@@ -15,6 +15,13 @@
       "when": 1785124158022,
       "tag": "0001_rare_bromley",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785271220028,
+      "tag": "0002_slimy_shockwave",
+      "breakpoints": true
     }
   ]
 }

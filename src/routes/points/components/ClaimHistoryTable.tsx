@@ -1,8 +1,14 @@
 import { component$ } from '@qwik.dev/core';
 import History from 'lucide-icons-qwik/icons/History';
 
+interface ClaimItem {
+  type?: string | null;
+  input?: string | null;
+  status?: string | null;
+}
+
 interface ClaimHistoryTableProps {
-  history: any[];
+  history: ClaimItem[];
 }
 
 export const ClaimHistoryTable = component$<ClaimHistoryTableProps>(
@@ -36,7 +42,7 @@ export const ClaimHistoryTable = component$<ClaimHistoryTableProps>(
                     <td class="px-6 py-4">
                       <span
                         class={`inline-block rounded-lg px-3 py-1 text-xs font-medium ${
-                          req.status.startsWith('Coupon:')
+                          req.status?.startsWith('Coupon:')
                             ? 'border border-emerald-900/40 bg-emerald-950/30 font-mono text-emerald-400 select-all'
                             : 'border border-gray-900/40 bg-gray-950/30 text-gray-200'
                         }`}

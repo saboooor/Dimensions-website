@@ -198,8 +198,16 @@ export default component$(() => {
   });
 
   return (
-    <>
-      <div class="flex w-full flex-col gap-6" id="app">
+    <section
+      class="relative flex min-h-svh flex-col overflow-hidden p-6 pt-20"
+      style={{
+        '--lum-border-radius': '1.5rem',
+      }}
+    >
+      <div
+        class="mx-auto flex w-full max-w-4xl flex-col gap-6 text-gray-100 xl:max-w-5xl 2xl:max-w-6xl"
+        id="app"
+      >
         {/* Editor Control Bar via Nav.tsx component */}
         <Nav>
           <div q:slot="icon">
@@ -660,6 +668,6 @@ export default component$(() => {
           </div>
         </div>
       )}
-    </>
+    </section>
   );
 });

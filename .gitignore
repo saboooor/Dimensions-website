@@ -51,3 +51,6 @@ vite.config.mts.*
 worker-configuration.d.ts
 .wrangler
 tmp/*
+
+# Generated Texture Assets
+public/editor/portal/Images/

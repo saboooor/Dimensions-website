@@ -24,10 +24,13 @@ import ChevronDown from 'lucide-icons-qwik/icons/ChevronDown';
 import Box from 'lucide-icons-qwik/icons/Box';
 import Maximize2 from 'lucide-icons-qwik/icons/Maximize2';
 
+import { Toggle } from '@luminescent/ui-qwik';
 import { getDB, userPortals } from '~/util/db';
 import { getSessionUser, isAdmin } from '~/util/auth';
 import { Session } from '@auth/qwik';
 import textureManifest from '~/lib/texture-manifest.json';
+import blocksRegistry from '~/lib/blocks.json';
+import registeredAddons from '~/lib/registered-addons.json';
 import { Nav } from '~/components/Nav';
 import { ViewportCanvas } from './portal-editor';
 
@@ -41,21 +44,8 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
   const db = getDB();
   const session = requestEvent.sharedMap.get('session') as Session;
 
-  // Load registered addons
-  const addons = await db.query.registeredAddons.findMany();
-  const addonsList = addons.map((a) => {
-    let options = {};
-    try {
-      options = JSON.parse(a.portalOptions);
-    } catch {
-      // ignore
-    }
-    return {
-      name: a.name,
-      description: a.description,
-      options,
-    };
-  });
+  // Load registered addons from static json
+  const addonsList = registeredAddons;
 
   // Load portal row if portalId is set
   let portalRow = undefined;
@@ -188,8 +178,6 @@ export default component$(() => {
   const loaderSig = usePortalEditorLoader();
   const canvasRef = useSignal<HTMLCanvasElement>();
 
-  const blocksList: string[] = loaderSig.value.textureManifest.blocks || [];
-
   const store = useStore({
     portalID: 'testPortal',
     activeTab: 'design' as 'design' | 'settings' | 'addons',
@@ -222,6 +210,7 @@ export default component$(() => {
     if (!canvasRef.value) return;
 
     const viewport = new ViewportCanvas(canvasRef.value);
+    viewport.setMaterials(store.frameBlock, store.portalBlock);
     viewport.setDimensions(store.width, store.height);
     viewport.start();
 
@@ -231,8 +220,16 @@ export default component$(() => {
   });
 
   return (
-    <>
-      <div class="flex w-full flex-col gap-6" id="app">
+    <section
+      class="relative flex min-h-svh flex-col overflow-hidden p-6 pt-20"
+      style={{
+        '--lum-border-radius': '1.5rem',
+      }}
+    >
+      <div
+        class="mx-auto flex w-full max-w-4xl flex-col gap-6 text-gray-100 xl:max-w-5xl 2xl:max-w-6xl"
+        id="app"
+      >
         {/* Editor Control Bar via Nav.tsx component */}
         <Nav>
           <div q:slot="icon">
@@ -412,26 +409,35 @@ export default component$(() => {
                           }}
                         />
                         <div class="grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
-                          {blocksList
-                            .filter((b) =>
-                              b
-                                .toLowerCase()
-                                .includes(store.frameSearch.toLowerCase())
+                          {blocksRegistry
+                            .filter(
+                              (b) =>
+                                b.name
+                                  .toLowerCase()
+                                  .includes(store.frameSearch.toLowerCase()) ||
+                                b.key
+                                  .toLowerCase()
+                                  .includes(store.frameSearch.toLowerCase()) ||
+                                b.id
+                                  .toLowerCase()
+                                  .includes(store.frameSearch.toLowerCase())
                             )
                             .map((block) => (
                               <div
-                                key={block}
+                                key={block.id}
                                 class={
                                   'aspect-square cursor-pointer rounded-lg border bg-cover bg-center shadow-sm transition-all duration-150 hover:scale-105 ' +
-                                  (store.frameBlock === block
+                                  (store.frameBlock === block.key ||
+                                  store.frameBlock === block.icon
                                     ? 'border-gray-400 shadow-lg ring-2 ring-gray-400/40'
                                     : 'border-gray-800/80 hover:border-gray-600')
                                 }
                                 style={{
-                                  backgroundImage: `url(/editor/portal/Images/blocks/${block}.png)`,
+                                  backgroundImage: `url(/editor/portal/Images/blocks/${block.icon}.png)`,
+                                  imageRendering: 'pixelated',
                                 }}
-                                title={block}
-                                onClick$={() => (store.frameBlock = block)}
+                                title={`${block.name} (${block.id})`}
+                                onClick$={() => (store.frameBlock = block.key)}
                               />
                             ))}
                         </div>
@@ -472,26 +478,35 @@ export default component$(() => {
                           }}
                         />
                         <div class="grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
-                          {blocksList
-                            .filter((b) =>
-                              b
-                                .toLowerCase()
-                                .includes(store.portalSearch.toLowerCase())
+                          {blocksRegistry
+                            .filter(
+                              (b) =>
+                                b.name
+                                  .toLowerCase()
+                                  .includes(store.portalSearch.toLowerCase()) ||
+                                b.key
+                                  .toLowerCase()
+                                  .includes(store.portalSearch.toLowerCase()) ||
+                                b.id
+                                  .toLowerCase()
+                                  .includes(store.portalSearch.toLowerCase())
                             )
                             .map((block) => (
                               <div
-                                key={block}
+                                key={block.id}
                                 class={
                                   'aspect-square cursor-pointer rounded-lg border bg-cover bg-center shadow-sm transition-all duration-150 hover:scale-105 ' +
-                                  (store.portalBlock === block
+                                  (store.portalBlock === block.key ||
+                                  store.portalBlock === block.icon
                                     ? 'border-gray-400 shadow-lg ring-2 ring-gray-400/40'
                                     : 'border-gray-800/80 hover:border-gray-600')
                                 }
                                 style={{
-                                  backgroundImage: `url(/editor/portal/Images/blocks/${block}.png)`,
+                                  backgroundImage: `url(/editor/portal/Images/blocks/${block.icon}.png)`,
+                                  imageRendering: 'pixelated',
                                 }}
-                                title={block}
-                                onClick$={() => (store.portalBlock = block)}
+                                title={`${block.name} (${block.id})`}
+                                onClick$={() => (store.portalBlock = block.key)}
                               />
                             ))}
                         </div>
@@ -607,25 +622,12 @@ export default component$(() => {
                           <span class="text-xs font-bold text-gray-200">
                             {addon.name}
                           </span>
-                          <button
-                            type="button"
-                            class={
-                              'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ' +
-                              (addon.enabled
-                                ? 'bg-gray-600'
-                                : 'border-gray-800 bg-gray-950')
-                            }
-                            onClick$={() => (addon.enabled = !addon.enabled)}
-                          >
-                            <span
-                              class={
-                                'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ' +
-                                (addon.enabled
-                                  ? 'translate-x-4'
-                                  : 'translate-x-0')
-                              }
-                            />
-                          </button>
+                          <Toggle
+                            checked={addon.enabled}
+                            onChange$={(e, el) => {
+                              addon.enabled = el.checked;
+                            }}
+                          />
                         </div>
                         {addon.description && (
                           <p class="text-[11px] leading-relaxed text-gray-400">
@@ -645,7 +647,9 @@ export default component$(() => {
             <div class="relative flex h-[500px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-800/80 bg-gray-950 shadow-2xl lg:h-[700px]">
               <canvas
                 ref={canvasRef}
+                id="viewport"
                 class="block h-full w-full flex-1 bg-black"
+                style={{ imageRendering: 'pixelated' }}
               ></canvas>
               <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
                 <span class="rounded-lg border border-gray-800/80 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-300 uppercase backdrop-blur-sm">
@@ -656,6 +660,6 @@ export default component$(() => {
           </div>
         </main>
       </div>
-    </>
+    </section>
   );
 });

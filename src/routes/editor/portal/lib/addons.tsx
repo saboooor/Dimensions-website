@@ -1,4 +1,5 @@
 import { render } from "@qwik.dev/core";
+import { Toggle } from "@luminescent/ui-qwik";
 import Puzzle from "lucide-icons-qwik/icons/Puzzle";
 
 import type { AddonOption, AddonDefinition } from "./types";
@@ -142,20 +143,17 @@ export const AddonManager = {
       nameEl.textContent = addon.name;
       nameRow.appendChild(nameEl);
 
-      const toggleBtn = document.createElement("button");
-      toggleBtn.type = "button";
-      toggleBtn.className =
-        "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out " +
-        (addon.enabled ? "bg-gray-600" : "bg-gray-950 border-gray-800");
-      toggleBtn.innerHTML =
-        '<span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ' +
-        (addon.enabled ? "translate-x-4" : "translate-x-0") +
-        '"></span>';
-      toggleBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.toggle(addon.name);
-      });
-      nameRow.appendChild(toggleBtn);
+      const toggleWrap = document.createElement("div");
+      void render(
+        toggleWrap,
+        <Toggle
+          checked={addon.enabled}
+          onChange$={() => {
+            this.toggle(addon.name);
+          }}
+        />
+      );
+      nameRow.appendChild(toggleWrap);
       card.appendChild(nameRow);
 
       if (addon.description) {
@@ -231,21 +229,19 @@ export const AddonManager = {
     row.appendChild(labelEl);
 
     if (type === "toggle") {
-      row.className = "field-row";
-      const toggle = document.createElement("label");
-      toggle.className = "toggle-switch";
-      toggle.innerHTML =
-        '<input type="checkbox"' +
-        (value ? " checked" : "") +
-        '><span class="toggle-track"></span>';
-      const input = toggle.querySelector("input");
-      if (input) {
-        input.addEventListener("change", () => {
-          this.addonState[key] = input.checked;
-          if (this.onStateChange) this.onStateChange();
-        });
-      }
-      row.appendChild(toggle);
+      row.className = "field-row flex items-center justify-between";
+      const toggleWrap = document.createElement("div");
+      void render(
+        toggleWrap,
+        <Toggle
+          checked={!!value}
+          onChange$={(e, el) => {
+            this.addonState[key] = el.checked;
+            if (this.onStateChange) this.onStateChange();
+          }}
+        />
+      );
+      row.appendChild(toggleWrap);
     } else if (type === "int") {
       const input = document.createElement("input");
       input.type = "number";

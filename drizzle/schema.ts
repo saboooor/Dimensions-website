@@ -135,14 +135,6 @@ export const cosmetics = sqliteTable('cosmetics', {
   used: text('used').notNull(), // JSON array of event types (ignite, destroy, use, tick)
 });
 
-// Registered Addons Table
-export const registeredAddons = sqliteTable('registered_addons', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').unique().notNull(),
-  description: text('description').notNull(),
-  portalOptions: text('portalOptions').notNull(), // JSON options
-});
-
 // Dimensions Subscriptions Table
 export const dimensionsSubscriptions = sqliteTable('dimensionsSubscriptions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -211,9 +203,6 @@ export type NewBadge = typeof badges.$inferInsert;
 
 export type Cosmetic = typeof cosmetics.$inferSelect;
 export type NewCosmetic = typeof cosmetics.$inferInsert;
-
-export type RegisteredAddon = typeof registeredAddons.$inferSelect;
-export type NewRegisteredAddon = typeof registeredAddons.$inferInsert;
 
 export type DimensionsSubscription =
   typeof dimensionsSubscriptions.$inferSelect;

@@ -1,0 +1,375 @@
+[
+  {
+    "name": "HorizontalPortals",
+    "description": "Allows creation of horizontal portals (floors and ceilings).",
+    "options": [
+      {
+        "name": "horizontalPortal",
+        "type": "select-single",
+        "default": "both",
+        "list": ["both", "top", "bottom"]
+      }
+    ]
+  },
+  {
+    "name": "CommandsOnUse",
+    "description": "Executes console or player commands when a portal is used.",
+    "options": [
+      {
+        "name": "commandsOnUse",
+        "type": "list",
+        "default": []
+      },
+      {
+        "name": "disableTp",
+        "type": "toggle",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Permissions",
+    "description": "Restricts portal usage using permission nodes.",
+    "options": [
+      {
+        "name": "permissionNode",
+        "type": "text",
+        "default": ""
+      },
+      {
+        "name": "permissionDenyMessage",
+        "type": "text",
+        "default": "You do not have permission to use this portal."
+      }
+    ]
+  },
+  {
+    "name": "LimitedUses",
+    "description": "Limits how many times a portal can be used before deactivating.",
+    "options": [
+      {
+        "name": "limitedUses",
+        "type": "int",
+        "default": 10,
+        "min": 1,
+        "max": 10000
+      },
+      {
+        "name": "limitedUsesAction",
+        "type": "text",
+        "default": "destroy"
+      },
+      {
+        "name": "hubWorld",
+        "type": "text",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "ChargeOnUse",
+    "description": "Charges currency via Vault when players use a portal.",
+    "options": [
+      {
+        "name": "chargeAmount",
+        "type": "int",
+        "default": 10,
+        "min": 0
+      },
+      {
+        "name": "chargeDenyMessage",
+        "type": "text",
+        "default": "You cannot afford to use this portal!"
+      },
+      {
+        "name": "chargeAcceptMessage",
+        "type": "text",
+        "default": "Paid {amount} to use the portal."
+      },
+      {
+        "name": "chargeOnReturn",
+        "type": "toggle",
+        "default": true
+      },
+      {
+        "name": "chargeOneTime",
+        "type": "toggle",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "CustomLighter",
+    "description": "Allows custom items to ignite portals and customize frame/inside blocks.",
+    "options": [
+      {
+        "name": "customItem",
+        "type": "text",
+        "default": "FLINT_AND_STEEL"
+      }
+    ]
+  },
+  {
+    "name": "Daylight",
+    "description": "Restricts portal usage based on daylight level or time of day.",
+    "options": [
+      {
+        "name": "dayLightMin",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "max": 24000
+      },
+      {
+        "name": "dayLightMax",
+        "type": "int",
+        "default": 24000,
+        "min": 0,
+        "max": 24000
+      },
+      {
+        "name": "dayLightDenyMessage",
+        "type": "text",
+        "default": "This portal only operates during certain hours of the day."
+      }
+    ]
+  },
+  {
+    "name": "HubWorld",
+    "description": "Routes players through a central hub world location.",
+    "options": [
+      {
+        "name": "hubWorld",
+        "type": "text",
+        "default": "world"
+      },
+      {
+        "name": "hubPortals",
+        "type": "list",
+        "default": []
+      },
+      {
+        "name": "hubPortalsMode",
+        "type": "select-single",
+        "default": "RANDOM",
+        "list": ["RANDOM", "ORDERED"]
+      }
+    ]
+  },
+  {
+    "name": "IgniteByEvent",
+    "description": "Ignites portals automatically when triggered by environmental events.",
+    "options": [
+      {
+        "name": "igniteEvents",
+        "type": "list",
+        "default": ["REDSTONE", "PLAYER_WALK", "PRESSURE_PLATE"]
+      }
+    ]
+  },
+  {
+    "name": "MessageOnUse",
+    "description": "Sends customizable chat messages when entering a portal.",
+    "options": [
+      {
+        "name": "messageOnUse",
+        "type": "text",
+        "default": "Welcome to the new dimension!"
+      }
+    ]
+  },
+  {
+    "name": "ModelEngine",
+    "description": "Attaches 3D ModelEngine models to active portals.",
+    "options": [
+      {
+        "name": "modelEngineList",
+        "type": "list",
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "Particles",
+    "description": "Adds custom particle effects and animations around portals.",
+    "options": [
+      {
+        "name": "particlePacks",
+        "type": "list",
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "PastedPortals",
+    "description": "Pastes WorldEdit schematics when portals are built or activated.",
+    "options": [
+      {
+        "name": "schematic",
+        "type": "text",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "PortalSounds",
+    "description": "Plays ambient sound effects when players interact with portals.",
+    "options": [
+      {
+        "name": "soundPacks",
+        "type": "list",
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "ProxyAddon",
+    "description": "Enables cross-server portal teleports via BungeeCord or Velocity networks.",
+    "options": [
+      {
+        "name": "bungeeServer",
+        "type": "text",
+        "default": "lobby"
+      },
+      {
+        "name": "bungeeTPWorld",
+        "type": "text",
+        "default": "world"
+      }
+    ]
+  },
+  {
+    "name": "RandomLocation",
+    "description": "Teleports players to a safe random location within a configured radius.",
+    "options": [
+      {
+        "name": "randomTPRange",
+        "type": "int",
+        "default": 1000,
+        "min": 10,
+        "max": 100000
+      },
+      {
+        "name": "randomTPAllowLink",
+        "type": "toggle",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "StylishPortals",
+    "description": "Allows non-rectangular custom portal geometry.",
+    "options": []
+  },
+  {
+    "name": "TimedPortals",
+    "description": "Automatically destroys or deactivates portals after a timer expires.",
+    "options": [
+      {
+        "name": "timedPortalsDestroyAfter",
+        "type": "int",
+        "default": 60,
+        "min": 1
+      },
+      {
+        "name": "timedPortalsEffects",
+        "type": "list",
+        "default": []
+      },
+      {
+        "name": "timedPortalsAction",
+        "type": "text",
+        "default": "DESTROY"
+      }
+    ]
+  },
+  {
+    "name": "Unbreakable",
+    "description": "Prevents portal structures from being broken by players or explosions.",
+    "options": [
+      {
+        "name": "unbreakableList",
+        "type": "list",
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "Weather",
+    "description": "Controls portal availability based on weather conditions (rain, thunder, clear).",
+    "options": [
+      {
+        "name": "weatherDisabled",
+        "type": "select-single",
+        "default": "none",
+        "list": ["none", "rain", "thunder", "clear"]
+      },
+      {
+        "name": "weatherDenyMessage",
+        "type": "text",
+        "default": "This portal cannot be activated during this weather!"
+      }
+    ]
+  },
+  {
+    "name": "Biomes",
+    "description": "Restricts portal creation or usage to specified biomes.",
+    "options": [
+      {
+        "name": "biomesList",
+        "type": "list",
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "BetterPortals",
+    "description": "Hooks into BetterPortals for seamless portal rendering.",
+    "options": []
+  },
+  {
+    "name": "ForceLink",
+    "description": "Forces specific portal link pairings between locations.",
+    "options": []
+  },
+  {
+    "name": "WorldGuardFlags",
+    "description": "Integrates with WorldGuard region flags for portal access control.",
+    "options": []
+  },
+  {
+    "name": "PatreonCosmetics",
+    "description": "Exclusive portal cosmetics and particle trails for Patreon supporters.",
+    "options": []
+  },
+  {
+    "name": "PortablePortals",
+    "description": "Allows players to spawn portable temporary portals using commands.",
+    "options": []
+  },
+  {
+    "name": "PortalTp",
+    "description": "Allows players to teleport to the nearest portal of a given type.",
+    "options": []
+  },
+  {
+    "name": "CustomWorlds",
+    "description": "Integrates custom world generators for portal destination worlds.",
+    "options": []
+  },
+  {
+    "name": "DimensionsBungee",
+    "description": "BungeeCord proxy component for multi-server networking.",
+    "options": []
+  },
+  {
+    "name": "DimensionsVelocity",
+    "description": "Velocity proxy component for multi-server networking.",
+    "options": []
+  },
+  {
+    "name": "ExampleAddon",
+    "description": "Reference template for building custom Dimensions addons.",
+    "options": []
+  }
+]
