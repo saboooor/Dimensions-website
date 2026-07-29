@@ -59,13 +59,13 @@ export default component$<SidebarProps>(({ user, sidebarOpen }) => {
             {editorsOpen.value && (
               <ul class="animate-in fade-in slide-in-from-top-1 mt-1.5 flex flex-col gap-1 duration-150">
                 <li>
-                  <a href="/editor/portal" class={subNavItemClass}>
+                  <a href="/editor" class={subNavItemClass}>
                     <Dot class="h-3 w-3" />
                     <span>Portal editor</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/editor/particle" class={subNavItemClass}>
+                  <a href="/editor" class={subNavItemClass}>
                     <Dot class="h-3 w-3" />
                     <span>Particle editor</span>
                   </a>

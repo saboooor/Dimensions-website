@@ -247,7 +247,7 @@ export default component$(() => {
             )}
 
             <a
-              href="/editor/portal"
+              href="/editor"
               class="flex items-center gap-2 rounded-xl bg-gray-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-gray-500"
             >
               <Plus class="h-4 w-4" />

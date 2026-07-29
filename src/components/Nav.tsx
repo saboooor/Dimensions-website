@@ -8,7 +8,6 @@ import LogOut from 'lucide-icons-qwik/icons/LogOut';
 import type { User } from '~/util/db';
 import { useSession, useSignIn, useSignOut } from '~/routes/plugin@auth';
 import UserIcon from 'lucide-icons-qwik/icons/User';
-import Sparkle from 'lucide-icons-qwik/icons/Sparkle';
 import RectangleVertical from 'lucide-icons-qwik/icons/RectangleVertical';
 
 export interface NavProps {
@@ -52,20 +51,13 @@ export const Nav = component$<NavProps>(({ user }) => {
       </Link>
       <Link
         q:slot="center"
-        href="/editor/portal"
+        href="/editor"
         class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
       >
         <RectangleVertical class="h-4 w-4" />
         Portal Editor
       </Link>
-      <Link
-        q:slot="center"
-        href="/editor/particle"
-        class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2 hidden sm:flex"
-      >
-        <Sparkle class="h-4 w-4" />
-        Particle Editor
-      </Link>
+
       <Link
         q:slot="center"
         href="/faq"
@@ -133,7 +125,7 @@ export const Nav = component$<NavProps>(({ user }) => {
             name="options.redirectTo"
             value={loc.url.pathname + loc.url.search}
           />
-          <button class="lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2">
+          <button class="lum-btn lum-bg-transparent hover:lum-bg-nav-bg rounded-lum-2">
             Login
           </button>
         </Form>

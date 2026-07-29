@@ -53,4 +53,4 @@ worker-configuration.d.ts
 tmp/*
 
 # Generated Texture Assets
-public/editor/portal/Images/
+public/editor/Images/

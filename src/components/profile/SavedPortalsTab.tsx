@@ -47,7 +47,7 @@ export const SavedPortalsTab = component$<SavedPortalsTabProps>(
                 </div>
 
                 <a
-                  href={`/editor/portal/?portal=${portal.id}`}
+                  href={`/editor/?portal=${portal.id}`}
                   class="border-gray-850 mt-4 w-full rounded-lg border bg-gray-900 py-1.5 text-center text-[10px] font-bold text-gray-300 transition-all hover:bg-gray-800"
                 >
                   Open in Editor

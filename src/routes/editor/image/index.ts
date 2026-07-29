@@ -54,7 +54,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
     // 2. Load and crop background
     const background = await fetchJimpImage(
       origin,
-      '/editor/portal/Images/portalBackground.jpg'
+      '/editor/Images/portalBackground.jpg'
     );
     const bgCropX = Math.floor(background.width / 2);
     const bgCropY = Math.floor((background.height / height) * 1.5);
@@ -68,8 +68,8 @@ export const onGet: RequestHandler = async (requestEvent) => {
     try {
       frameBlockImg = await fetchJimpImage(
         origin,
-        `/editor/portal/Images/blocks/${blockName}.png`,
-        '/editor/portal/Images/noTexture.jpg'
+        `/editor/Images/blocks/${blockName}.png`,
+        '/editor/Images/noTexture.jpg'
       );
       frameBlockImg.resize({ w: 61, h: 61 });
     } catch (e) {
@@ -79,8 +79,8 @@ export const onGet: RequestHandler = async (requestEvent) => {
     try {
       insideBlockImg = await fetchJimpImage(
         origin,
-        `/editor/portal/Images/frames/${insideName}.png`,
-        '/editor/portal/Images/noTexture.jpg'
+        `/editor/Images/frames/${insideName}.png`,
+        '/editor/Images/noTexture.jpg'
       );
       insideBlockImg.resize({ w: 61, h: 61 });
       insideBlockImg.opacity(0.65); // 65% opacity
@@ -110,8 +110,8 @@ export const onGet: RequestHandler = async (requestEvent) => {
     try {
       const itemImg = await fetchJimpImage(
         origin,
-        `/editor/portal/Images/items/${itemName}.png`,
-        '/editor/portal/Images/noTexture.jpg'
+        `/editor/Images/items/${itemName}.png`,
+        '/editor/Images/noTexture.jpg'
       );
       itemImg.resize({ w: 61, h: 61 });
       dest.composite(itemImg, 0, (height - 1) * 60);

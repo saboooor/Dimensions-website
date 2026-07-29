@@ -17,9 +17,7 @@ declare global {
 
 export const Utils = {
   generateId(): string {
-    return (
-      "pe_" + Math.random().toString(36).substr(2, 9) + Date.now().toString(36)
-    );
+    return "pe_" + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   },
 
   clamp(val: number, min: number, max: number): number {
@@ -40,8 +38,7 @@ export const Utils = {
 
   hexToRgb(hex: string): { r: number; g: number; b: number } {
     hex = hex.replace(/^#/, "");
-    if (hex.length === 3)
-      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     const n = parseInt(hex, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   },

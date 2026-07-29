@@ -12,10 +12,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
   const b = rgb[2] !== undefined ? rgb[2] : 255;
 
   try {
-    const url = new URL(
-      '/editor/portal/Images/particles.png',
-      origin
-    ).toString();
+    const url = new URL('/editor/Images/particles.png', origin).toString();
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch particles.png');
     const arrayBuffer = await res.arrayBuffer();

@@ -35,10 +35,7 @@ export const ShapeParamLabels: Record<string, string> = {
   expression: "Expression",
 };
 
-export const ShapeParamRanges: Record<
-  string,
-  { min: number; max: number; step: number }
-> = {
+export const ShapeParamRanges: Record<string, { min: number; max: number; step: number }> = {
   radius: { min: 0.1, max: 4.0, step: 0.1 },
   density: { min: 1, max: 100, step: 1 },
   speed: { min: 0, max: 5.0, step: 0.1 },
@@ -75,12 +72,7 @@ export const PresetIconComponents: Record<string, any> = {
 };
 
 export const Shapes = {
-  ring(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    t: number
-  ): ParticlePoint[] {
+  ring(params: Record<string, any>, _pw: number, _ph: number, t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.density || 20);
     const radius = params.radius || 1.5;
@@ -97,12 +89,7 @@ export const Shapes = {
     return points;
   },
 
-  spiral(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    t: number
-  ): ParticlePoint[] {
+  spiral(params: Record<string, any>, _pw: number, _ph: number, t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.density || 30);
     const maxRadius = params.radius || 1.2;
@@ -122,12 +109,7 @@ export const Shapes = {
     return points;
   },
 
-  helix(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    t: number
-  ): ParticlePoint[] {
+  helix(params: Record<string, any>, _pw: number, _ph: number, t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.density || 20);
     const radius = params.radius || 1.0;
@@ -148,12 +130,7 @@ export const Shapes = {
     return points;
   },
 
-  vortex(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    t: number
-  ): ParticlePoint[] {
+  vortex(params: Record<string, any>, _pw: number, _ph: number, t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.density || 30);
     const maxRadius = params.maxRadius || 1.5;
@@ -173,12 +150,7 @@ export const Shapes = {
     return points;
   },
 
-  rain(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    t: number
-  ): ParticlePoint[] {
+  rain(params: Record<string, any>, _pw: number, _ph: number, t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.density || 15);
     const spread = params.spread || 1.5;
@@ -195,12 +167,7 @@ export const Shapes = {
     return points;
   },
 
-  border(
-    params: Record<string, any>,
-    pw: number,
-    ph: number,
-    _t: number
-  ): ParticlePoint[] {
+  border(params: Record<string, any>, pw: number, ph: number, _t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const range = params.offsetRange || 0.05;
     const halfW = pw * 0.5;
@@ -232,12 +199,7 @@ export const Shapes = {
     return points;
   },
 
-  random(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    _t: number
-  ): ParticlePoint[] {
+  random(params: Record<string, any>, _pw: number, _ph: number, _t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.count || 12);
     const spread = params.spread || 1.0;
@@ -255,12 +217,7 @@ export const Shapes = {
     return points;
   },
 
-  custom(
-    params: Record<string, any>,
-    _pw: number,
-    _ph: number,
-    _t: number
-  ): ParticlePoint[] {
+  custom(params: Record<string, any>, _pw: number, _ph: number, _t: number): ParticlePoint[] {
     const points: ParticlePoint[] = [];
     const count = Math.round(params.count || 10);
     for (let i = 0; i < count; i++) {

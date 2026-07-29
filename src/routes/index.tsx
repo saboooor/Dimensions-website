@@ -6,7 +6,6 @@ import DoorOpen from 'lucide-icons-qwik/icons/DoorOpen';
 import InfinityIcon from 'lucide-icons-qwik/icons/InfinityIcon';
 import MessageSquareHeart from 'lucide-icons-qwik/icons/MessageSquareHeart';
 import RectangleVertical from 'lucide-icons-qwik/icons/RectangleVertical';
-import Sparkle from 'lucide-icons-qwik/icons/Sparkle';
 import { Hoverable } from '@luminescent/ui-qwik';
 //@ts-expect-error vite imagetools
 import Background from '~/images/Background.png?jsx&format=avif&w=1280;1920;2560;3840';
@@ -46,9 +45,9 @@ export default component$(() => {
       >
         <div
           id="hero"
-          class="grid w-full max-w-4xl grid-cols-1 gap-2 text-gray-100 md:grid-cols-2 xl:max-w-5xl 2xl:max-w-6xl"
+          class="grid w-full max-w-4xl grid-cols-1 gap-2 px-4 pb-20 text-gray-100 sm:grid-cols-2 sm:pb-4 xl:max-w-5xl 2xl:max-w-6xl"
         >
-          <div class="lum-card lum-bg-lum-card-bg/50 relative col-span-2 items-center gap-2 overflow-clip px-48 py-48 text-center xl:gap-4">
+          <div class="lum-card lum-bg-lum-card-bg/50 relative items-center gap-2 overflow-clip px-6 py-20 text-center sm:col-span-2 sm:px-20 sm:py-32 md:px-48 md:py-48 xl:gap-4">
             <Background
               id="bg"
               alt="Background"
@@ -86,30 +85,23 @@ export default component$(() => {
               <p>{feature.description}</p>
             </div>
           ))}
-          <div class="lum-card lum-grad-bg-yellow-200/10 flex-row items-center transition-all duration-200!">
+          <div class="lum-card lum-grad-bg-yellow-200/10 flex-col items-start gap-4 transition-all duration-200! sm:flex-row sm:items-center">
             <div class="flex flex-col gap-3">
               <h4 class="mb-2 flex items-center gap-2 text-2xl font-bold">
-                <Palette /> Interactive Visual Editors
+                <Palette /> Interactive Visual Editor
               </h4>
               <p>
-                Build your custom portals and particle designs in the browser
-                and instantly download the YAML config
+                Build your custom portals, configure particles, and download the
+                YAML config — all in one place.
               </p>
             </div>
             <div class="flex flex-col gap-1">
               <Link
-                href="/editor/portal"
-                class="lum-btn rounded-lum-2 lum-bg-yellow-200/20 hover:lum-bg-yellow-200/40 rounded-b"
+                href="/editor"
+                class="lum-btn rounded-lum-2 lum-bg-yellow-200/20 hover:lum-bg-yellow-200/40"
               >
                 <RectangleVertical size={16} />
                 Portal Editor
-              </Link>
-              <Link
-                href="/editor/particle"
-                class="lum-btn rounded-lum-2 lum-bg-yellow-200/20 hover:lum-bg-yellow-200/40 rounded-t"
-              >
-                <Sparkle size={16} />
-                Particle Editor
               </Link>
             </div>
           </div>

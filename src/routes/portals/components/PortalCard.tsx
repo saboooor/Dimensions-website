@@ -71,7 +71,7 @@ export const PortalCard = component$<PortalCardProps>(
 
         {/* Open button */}
         <a
-          href={`/editor/portal/?portal=${portal.id}`}
+          href={`/editor/?portal=${portal.id}`}
           class="border-gray-850 mt-4 w-full rounded-lg border bg-gray-900 py-2 text-center text-xs font-semibold text-gray-300 transition-all hover:bg-gray-800"
         >
           Open in Editor

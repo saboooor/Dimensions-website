@@ -1,4 +1,4 @@
-import type { PresetDefinition } from "./types";
+import type { PresetDefinition } from "../particle/lib/types";
 import { PresetIconComponents, ShapeIconComponents } from "./shapes";
 import Circle from "lucide-icons-qwik/icons/Circle";
 

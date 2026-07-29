@@ -32,18 +32,9 @@ if (!fs.existsSync(srcBlocksPath)) {
   }
 }
 
-const publicBlocksPath = path.join(
-  projectRoot,
-  'public/editor/portal/Images/blocks'
-);
-const publicFramesPath = path.join(
-  projectRoot,
-  'public/editor/portal/Images/frames'
-);
-const publicItemsPath = path.join(
-  projectRoot,
-  'public/editor/portal/Images/items'
-);
+const publicBlocksPath = path.join(projectRoot, 'public/editor/Images/blocks');
+const publicFramesPath = path.join(projectRoot, 'public/editor/Images/frames');
+const publicItemsPath = path.join(projectRoot, 'public/editor/Images/items');
 
 fs.mkdirSync(publicBlocksPath, { recursive: true });
 fs.mkdirSync(publicFramesPath, { recursive: true });

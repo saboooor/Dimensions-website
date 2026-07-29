@@ -15,7 +15,7 @@ export const BlockSelector = {
     manualId: string,
     textureList: Array<string | { id: string; key: string; name: string; icon: string }>,
     folder: string,
-    onSelect: (id: string) => void
+    onSelect: (id: string) => void,
   ): BlockSelectorInstance {
     const grid = document.getElementById(gridId) as HTMLElement;
     const search = document.getElementById(searchId) as HTMLInputElement;
@@ -27,7 +27,7 @@ export const BlockSelector = {
       grid.innerHTML = "";
       const filterLower = (filter || "").toLowerCase().trim();
       let shown = 0;
-      const base = (window as any).TEXTURE_BASE || "/editor/portal/Images/";
+      const base = (window as any).TEXTURE_BASE || "/editor/Images/";
 
       textureList.forEach((item) => {
         const isObj = typeof item === "object";
@@ -49,8 +49,7 @@ export const BlockSelector = {
           (selected === key || selected === icon
             ? "border-gray-400 ring-2 ring-gray-400/40 shadow-lg"
             : "border-gray-800/80 hover:border-gray-600");
-        tile.style.backgroundImage =
-          "url('" + base + folder + "/" + icon + ".png')";
+        tile.style.backgroundImage = "url('" + base + folder + "/" + icon + ".png')";
         tile.style.imageRendering = "pixelated";
         tile.title = name + " (" + fullId + ")";
         tile.addEventListener("click", () => {
@@ -108,13 +107,10 @@ export const BlockSelector = {
 
   _addRecent(id: string): void {
     try {
-      let recent: string[] = JSON.parse(
-        localStorage.getItem(this._recentKey) || "[]"
-      );
+      let recent: string[] = JSON.parse(localStorage.getItem(this._recentKey) || "[]");
       recent = recent.filter((r) => r !== id);
       recent.unshift(id);
-      if (recent.length > this._maxRecent)
-        recent = recent.slice(0, this._maxRecent);
+      if (recent.length > this._maxRecent) recent = recent.slice(0, this._maxRecent);
       localStorage.setItem(this._recentKey, JSON.stringify(recent));
     } catch {
       // ignore

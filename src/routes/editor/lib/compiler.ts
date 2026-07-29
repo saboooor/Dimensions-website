@@ -3,7 +3,7 @@ import type {
   ParticleColor,
   PositionConfig,
   AnimationConfig,
-} from "./types";
+} from "../particle/lib/types";
 
 declare const jsyaml: any;
 
@@ -32,17 +32,7 @@ export const Compiler = {
     switch (shape.type) {
       case "spiral":
       case "helix":
-        this._compileSpiralHelix(
-          p,
-          shape.type,
-          params,
-          pos,
-          type,
-          c,
-          size,
-          anim,
-          result
-        );
+        this._compileSpiralHelix(p, shape.type, params, pos, type, c, size, anim, result);
         break;
       case "ring":
         this._compileRing(p, params, pos, type, c, size, anim, result);
@@ -76,7 +66,7 @@ export const Compiler = {
     c: ParticleColor,
     size: number,
     anim: AnimationConfig,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const isHelix = shapeType === "helix";
     const turns = params.turns || (isHelix ? 3 : 2);
@@ -89,16 +79,12 @@ export const Compiler = {
     result[p + "increment"] = "PI/" + p + "amount";
 
     const outerMax = isHelix ? 2 : turns;
-    const outerKey =
-      p + "i=0;" + p + "i<" + outerMax + ";" + p + "i=" + p + "i+1";
-    const innerKey =
-      p + "j=0;" + p + "j<" + p + "amount;" + p + "j=" + p + "j+1";
+    const outerKey = p + "i=0;" + p + "i<" + outerMax + ";" + p + "i=" + p + "i+1";
+    const innerKey = p + "j=0;" + p + "j<" + p + "amount;" + p + "j=" + p + "j+1";
 
     const run: Record<string, any> = {};
     run[p + "angle"] = p + "j*" + p + "increment";
-    const rExpr = isHelix
-      ? p + "radius"
-      : p + "radius*(" + p + "j/" + p + "amount)";
+    const rExpr = isHelix ? p + "radius" : p + "radius*(" + p + "j/" + p + "amount)";
     run[p + "r"] = rExpr;
 
     let xExpr = p + "r*cos(" + p + "angle)";
@@ -113,10 +99,8 @@ export const Compiler = {
     if (anim && anim.rotate) {
       const rotSpeed = anim.rotateSpeed || 1.0;
       const rot = "t*" + rotSpeed;
-      const rx =
-        "(" + xExpr + ")*cos(" + rot + ")-(" + yExpr + ")*sin(" + rot + ")";
-      const ry =
-        "(" + xExpr + ")*sin(" + rot + ")+(" + yExpr + ")*cos(" + rot + ")";
+      const rx = "(" + xExpr + ")*cos(" + rot + ")-(" + yExpr + ")*sin(" + rot + ")";
+      const ry = "(" + xExpr + ")*sin(" + rot + ")+(" + yExpr + ")*cos(" + rot + ")";
       xExpr = rx;
       yExpr = ry;
     }
@@ -142,7 +126,7 @@ export const Compiler = {
     c: ParticleColor,
     size: number,
     anim: AnimationConfig,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const density = params.density || 20;
     const radius = params.radius || 1.5;
@@ -162,10 +146,8 @@ export const Compiler = {
     if (anim && anim.rotate) {
       const rotSpeed = anim.rotateSpeed || 1.0;
       const rot = "t*" + rotSpeed;
-      const rx =
-        "(" + xExpr + ")*cos(" + rot + ")-(" + yExpr + ")*sin(" + rot + ")";
-      const ry =
-        "(" + xExpr + ")*sin(" + rot + ")+(" + yExpr + ")*cos(" + rot + ")";
+      const rx = "(" + xExpr + ")*cos(" + rot + ")-(" + yExpr + ")*sin(" + rot + ")";
+      const ry = "(" + xExpr + ")*sin(" + rot + ")+(" + yExpr + ")*cos(" + rot + ")";
       xExpr = rx;
       yExpr = ry;
     }
@@ -187,7 +169,7 @@ export const Compiler = {
     type: string,
     c: ParticleColor,
     size: number,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const density = params.density || 30;
     const maxRadius = params.maxRadius || 1.5;
@@ -225,7 +207,7 @@ export const Compiler = {
     type: string,
     c: ParticleColor,
     size: number,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const density = params.density || 15;
     const spread = params.spread || 1.5;
@@ -258,7 +240,7 @@ export const Compiler = {
     type: string,
     c: ParticleColor,
     size: number,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const range = params.offsetRange || 0.05;
     let xExpr: string | number = "rand(-" + range + "," + range + ")";
@@ -268,14 +250,7 @@ export const Compiler = {
     if (pos.x) xExpr = "(" + xExpr + ")+" + pos.x;
     if (pos.y) yExpr = "(" + yExpr + ")+" + pos.y;
 
-    result[p + "particle"] = this._particleStr(
-      type,
-      xExpr,
-      yExpr,
-      zExpr,
-      c,
-      size
-    );
+    result[p + "particle"] = this._particleStr(type, xExpr, yExpr, zExpr, c, size);
   },
 
   _compileRandom(
@@ -285,7 +260,7 @@ export const Compiler = {
     type: string,
     c: ParticleColor,
     size: number,
-    result: Record<string, any>
+    result: Record<string, any>,
   ): void {
     const count = params.count || 12;
     const spread = params.spread || 1.0;
@@ -319,7 +294,7 @@ export const Compiler = {
     yExpr: string | number,
     zExpr: string | number,
     color: ParticleColor,
-    size: number
+    size: number,
   ): string {
     let dustOpts = "";
     if (type === "REDSTONE") {

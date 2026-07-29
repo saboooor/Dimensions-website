@@ -2,6 +2,7 @@ import { component$, Slot } from '@qwik.dev/core';
 import { routeLoader$ } from '@qwik.dev/router';
 import { getSessionUser } from '../util/auth';
 import Nav from '../components/Nav';
+import { MobileNav } from '../components/Elements/MobileNav';
 
 /**
  * Global route loader to fetch the logged-in user's session data.
@@ -17,6 +18,7 @@ export default component$(() => {
     <>
       {/* Luminescent UI Nav Component */}
       <Nav user={userSig.value} />
+      <MobileNav />
       <Slot />
     </>
   );

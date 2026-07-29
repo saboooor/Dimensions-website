@@ -17,6 +17,6 @@ After you have done that, restart your server and the plugin will be ready for u
 
 ## Creating a portal
 
-To create a portal, you need to go to the [Portal creator](/editor/portal). From there, you can fully customize your portal.
+To create a portal, you need to go to the [Portal creator](/editor). From there, you can fully customize your portal.
 
 Once you have finished, go to the "Config" tab and click **Download portal file**. Now you need to put that .yml file you just downloaded in the **./plugins/Dimensions/Portals/** folder. Restart your server again, and you are ready to go.

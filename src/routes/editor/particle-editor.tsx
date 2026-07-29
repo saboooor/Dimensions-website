@@ -9,7 +9,7 @@ import {
 } from './lib/shapes';
 import { Compiler } from './lib/compiler';
 import { Presets } from './lib/presets';
-import { ThreeView } from './lib/viewport';
+import { ThreeView } from './lib/particleviewport';
 import type { LayerData } from './lib/types';
 import { render } from '@qwik.dev/core';
 import Circle from 'lucide-icons-qwik/icons/Circle';
