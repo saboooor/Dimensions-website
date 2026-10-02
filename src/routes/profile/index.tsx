@@ -9,7 +9,7 @@ import { ProfileView } from '~/components/ProfileView';
  * Loader to fetch logged-in user profile details, including ranks, badges, cosmetics access, and saved portals.
  */
 export const useProfileLoader = routeLoader$(async (requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
   const userId = session?.user?.id;
   if (!userId) {
     throw requestEvent.redirect(302, '/login');
@@ -107,7 +107,9 @@ export const useProfileLoader = routeLoader$(async (requestEvent) => {
 export const useUpdateAvatarAction = routeAction$(
   async (formData, requestEvent) => {
     const { avatarData } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
     const userId = session?.user?.id;
     if (!userId) return { success: false, message: 'Not authenticated.' };
     const db = getDB();
@@ -136,7 +138,7 @@ export const useUpdateAvatarAction = routeAction$(
  * Action to remove custom avatar (reverts to guest fallback).
  */
 export const useRemoveAvatarAction = routeAction$(async (_, requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
   const userId = session?.user?.id;
   if (!userId) return { success: false, message: 'Not authenticated.' };
   const db = getDB();
@@ -159,7 +161,9 @@ export const useRemoveAvatarAction = routeAction$(async (_, requestEvent) => {
 export const useUpdateCosmeticsAction = routeAction$(
   async (formData, requestEvent) => {
     const { postIgnite, postDestroy, postUse, onTick } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
     const userId = session?.user?.id;
     if (!userId) return { success: false, message: 'Not authenticated.' };
     const db = getDB();
@@ -199,7 +203,9 @@ export const useUpdateCosmeticsAction = routeAction$(
 export const useChangeUsernameAction = routeAction$(
   async (formData, requestEvent) => {
     const { newUsername } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
     const userId = session?.user?.id;
     if (!userId) return { success: false, message: 'Not authenticated.' };
     const db = getDB();

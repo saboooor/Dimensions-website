@@ -26,15 +26,15 @@ export interface PortalCardData {
  */
 export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
   const db = getDB();
-  const session = requestEvent.sharedMap.get('session') as Session;
-  const user = await getSessionUser(session.user?.id);
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  const user = await getSessionUser(session?.user?.id);
 
   const limit = 8;
 
   // By default, show public portals or self-owned portals
   const queryWhere = or(
     eq(userPortals.public, 1),
-    eq(userPortals.maker, session.user?.id || '')
+    eq(userPortals.maker, session?.user?.id || '')
   );
 
   try {
@@ -69,8 +69,8 @@ export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
         img: p.img,
         public: p.public,
         likesCount: likesList.length,
-        isLiked: session.user?.id
-          ? likesList.map(String).includes(session.user?.id)
+        isLiked: session?.user?.id
+          ? likesList.map(String).includes(session?.user?.id)
           : false,
       };
     });
@@ -78,7 +78,7 @@ export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
     return {
       portals,
       hasMore: portals.length === limit,
-      isLoggedIn: !!session.user?.id,
+      isLoggedIn: !!session?.user?.id,
       isAdmin: isAdmin(user),
     };
   } catch (err) {
@@ -93,8 +93,10 @@ export const useInitialPortalsLoader = routeLoader$(async (requestEvent) => {
 export const useToggleLikeAction = routeAction$(
   async (formData, requestEvent) => {
     const { portalId } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
-    if (!session.user?.id)
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
+    if (!session?.user?.id)
       return { success: false, message: 'Must be logged in.' };
 
     const db = getDB();
@@ -114,11 +116,11 @@ export const useToggleLikeAction = routeAction$(
       }
 
       const strLikedList = likedList.map(String);
-      const userIndex = strLikedList.indexOf(session.user?.id);
+      const userIndex = strLikedList.indexOf(session?.user?.id);
       if (userIndex > -1) {
         likedList.splice(userIndex, 1); // Unlike
       } else {
-        likedList.push(session.user?.id); // Like
+        likedList.push(session?.user?.id); // Like
       }
 
       await db

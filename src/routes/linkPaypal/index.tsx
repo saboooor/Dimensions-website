@@ -9,7 +9,7 @@ import { getDB, users } from '~/util/db';
 import { Session } from '@auth/qwik';
 
 export const useLinkPaypalLoader = routeLoader$(async (requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
   const userId = session?.user?.id;
   if (!userId) {
     throw requestEvent.redirect(302, '/login?error=auth_required');
@@ -31,7 +31,9 @@ async function dbQueryUser(requestEvent: any, userId: string) {
 
 export const useLinkPaypalAction = routeAction$(
   async (formData, requestEvent) => {
-    const session = requestEvent.sharedMap.get('session') as Session;
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
     const userId = session?.user?.id;
     if (!userId) {
       return { success: false, message: 'Authentication required.' };

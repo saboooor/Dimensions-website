@@ -6,8 +6,8 @@ import { Session } from '@auth/qwik';
 
 export const onGet: RequestHandler = async (requestEvent) => {
   const db = getDB();
-  const session = requestEvent.sharedMap.get('session') as Session;
-  const user = await getSessionUser(session.user?.id);
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  const user = await getSessionUser(session?.user?.id);
 
   // Read query parameters
   const page = parseInt(requestEvent.url.searchParams.get('page') || '1', 10);
@@ -24,7 +24,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
       ? undefined
       : or(
           eq(userPortals.public, 1),
-          eq(userPortals.maker, session.user?.id || '')
+          eq(userPortals.maker, session?.user?.id || '')
         );
 
   try {
@@ -64,7 +64,7 @@ export const onGet: RequestHandler = async (requestEvent) => {
         img: p.img,
         public: p.public,
         likesCount: likesList.length,
-        isLiked: session.user?.id
+        isLiked: session?.user?.id
           ? likesList.map(String).includes(session.user.id)
           : false,
       };

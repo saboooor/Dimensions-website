@@ -12,7 +12,7 @@ import { Session } from '@auth/qwik';
  * Handle unlinking Minecraft account or check if already linked.
  */
 export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
   const userId = session?.user?.id;
   if (!userId) {
     throw requestEvent.redirect(302, '/login?error=auth_required');
@@ -45,7 +45,9 @@ export const useLinkMinecraftLoader = routeLoader$(async (requestEvent) => {
  */
 export const useLinkMinecraftAction = routeAction$(
   async (formData, requestEvent) => {
-    const session = requestEvent.sharedMap.get('session') as Session;
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
     const userId = session?.user?.id;
     if (!userId) {
       return { success: false, message: 'Authentication required.' };

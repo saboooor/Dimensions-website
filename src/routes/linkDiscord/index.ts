@@ -6,7 +6,7 @@ import { Session } from '@auth/qwik';
 export const onGet: RequestHandler = async (requestEvent) => {
   const { url, redirect, env, sharedMap } = requestEvent;
   const code = url.searchParams.get('code');
-  const session = sharedMap.get('session') as Session;
+  const session = sharedMap.get('session') as Session | undefined;
   const userId = session?.user?.id;
 
   if (!userId) {

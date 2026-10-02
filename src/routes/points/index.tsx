@@ -21,8 +21,8 @@ import { Session } from '@auth/qwik';
  * Loader to fetch points data, available rewards, and user's claim history.
  */
 export const usePointsLoader = routeLoader$(async (requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
-  if (!session.user?.id) {
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  if (!session?.user?.id) {
     throw requestEvent.redirect(302, '/login');
   }
 
@@ -30,7 +30,7 @@ export const usePointsLoader = routeLoader$(async (requestEvent) => {
 
   // Fetch current user details
   const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user?.id),
+    where: eq(users.id, session?.user?.id),
   });
 
   if (!user) {
@@ -44,7 +44,7 @@ export const usePointsLoader = routeLoader$(async (requestEvent) => {
 
   // Fetch user's claim requests history
   const history = await db.query.claimRequests.findMany({
-    where: eq(claimRequests.user, session.user?.id),
+    where: eq(claimRequests.user, session?.user?.id),
     orderBy: [desc(claimRequests.id)],
   });
 
@@ -57,8 +57,11 @@ export const usePointsLoader = routeLoader$(async (requestEvent) => {
 export const useRedeemCodeAction = routeAction$(
   async (formData, requestEvent) => {
     const { code } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
-    if (!session.user?.id) return { success: false, message: 'Not logged in.' };
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
+    if (!session?.user?.id)
+      return { success: false, message: 'Not logged in.' };
     const db = getDB();
 
     // Find valid coupon where isSubscription = 0 (points coupon)
@@ -67,7 +70,7 @@ export const useRedeemCodeAction = routeAction$(
       where: and(
         eq(subscriptionCoupons.coupon, code),
         eq(subscriptionCoupons.isSubscription, 0),
-        notLike(subscriptionCoupons.usedBy, `%!${session.user?.id}!%`)
+        notLike(subscriptionCoupons.usedBy, `%!${session?.user?.id}!%`)
       ),
     });
 
@@ -100,7 +103,7 @@ export const useRedeemCodeAction = routeAction$(
     try {
       // Update coupon: decrement uses and append user to usedBy
       const newUses = coupon.uses === -1 ? -1 : Math.max(0, coupon.uses - 1);
-      const newUsedBy = coupon.usedBy + `!${session.user?.id}!`;
+      const newUsedBy = coupon.usedBy + `!${session?.user?.id}!`;
 
       await db
         .update(subscriptionCoupons)
@@ -110,13 +113,13 @@ export const useRedeemCodeAction = routeAction$(
       // Add points to user
       const pointsToAdd = parseInt(coupon.period, 10) || 0;
       const user = await db.query.users.findFirst({
-        where: eq(users.id, session.user?.id),
+        where: eq(users.id, session?.user?.id),
       });
       if (user) {
         await db
           .update(users)
           .set({ points: user.points + pointsToAdd })
-          .where(eq(users.id, session.user?.id));
+          .where(eq(users.id, session?.user?.id));
       }
 
       return {
@@ -140,12 +143,12 @@ export const useRedeemCodeAction = routeAction$(
  * Action to toggle rewarded ads on/off.
  */
 export const useToggleAdsAction = routeAction$(async (_, requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
-  if (!session.user?.id) return { success: false, message: 'Not logged in.' };
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  if (!session?.user?.id) return { success: false, message: 'Not logged in.' };
   const db = getDB();
 
   const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user?.id),
+    where: eq(users.id, session?.user?.id),
   });
   if (!user) return { success: false, message: 'User not found' };
 
@@ -172,7 +175,7 @@ export const useToggleAdsAction = routeAction$(async (_, requestEvent) => {
         disabledAds: disabledAdsCount,
         points: newPoints,
       })
-      .where(eq(users.id, session.user?.id));
+      .where(eq(users.id, session?.user?.id));
 
     return {
       success: true,
@@ -188,12 +191,12 @@ export const useToggleAdsAction = routeAction$(async (_, requestEvent) => {
  * Action to claim daily rewarded ad points.
  */
 export const useClaimDailyAdsAction = routeAction$(async (_, requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
-  if (!session.user?.id) return { success: false, message: 'Not logged in.' };
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  if (!session?.user?.id) return { success: false, message: 'Not logged in.' };
   const db = getDB();
 
   const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user?.id),
+    where: eq(users.id, session?.user?.id),
   });
   if (!user) return { success: false, message: 'User not found' };
 
@@ -217,7 +220,7 @@ export const useClaimDailyAdsAction = routeAction$(async (_, requestEvent) => {
         points: user.points + 50,
         lastAdClaim: todayStr,
       })
-      .where(eq(users.id, session.user?.id));
+      .where(eq(users.id, session?.user?.id));
 
     return {
       success: true,
@@ -235,8 +238,11 @@ export const useClaimDailyAdsAction = routeAction$(async (_, requestEvent) => {
 export const useClaimRewardAction = routeAction$(
   async (formData, requestEvent) => {
     const { rewardCode, input } = formData;
-    const session = requestEvent.sharedMap.get('session') as Session;
-    if (!session.user?.id) return { success: false, message: 'Not logged in.' };
+    const session = requestEvent.sharedMap.get('session') as
+      | Session
+      | undefined;
+    if (!session?.user?.id)
+      return { success: false, message: 'Not logged in.' };
     const db = getDB();
 
     const reward = await db.query.claimRewards.findFirst({
@@ -248,7 +254,7 @@ export const useClaimRewardAction = routeAction$(
     }
 
     const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user?.id),
+      where: eq(users.id, session?.user?.id),
     });
     if (!user) return { success: false, message: 'User not found.' };
 
@@ -294,7 +300,7 @@ export const useClaimRewardAction = routeAction$(
 
       // Insert claim request
       await db.insert(claimRequests).values({
-        user: session.user?.id,
+        user: session?.user?.id,
         type: reward.name,
         status: statusDescription,
         input: input || '',
@@ -304,7 +310,7 @@ export const useClaimRewardAction = routeAction$(
       await db
         .update(users)
         .set({ points: user.points - reward.price })
-        .where(eq(users.id, session.user?.id));
+        .where(eq(users.id, session?.user?.id));
 
       return {
         success: true,

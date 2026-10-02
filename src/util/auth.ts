@@ -24,7 +24,10 @@ export async function getSessionUser(
     userId = input;
   } else if (typeof input === 'object') {
     if ('sharedMap' in input && typeof input.sharedMap?.get === 'function') {
-      const session = input.sharedMap.get('session') as Session | null;
+      const session = input.sharedMap.get('session') as
+        | Session
+        | undefined
+        | null;
       userId = session?.user?.id;
     } else if ('user' in input) {
       userId = input.user?.id;

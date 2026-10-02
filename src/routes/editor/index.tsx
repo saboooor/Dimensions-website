@@ -34,6 +34,8 @@ import Plus from 'lucide-icons-qwik/icons/Plus';
 import Layers from 'lucide-icons-qwik/icons/Layers';
 import X from 'lucide-icons-qwik/icons/X';
 import Circle from 'lucide-icons-qwik/icons/Circle';
+import Check from 'lucide-icons-qwik/icons/Check';
+import FileText from 'lucide-icons-qwik/icons/FileText';
 
 import { ColorPicker, Label, NumberInput, Toggle } from '@luminescent/ui-qwik';
 import { getDB, userPortals } from '~/util/db';
@@ -63,7 +65,7 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
   const portalId = portalIdParam ? parseInt(portalIdParam, 10) || 0 : 0;
 
   const db = getDB();
-  const session = requestEvent.sharedMap.get('session') as Session;
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
 
   const addonsList = registeredAddons;
 
@@ -80,7 +82,7 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
     portalId > 0 && portalRow && isLoggedIn && userId === portalRow.maker;
 
   if (portalId > 0 && portalRow && portalRow.public === 0 && !isOwner) {
-    const user = await getSessionUser(session.user?.id);
+    const user = await getSessionUser(session?.user?.id);
     if (!isAdmin(user)) {
       throw requestEvent.redirect(302, '/editor/');
     }
@@ -102,8 +104,8 @@ export const usePortalEditorLoader = routeLoader$(async (requestEvent) => {
  * Handler for portal editor POST requests (save, toggle public, delete).
  */
 export const onPost: RequestHandler = async (requestEvent) => {
-  const session = requestEvent.sharedMap.get('session') as Session;
-  if (!session.user?.id) {
+  const session = requestEvent.sharedMap.get('session') as Session | undefined;
+  if (!session?.user?.id) {
     requestEvent.send(401, 'Unauthorized');
     return;
   }
@@ -123,7 +125,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === session.user?.id) {
+      if (existing && existing.maker === session?.user?.id) {
         await db
           .update(userPortals)
           .set({ data, portalID, img })
@@ -131,14 +133,14 @@ export const onPost: RequestHandler = async (requestEvent) => {
       } else {
         const inserted = await db
           .insert(userPortals)
-          .values({ data, portalID, img, maker: session.user?.id, public: 0 })
+          .values({ data, portalID, img, maker: session?.user?.id, public: 0 })
           .returning({ id: userPortals.id });
         rowId = inserted[0]?.id || 0;
       }
     } else {
       const inserted = await db
         .insert(userPortals)
-        .values({ data, portalID, img, maker: session.user?.id, public: 0 })
+        .values({ data, portalID, img, maker: session?.user?.id, public: 0 })
         .returning({ id: userPortals.id });
       rowId = inserted[0]?.id || 0;
     }
@@ -153,7 +155,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === session.user?.id) {
+      if (existing && existing.maker === session?.user?.id) {
         const newPublic = existing.public === 1 ? 0 : 1;
         await db
           .update(userPortals)
@@ -171,7 +173,7 @@ export const onPost: RequestHandler = async (requestEvent) => {
       const existing = await db.query.userPortals.findFirst({
         where: eq(userPortals.id, portalId),
       });
-      if (existing && existing.maker === session.user?.id) {
+      if (existing && existing.maker === session?.user?.id) {
         await db.delete(userPortals).where(eq(userPortals.id, portalId));
       }
     }
@@ -222,6 +224,7 @@ export default component$(() => {
     showAddParticleLayerModal: false,
     showConfigModal: false,
     configYaml: '',
+    copiedConfig: false,
   });
 
   const generateYaml = $(() => {
@@ -232,11 +235,13 @@ export default component$(() => {
       DisplayName: id,
       Portal: {
         Frame: {
-          Material: store.frameBlock.toLowerCase(),
+          Material: (store.frameBlock || 'OBSIDIAN').toUpperCase(),
           Face: 'all',
         },
-        InsideMaterial: store.portalBlock.toLowerCase(),
-        LighterMaterial: store.lighterBlock.toLowerCase(),
+        InsideMaterial: (store.portalBlock || 'NETHER_PORTAL').toUpperCase(),
+        LighterMaterial: (
+          store.lighterBlock || 'FLINT_AND_STEEL'
+        ).toUpperCase(),
         ParticlesColor: '255;255;255',
         MinimumWidth: store.width,
         MinimumHeight: store.height,
@@ -254,7 +259,7 @@ export default component$(() => {
         },
       },
       World: {
-        Name: store.targetWorld,
+        Name: store.targetWorld || 'world_nether',
       },
       Entities: {
         Transformation: [],
@@ -264,8 +269,57 @@ export default component$(() => {
         },
       },
     };
+
+    if (store.addons && store.addons.length > 0) {
+      store.addons.forEach((addon) => {
+        if (addon.enabled && addon.options) {
+          Object.assign(obj, addon.options);
+        }
+      });
+    }
+
     store.configYaml = YamlConverter.convert(obj);
-    store.showConfigModal = true;
+  });
+
+  // Auto-update configYaml for sidebar preview
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(({ track }) => {
+    track(() => store.portalID);
+    track(() => store.frameBlock);
+    track(() => store.portalBlock);
+    track(() => store.lighterBlock);
+    track(() => store.width);
+    track(() => store.height);
+    track(() => store.targetWorld);
+    track(() => store.teleportDelay);
+    track(() => store.enableParticles);
+    track(() => store.exitPortalEnable);
+    track(() => store.addons);
+
+    void generateYaml();
+  });
+
+  const downloadYaml = $(() => {
+    generateYaml();
+    const id = store.portalID || 'testPortal';
+    const blob = new Blob([store.configYaml], { type: 'text/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${id}.yml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const copyYaml = $(async () => {
+    generateYaml();
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(store.configYaml);
+      store.copiedConfig = true;
+      setTimeout(() => {
+        store.copiedConfig = false;
+      }, 2000);
+    }
   });
 
   // 3D Viewport setup
@@ -437,7 +491,7 @@ export default component$(() => {
 
             <button
               class="flex h-9 cursor-pointer items-center gap-1.5 bg-gray-950 px-4 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-700 hover:bg-gray-900"
-              onClick$={() => void generateYaml()}
+              onClick$={() => void downloadYaml()}
             >
               <Download size={16} />
               <span>Download</span>
@@ -445,7 +499,10 @@ export default component$(() => {
             <button
               class="flex h-9 w-9 cursor-pointer items-center justify-center bg-gray-950 text-gray-300 transition-all hover:border-gray-700 hover:text-white"
               title="Preview YAML"
-              onClick$={() => void generateYaml()}
+              onClick$={() => {
+                void generateYaml();
+                store.showConfigModal = true;
+              }}
             >
               <Clipboard size={16} />
             </button>
@@ -480,7 +537,7 @@ export default component$(() => {
 
         <main class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* LEFT PANEL */}
-          <aside class="lum-card flex h-[600px] flex-col overflow-hidden p-0 lg:col-span-4 lg:h-[700px]">
+          <aside class="flex h-[600px] flex-col overflow-hidden p-0 lg:col-span-4 lg:h-[700px]">
             <div class="p-3">
               <ButtonContainer class="[&>button]:lum-btn-p-1! [&>button]:justify-center">
                 <button
@@ -924,13 +981,6 @@ export default component$(() => {
                       />
                     </div>
                   </div>
-                  <button
-                    class="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-900 py-2 text-xs font-bold tracking-wider text-gray-200 uppercase transition-all hover:border-gray-600 hover:bg-gray-800"
-                    onClick$={() => void generateYaml()}
-                  >
-                    <Clipboard size={14} />
-                    Preview / Copy Config
-                  </button>
                 </div>
               )}
 
@@ -972,6 +1022,42 @@ export default component$(() => {
                 </div>
               )}
             </div>
+
+            {/* Bottom Sidebar Config Preview */}
+            <div class="flex flex-col gap-2 border-t border-gray-800/80 bg-gray-950/60 p-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-gray-300 uppercase">
+                  <FileText size={14} class="text-emerald-400" />
+                  <span>Config Preview</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    class="flex h-6 cursor-pointer items-center gap-1 rounded bg-gray-900 px-2 text-[11px] font-semibold text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+                    title="Copy YAML"
+                    onClick$={() => void copyYaml()}
+                  >
+                    {store.copiedConfig ? (
+                      <Check size={12} class="text-emerald-400" />
+                    ) : (
+                      <Clipboard size={12} />
+                    )}
+                    <span>{store.copiedConfig ? 'Copied' : 'Copy'}</span>
+                  </button>
+                  <button
+                    class="flex h-6 cursor-pointer items-center gap-1 rounded bg-gray-900 px-2 text-[11px] font-semibold text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+                    title="Download YAML"
+                    onClick$={() => void downloadYaml()}
+                  >
+                    <Download size={12} />
+                    <span>Download</span>
+                  </button>
+                </div>
+              </div>
+              <pre class="max-h-36 overflow-x-auto overflow-y-auto rounded-lg border border-gray-800/80 bg-black/80 p-2.5 font-mono text-[11px] leading-relaxed whitespace-pre text-emerald-400 select-all">
+                {store.configYaml || (void generateYaml(), store.configYaml)}
+              </pre>
+            </div>
+          </aside>
           </aside>
 
           {/* CENTER PANEL: 3D Viewport */}
@@ -1089,6 +1175,55 @@ export default component$(() => {
                 );
               })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Config Output Modal */}
+      {store.showConfigModal && (
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div class="flex w-full max-w-xl flex-col gap-4 overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-5 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
+              <div class="flex items-center gap-2 text-xs font-bold tracking-wider text-gray-200 uppercase">
+                <FileText size={16} class="text-emerald-400" />
+                <span>Portal Config Output</span>
+              </div>
+              <button
+                class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-300"
+                onClick$={() => (store.showConfigModal = false)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-medium text-gray-400">
+                Generated YAML configuration for{' '}
+                {store.portalID || 'testPortal'}.yml
+              </span>
+              <div class="flex items-center gap-2">
+                <button
+                  class="flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-gray-800 bg-gray-900 px-3 text-xs font-semibold text-gray-200 transition-all hover:border-gray-700 hover:bg-gray-800"
+                  onClick$={() => void copyYaml()}
+                >
+                  {store.copiedConfig ? (
+                    <Check size={14} class="text-emerald-400" />
+                  ) : (
+                    <Clipboard size={14} />
+                  )}
+                  <span>{store.copiedConfig ? 'Copied!' : 'Copy'}</span>
+                </button>
+                <button
+                  class="flex h-8 cursor-pointer items-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-500"
+                  onClick$={() => void downloadYaml()}
+                >
+                  <Download size={14} />
+                  <span>Download .yml</span>
+                </button>
+              </div>
+            </div>
+            <pre class="lum-card max-h-[420px] overflow-x-auto overflow-y-auto rounded-xl border border-gray-800 bg-gray-950 p-4 font-mono text-xs leading-relaxed whitespace-pre text-emerald-400 select-all">
+              {store.configYaml}
+            </pre>
           </div>
         </div>
       )}
